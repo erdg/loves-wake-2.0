@@ -1,0 +1,73 @@
+.flex-container {
+   display: flex;
+   flex-direction: row;
+}
+
+/* hovers above avatar/form rails */
+.flex-container-heading {
+   margin-left: 16vw;
+}
+
+@media (max-width: 600px) {
+   .flex-container-heading {
+      text-align: center;
+      margin: auto;
+   }
+}
+
+.left-rail {
+   /* background-color: lightgray; */
+   flex: 0 0 59px;
+}
+
+.left-gutter {
+   /* background-color: gray; */
+   flex: 2 2 auto;
+}
+
+.avatar-rail {
+   /* flex: 0 0 auto; */
+   flex: 0 0 173px;
+   margin: 8px;
+}
+
+
+.form-rail {
+   flex: 0 0 307px;
+   margin: 8px;
+}
+
+.dialog-rail {
+   /* background-color: lightgray; */
+   flex: 0 0 470px;
+}
+
+.right-gutter {
+   /* background-color: gray; */
+   flex: 6 6 auto;
+}
+
+ /*****************/
+/* media queries */
+
+/* avatar rail to top on mobile */
+@media (max-width: 600px) {
+   .flex-container {
+      flex-direction: column;
+      align-items: center;
+   }
+   .avatar-rail {
+      height: auto;
+      width: auto;
+   }
+   .form-rail {
+      width: 307px;
+   }
+}
+
+/* shrink left rail reeeaaally fast between 1048px and 990px */
+@media (max-width: 1048px) and (min-width: 990px) {
+   .left-rail {
+      flex: 0 16 59px;
+   }
+}

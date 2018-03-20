@@ -1,0 +1,33 @@
+.gridContainer {
+   display: flex;
+   flex-direction: row;
+   /* justify-content: flex-start; */
+   justify-content: space-between;
+   margin: 48px;
+}
+
+@media (max-width: 960px) {
+   .gridContainer {
+      flex-direction: column;
+      margin: 0 auto;
+      width: 92%;
+   }
+   .avatarColumn {
+      flex: 0 0 100%;
+      margin: 0 auto;
+   }
+   .contentColumn {
+      flex: 0 0 100%;
+   }
+}
+
+.avatarColumn {
+   flex: 0 0 16%;
+   max-width: 200px;
+}
+
+.contentColumn { 
+   /* flex: 0 1 1000px; */
+   flex: 0 1 66%;
+   align-self: stretch;
+}

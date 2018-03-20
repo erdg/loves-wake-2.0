@@ -1,0 +1,37 @@
+.ContentColumnContainer {
+   max-width: 700px;
+}
+
+.ChronicleCard {
+   width: 100%;
+   height: 500px;
+}
+
+.LeftArrow {
+   position: relative;
+   bottom: 140px;
+   right: 46px;
+}
+
+.RightArrow {
+   position: relative;
+   bottom: 140px;
+   left: 80px;
+}
+
+.AddSomething {
+   position: relative;
+   left: 200px;
+   bottom: 500px;
+}
+
+@media (max-width: 840px) {
+   .LeftArrow,
+   .RightArrow,
+   .AddSomething {
+      position: unset;
+   }
+   .ChronicleCard {
+      min-height: 100%;
+   }
+}

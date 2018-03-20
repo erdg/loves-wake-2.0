@@ -1,0 +1,18 @@
+.dialog-icon {
+   padding: 0px 7px;
+   color: white;
+   background-color: #5757d9;
+   line-height: 1.2;
+}
+
+@media (min-width: 990px) {
+   .dialog {
+      position: absolute;
+      top: 0px;
+      left: 328px;
+      font-weight: normal;
+      word-wrap: normal;
+      width: 100%;
+      min-width: 444px;
+   }
+}

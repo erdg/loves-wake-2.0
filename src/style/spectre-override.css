@@ -1,0 +1,14 @@
+.form-label {
+   font-weight: bold;
+}
+
+.loading.loading-xl {
+   position: unset;
+}
+
+.loading-xl:after {
+   height: 6rem;
+   width: 6rem;
+   margin-left: -3rem;
+   margin-top: -3rem; 
+}

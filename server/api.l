@@ -1,0 +1,352 @@
+# api.l - api endpoints and data structures
+
+# UTILS
+(de respondJson (Lst)
+   (let Json (json~encode Lst)
+      (http1 "application/json" 0)
+      (prinl "Access-Control-Allow-Origin: *^M")
+      (prinl "Content-Length: " (size Json) "^M^J^M")
+      (prin Json) ) )
+
+# get json val from list
+(de getJson (Key Lst)
+   (cdr (assoc Key Lst)) )
+
+# by this convention, server-side errors are returned as,
+# 
+#    { error: "Server-side error text here" }
+#
+# to be displayed on the client.
+(de respondJsonError (Str)
+   (respondJson
+      (list
+         (cons "error"
+            Str ) ) ) )
+
+(de forbidden ()
+   (prinl "HTTP/1.0 403 Forbidden^M")
+   (prinl "Access-Control-Allow-Origin: *^M")
+   (prinl "^M") )
+
+#####################
+# user
+(class +User +Entity)
+
+(rel id (+Key +Number))          # id number
+(rel nm (+Ref +String))
+(rel em (+Ref +String))          # email
+(rel pw (+Swap +String))         # password
+
+(rel created (+Ref +String))     # creation timestamp
+(rel confirmed (+Ref +Bool))     # confirmed human?
+
+# list of memorials created by user
+(rel memorials (+List +Joint) usr (+Memorial))
+
+(rel img (+Blob))                # avatar image
+
+(dm json> ()
+   (list
+      (cons "user"
+         (make
+            # name
+            (if (: nm) (link (cons "name" @)))
+            # email
+            (link (cons "email" (: em)))
+            # confirmed?
+            (link (cons "confirmed" (if (: confirmed) "true" "false")))
+            # memorials
+            # NOTE - a lot of nested make/link'ing here
+            (link 
+               (make (link "memorials" T)
+                  (for M (: memorials)
+                     (link (json> M)) ) ) ) ) ) ) )
+
+   
+############
+
+#########################
+#  +Memorial
+(class +Memorial +Entity)
+
+(rel usr (+Joint) memorials (+User))   # created by
+(rel id (+Key +Number))                # memorial id
+
+(rel nm (+Ref +String))                # name
+(rel born (+Ref +String))              # date of birth
+(rel died (+Ref +String))              # date of passing
+(rel img (+Blob))                      # memorial avatar
+
+# links to chronicle data
+(rel chronicle (+List +Joint) memorial (+Chronicle))
+#  chronicle is simply a list of '+Chronicle's
+
+
+(dm json> ()
+   (make
+      (link (cons "name" (: nm)))
+      (if (: born) (link (cons "born" @)))
+      (if (: died) (link (cons "died" @)))
+      (if (: img) (link (cons "avatar" (pack *API (blob This 'img)))))
+      (link 
+         (make (link "items" T)
+            (for M (: chronicle)
+               (link (json> M)) ) ) ) ) )
+############
+
+##########################
+#  +Chronicle
+(class +Chronicle +Entity)
+
+# link back to memorial
+(rel memorial (+Joint) chronicle (+Memorial))  
+(rel id (+Key +Number))
+(rel title (+Idx +String))
+(rel location (+Ref +String))
+(rel date (+Ref +String))
+(rel txt (+Blob))                      # story text
+(rel img (+Blob))                      # image
+
+(dm json> ()
+   (make
+      (if (: id) (link (cons "id" @)))
+      (if (: title) (link (cons "title" @)))
+      (if (: location) (link (cons "location" @)))
+      # use 'start' for vis.Timeline - start date (the 'point') on timeline
+      (if (: date) (link (cons "start" @)))
+      # (cons "caption" (: txt))
+      (if (: img) (link (cons "src" (pack *API (blob This 'img))))) ) )
+
+# API/!getChronicle
+(allow "!getChronicle")
+(de getChronicle (Nm)
+   (if (db 'nm '+Memorial Nm)
+      (respondJson (json> @))
+      (respondJsonError "This memorial does not exist") ) )
+
+# API/!postChronicle
+(allow "!postChronicle")
+(de postChronicle (Nm)
+   (let Json (json~decode *Post)
+      (if (db 'nm '+Memorial Nm)  # -> '@'
+         (with 
+            # new +Chronicle -> 'This' for rest of prg
+            [new! '(+Chronicle)
+               'memorial @  # '@' bound from 'if' statement, see above 
+               'id (genKey 'id '+Chronicle)
+               'title (getJson "title" Json)
+               'location (getJson "location" Json)
+               'date (getJson "date" Json)
+               'txt (getJson "txt" Json) ]
+            (when (getJson "image" Json)  # '@' now contains base64 data URL
+               (put!> This 'img T)
+               (pipe
+                  # send to base64 utility to decode
+                  (out '(base64 "-d") 
+                     # remove "data:image/<type>;base64," from URL
+                     (prin (pack (stem (chop @) ",") ) ) )
+                  # write decoded image to db blob file
+                  (out (blob This 'img) (echo) ) ) )
+            (respondJson 
+               (json> This) ) ) ) ) )
+
+
+############
+
+# API
+#
+# NOTE - incoming POST body data will be available in *Post.
+# functions should call 'json~decode' to get an 'assoc' list
+# of the POST data, e.g.
+#
+#  (let Json (json~decode *Post)
+#     ... do something with 'Json' ... )
+
+
+# seed the random number generator
+(seed (in "/dev/urandom" (rd 8)))
+
+# /api/!newUser
+(allow "!newUser")
+(de newUser (Em Pw)  # email, password
+   ## if email exists in db
+   (if (db 'em '+User Em)
+      ## respond with error
+      (respondJson 
+         (list 
+            (cons "error"
+               (pack
+                  "An account has already been created with that email address. "
+                  "Please try signing up with a different email address." ) ) ) )
+      ## else, continue with account creation
+      (let Rand (rand 100000 999999)
+         (with
+            (new! '(+User)
+               'id (genKey 'id '+User)
+               'em Em
+               'pw (bcrypt~hashpw Pw 14)
+               'confirmationNumber Rand )
+            (sendConfirmationEmail Em Rand)
+            ## respond with user ID and a 1-hour token used to confirm
+            ## the account
+            (respondJson
+               (list 
+                  (cons "email" (: em)) ) ) ) ) ) )
+
+(de newUserConfirmationToken (Id)
+   (cons "newUserConfirmationToken"
+      (encodeJWT *Secret 3600
+         ("iss" . "lovesWake")
+         ("sub" . (list Id)) ) ) )
+
+
+# *Email is set in main.l
+(de sendConfirmationEmail (Email Num)
+   (mail "localhost" 25 *Email Email
+      # subject
+      "LovesWake - Please confirm your email address."
+      # attachments
+      NIL
+      # body
+      "Thanks for signing up for LovesWake! Please enter the six-digit number below to confirm your account:"
+      NIL
+      Num
+      NIL
+      "Thanks,"
+      "LovesWake" ) )
+
+# /api/!confirmUser
+# TODO - should use a JWT
+(allow "!confirmUser")
+(de confirmUser (Em Num)
+   (with (db 'em '+User Em)
+      (ifn (= (: confirmationNumber) Num)
+         (respondJson
+            (list (cons "error" "Confirmation number is incorrect, please try again.")) )
+         (put!> (db 'em '+User Em)
+            'confirmed T )
+         (respondJson
+            (list 
+               (cons "user" (: em))
+               (cons "token" (encodeJWT *Secret 3600 ("iss" . "lovesWake") ("sub" . (: id)))) ) ) ) ) ) 
+                  
+
+# /api/!loginUser
+(allow "!loginUser")
+(de loginUser ()
+   (let [Json (json~decode *Post)  Em (getJson "em" Json)  Pw (getJson "pw" Json)]
+      # find user in DB
+      (ifn (db 'em '+User Em)
+         # if no, login error
+         (respondJsonError
+            (pack 
+               "We couldn't find an account associated with this email address. "
+               "Check for typos and try again." ) )
+         # if yes
+         (with @
+            # correct password?
+            (ifn (bcrypt~compare Pw (val (: pw)))
+               # if no
+               (respondJsonError
+                  "Incorrect password. Please check for typos or try recovering your account." )
+               # if yes
+               (respondJson
+                  (list
+                     # login token - valid 1 week
+                     (cons "loginToken" (encodeJWT *Secret 604800 ("iss" . "loveswake.com") ("sub" . (: id)))) ) ) ) ) ) ) )
+
+# /api/!getUserData
+(allow "!getUserData")
+(de getUserData ()
+   (let [Json (json~decode *Post)
+         Jwt (decodeJWT *Secret (getJson "loginToken" Json))
+         Id (getJson "sub" Jwt) ]
+      (out 2 (prinl "id: " Id))
+      (ifn (db 'id '+User Id)
+         (forbidden)
+         (respondJson (json> @) ) ) ) )
+
+# /api/!recoverUserAccount
+# FIXME - THIS FUNCTION IS NOT WORKING
+# begins the user account recovery process.
+# sends email with six-digit number, which can be used to reset
+# the account password.
+(allow "!recoverUserAccount")
+(de recoverUserAccount (Email)
+   # find user in DB
+   (ifn (db 'em '+User Email)
+      # if no, return error
+      (respondJson
+         (list 
+            (cons "error" 
+               (pack 
+                  "We couldn't find an account associated with this email address. "
+                  "Check for typos and try again." )) ) )
+      (let Num (rand 100000 999999)
+         (put!> (db 'em '+User Email) 'recoverAccountNumber Num)
+         (sendRecoverAccountEmail Email Num)
+         (respondJson
+            (list (cons "email" Email)) ) ) ) )
+
+(de sendRecoverAccountEmail (Email Num)
+   (mailHTML "localhost" 25 *Email Email
+      # subject
+      "LovesWake - Account Recovery"
+      # attachments
+      NIL
+      # body
+      (<p> NIL
+         "Please use the following six-digit number to reset the password on your account:" )
+      (<br>)
+      (<strong> NIL Num) ) )
+
+# /api/!confirmRecoverAccountNumber
+# checks the six-digit number that was set in the 'recoverUserAccount'
+# function. if the number is correct, sends data to client to prompt for
+# password reset.
+# FIXME - THIS FUNCTION IS NOT WORKING
+(allow "!confirmRecoverAccountNumber")
+(de confirmRecoverAccountNumber (Email Num)
+   (let User (db 'em '+User Email)
+      (ifn (= (; User recoverAccountNumber) Num)
+         (respondJson
+            (list 
+               (cons "error" 
+                  (pack 
+                     "The six-digit account recovery number is not correct. " 
+                     "Please check your email and try again.")) ) )
+         (put!> User
+            'canResetPassword T )
+         (put!> User
+            'recoverAccountNumber NIL )
+         (respondJson
+            (list (cons "canResetPassword" "true")) ) ) ) )
+
+# /api/!resetUserPassword
+(allow "!resetUserPassword")
+(de resetUserPassword (Email Password)
+   (let User (db 'em '+User Email)
+      (ifn (; User canResetPassword)
+         (respondJson
+            (list (cons "error" "Not authorized to reset password.")) )
+         (put!> User
+            'pw (bcrypt~hashpw Password 14) )
+         (put!> User
+            'canResetPassword NIL )
+         (respondJson
+            (list 
+               (cons "user" (; User em))
+               (cons "token" (encodeJWT *Secret 3600 ("iss" . "lovesWake") ("sub" . (: id)))) ) ) ) ) )
+      
+
+(de loginError ()
+   (list (cons "error" "login error")) )
+
+# database sizes
+(dbs
+   (3 +User +Memorial +Chronicle)
+   (3 (+User pw))
+   (4 (+Chronicle title))
+   (4 (+Chronicle id location date))
+   (4 (+User id em confirmed))
+)

@@ -1,0 +1,13 @@
+.vis-item .vis-item-content {
+   padding: 0px;
+}
+
+.vis-item.vis-dot {
+   border-radius: 0.05em;
+   border-width: 4px;
+}
+
+.vis-item.vis-point.vis-selected {
+   background-color: none;
+}
+
