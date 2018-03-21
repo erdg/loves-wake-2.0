@@ -1,4 +1,5 @@
 import { h, Component } from 'preact';
+import API_ENDPOINT from '../../api';
 
 import { FlexContainer } from '../../components/FlexContainer';
 import { CreateShrineFormContainer } from './create-shrine-form-container/';
@@ -17,7 +18,7 @@ class CreateShrine extends Component {
       posPronoun: '',
       deceased: false,
 
-      file: {},
+      file: null,
       fileURL: ''
    };
 
@@ -28,6 +29,7 @@ class CreateShrine extends Component {
    onFileChange = (e) => {
       // console.log(e);
       this.setState({ file: e.target.files[0] });
+      this.makeFileURL();
    }
 
    makeFileURL = () => {
@@ -42,19 +44,19 @@ class CreateShrine extends Component {
    }
 
    _handleNextStep = () => {
-      // HACK - generate image when leaving step 2
-      if ((this.state.step === 2) && this.state.file) {
-         this.makeFileURL();
-      }
+      // // HACK - generate image when leaving step 2
+      // if ((this.state.step === 2) && this.state.file) {
+      //    this.makeFileURL();
+      // }
       let step = this.state.step + 1;
       this.setState({ step: step });
    }
 
    gotoStep = (n) => {
       // HACK - generate image when leaving step 2
-      if ((this.state.step === 2) && this.state.file) {
-         this.makeFileURL();
-      }
+      // if ((this.state.step === 2) && this.state.file) {
+      //    this.makeFileURL();
+      // }
       this.setState({ step: n })
    }
 
@@ -87,6 +89,28 @@ class CreateShrine extends Component {
       } else if ( e.target.value === "false" ) {
          this.setState({ deceased: false });
       }
+   }
+
+   newMemorial = () => {
+      let loginToken = window.sessionStorage.getItem("loginToken");
+
+      fetch(API_ENDPOINT + "!newMemorial",
+         {
+            method: "POST",
+            body: JSON.stringify({
+               nm: this.state.firstName + " " + this.state.lastName,
+               born: this.state.born,
+               died: this.state.died,
+               // strip trailing '='s so PL can handle it
+               img: this.state.fileURL.split("=")[0],
+               loginToken: loginToken
+            })
+         }
+      )
+         .then(res => res.json())
+         .then(json => {
+            // do something
+         })
    }
 
    render (props) {
@@ -131,6 +155,8 @@ class CreateShrine extends Component {
                      step={ step }
                      handleNextStep={ this._handleNextStep }
                      handlePrevStep={ this._handlePrevStep }
+
+                     newMemorial={this.newMemorial}
 
                      onChange={this.onChange}
                      onFileChange={this.onFileChange}

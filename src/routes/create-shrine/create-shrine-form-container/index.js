@@ -50,6 +50,8 @@ class CreateShrineFormContainer extends Component {
                   deceased={ props.deceased }
                   handleDeath={ props.handleDeath }
 
+                  newMemorial={props.newMemorial}
+
                   handleNextStep={ props.handleNextStep }
                   handlePrevStep={ props.handlePrevStep }
                />

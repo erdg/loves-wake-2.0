@@ -13,6 +13,7 @@ const CreateShrineFormStep3 = (props) => {
    return (
       <div>
 
+         {/*
          <ChooseGender 
             firstName={ props.firstName }
             subjPronoun={ props.subjPronoun }
@@ -20,6 +21,7 @@ const CreateShrineFormStep3 = (props) => {
             posPronoun={ props.posPronoun }
             handleGenderChange={ props.handleGenderChange } 
          />
+         */}
 
          <DateOfBirth 
             firstName={ props.firstName }
@@ -39,6 +41,7 @@ const CreateShrineFormStep3 = (props) => {
             died={props.died}
          />
 
+         {/*
          <div class="row my-2">
             <PrevStepButton
                onClick={ props.handlePrevStep }
@@ -47,6 +50,13 @@ const CreateShrineFormStep3 = (props) => {
                onClick={ props.handleNextStep }
             />
          </div>
+         */}
+
+         <button class="btn btn-primary"
+            onClick={props.newMemorial}
+         >
+            Create Memorial
+         </button>
 
       </div>
    );
