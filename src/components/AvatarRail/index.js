@@ -8,24 +8,26 @@ const AvatarRail = (props) => {
    return (
       <Menu>
 
-         <Avatar class="avatar-xl centered mt-2" data-initial={props.name.charAt[0]} />
+         <figure class="avatar avatar-xxl centered mt-2" data-initial={props.firstName.charAt[0]}>
+            <img src={props.avatar} />
+         </figure>
 
          <MenuItem>
-            <h4 class="text-center m-2">{props.name}</h4>
+            <h4 class="text-center m-2">{props.firstName}</h4>
          </MenuItem>
 
          <MenuDivider></MenuDivider>
 
          <MenuItem>
-            <Link activeClass="active" href={"/" + props.name + "/shrine"}>Shrine</Link>
+            <Link activeClass="active" href={"/" + props.urlName + "/shrine"}>Shrine</Link>
          </MenuItem>
 
          <MenuItem>
-            <Link activeClass="active" href={"/" + props.name + "/chronicle"}>Chronicle</Link>
+            <Link activeClass="active" href={"/" + props.urlName + "/chronicle"}>Chronicle</Link>
          </MenuItem>
 
          <MenuItem>
-            <Link activeClass="active" href={"/" + props.name + "/atlas"}>Atlas</Link>
+            <Link activeClass="active" href={"/" + props.urlName + "/atlas"}>Atlas</Link>
          </MenuItem>
 
       </Menu>

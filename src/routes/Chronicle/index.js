@@ -27,6 +27,8 @@ export default class Chronicle extends Component {
       // txt: '',    // description
       file: '',   // image file
 
+      // avatar image url
+      avatar: '',
       // timeline data
       currentItem: {},
       items: []
@@ -152,16 +154,19 @@ export default class Chronicle extends Component {
 
    componentWillMount () {
       // "KarenFox" -> "Karen Fox", props.name comes from URL
-      let name = this.props.name.split(/(?=[A-Z])/).join(" ");
+      let urlName = this.props.name.split(/(?=[A-Z])/).join(" ");
 
       // fetch chronicle items
-      fetch( API_ENDPOINT + "!getChronicle?" + name )
+      fetch( API_ENDPOINT + "!getChronicle?" + urlName )
       .then(res => res.json())
       .then(json => {
          // sort items by date, earliest first
          let sorted = json.items.sort((a, b) => parseInt(a.start) - parseInt(b.start));
-         this.setState({ items: sorted });
-         this.setState({ currentItem: sorted[0] });
+         this.setState({ 
+            items: sorted, 
+            currentItem: sorted[0],
+            avatar: json.avatar
+         });
       });
    }
 
@@ -201,7 +206,11 @@ export default class Chronicle extends Component {
       return (
          <GridContainer
             avatarColumn={
-               <AvatarRail name={name.split(/(?=[A-Z])/)[0]} />
+               <AvatarRail 
+                  firstName={name.split(/(?=[A-Z])/)[0]} 
+                  urlName={name}
+                  avatar={this.state.avatar}
+               />
             }
 
             contentColumn={
