@@ -2,6 +2,15 @@ import { h, Component } from 'preact';
 import { route } from 'preact-router';
 import API_ENDPOINT from '../../api';
 
+// This is a HOC that handles login details.
+//
+// USAGE - attach to a page that requires being
+// logged in to access, e.g.
+//
+//    UserProfileWithAuth = withAuth(UserProfile);
+//
+// If user is not logged in, they will be redirected
+// to the login page.
 const withAuth = ComposedComponent =>
    class extends Component {
       state = {
