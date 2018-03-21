@@ -29,6 +29,8 @@ export default class Chronicle extends Component {
 
       // avatar image url
       avatar: '',
+      born: '',
+      died: '',
       // timeline data
       currentItem: {},
       items: []
@@ -165,7 +167,9 @@ export default class Chronicle extends Component {
          this.setState({ 
             items: sorted, 
             currentItem: sorted[0],
-            avatar: json.avatar
+            avatar: json.avatar,
+            born: json.born,
+            died: json.died
          });
       });
    }
@@ -246,6 +250,7 @@ export default class Chronicle extends Component {
                   <TimeLine 
                      ref={ this.linkRef('timeline') }
                      data={this.state.items} 
+                     born={this.state.born.split("-")[0]}
                      changeItem={this.changeItem}
                   />
 

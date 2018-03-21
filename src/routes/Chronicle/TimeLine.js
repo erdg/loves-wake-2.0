@@ -7,19 +7,15 @@ import '../../style/timeline.css';
 export default class TimeLine extends Component {
 
    componentDidMount() {
+      let born = this.props.born;
 
       this.timelineDataSet = new vis.DataSet();
 
       this.timeline = new vis.Timeline(this.refs.timeline, this.timelineDataSet, {
          //options
-
-         // NOTE - these should be dynamic
-         // date of birth
-         min: '1950',
-         start: '1956',
-         // present
+         // NOTE - start/min of timeline set dynamically below, after data has loaded
          max: '2025',
-         end: '2018',
+         end: '2020',
 
          height: '160px',
 
@@ -30,9 +26,9 @@ export default class TimeLine extends Component {
          // stack: false,
          type: 'point',
          // one year
-         zoomMin: 31557600000,
-         // fifty years
-         zoomMax: 1577880000000
+         // zoomMin: 31557600000,
+         // // fifty years
+         // zoomMax: 1577880000000
       });
 
       // 'properties' not to be confused with 'props'
@@ -58,9 +54,14 @@ export default class TimeLine extends Component {
    }
 
    componentDidUpdate () {
-      // console.log(this.props.data);
-      // console.log(this.timelineDataSet);
+      // dynamic timeline start date (birth)
+      this.timeline.setOptions({ 
+         min: this.props.born,
+      });
+      // add data set
       this.timelineDataSet.add(this.props.data);
+      // focus timeline on current item
+      this.selectItem(this.props.data[0]);
       this.timeline.redraw();
    }
 
