@@ -60,7 +60,7 @@
             (link 
                (make (link "memorials" T)
                   (for M (: memorials)
-                     (link (json> M)) ) ) ) ) ) ) )
+                     (link (json> M T)) ) ) ) ) ) ) )
 
 ############
 
@@ -131,6 +131,16 @@
               'title (pack Nm " passed away")
               'date Died )
             (respondJson (json> This)) ) ) ) )
+
+(allow "!getMemorial")
+(de getMemorial (Nm)
+   (let [Json   (json~decode *Post)
+         Mem    (db 'nm '+Memorial Nm)
+         UserId (getJson "sub" (decodeJWT *Secret (getJson "loginToken" Json))) ]
+      # if memorial exists and belongs to user
+      (if (and Mem (= (db 'id '+User UserId) (; Mem usr)))
+         (respondJson (json> Mem T))
+         (respondJsonError "sorry") ) ) )
 
 ##########
 
