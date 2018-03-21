@@ -5,7 +5,7 @@ const MemorialList = (props) => (
       <h3>Memorials</h3>
       { 
          props.memorials.map((obj) => (
-            <MemorialTile name={obj.name} born={obj.born} died={obj.died} />
+            <MemorialTile name={obj.name} born={obj.born} died={obj.died} avatar={obj.avatar}/>
          ))
       }
    </div>
@@ -14,7 +14,9 @@ const MemorialList = (props) => (
 const MemorialTile = (props) => (
    <div class="tile" style="max-width: 500px;">
       <div class="tile-icon">
-         <figure class="avatar avatar-lg" />
+         <figure class="avatar avatar-lg"> 
+            <img src={props.avatar} />
+         </figure>
       </div>
       <div class="tile-content">
          <p class="tile-title">{props.name}</p>
