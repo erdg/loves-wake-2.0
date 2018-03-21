@@ -55,10 +55,12 @@ export default class User extends Component {
                </Toast>
             }
 
-            <ConfirmAccountModal
-               showModal={this.state.showModal}
-               hideModal={this.hideModal}
-            />
+            { !this.props.user.confirmed &&
+               <ConfirmAccountModal
+                  showModal={this.state.showModal}
+                  hideModal={this.hideModal}
+               />
+            }
 
 
             {/* list memorials, or 'Start a memorial' button if none */}
