@@ -7,8 +7,10 @@ import Header from './header';
 import Home from '../routes/home';
 import Login from '../routes/Login';
 import Signup from '../routes/signup';
+
 import User from '../routes/user';
 import CreateShrine from '../routes/create-shrine';
+import ManageMemorial from '../routes/ManageMemorial';
 
 // public shrines
 import Entry from '../routes/Entry';
@@ -22,8 +24,10 @@ if (module.hot) {
    require('preact/debug');
 }
 
+// routes requiring auth
 const UserWithAuth = withAuth(User);
 const CreateShrineWithAuth = withAuth(CreateShrine);
+const ManageMemorialWithAuth = withAuth(ManageMemorial);
 
 export default class App extends Component {
    state = {
@@ -71,6 +75,12 @@ export default class App extends Component {
                <UserWithAuth path="/user" 
                   setUserData={(user) => this.setUserData(user)}
                   user={this.state.user}
+               />
+
+               <ManageMemorialWithAuth 
+                  path="/user/manage-memorial/:name"
+                  user={this.state.user}
+                  setUserData={(user) => this.setUserData(user)}
                />
 
                { /*
