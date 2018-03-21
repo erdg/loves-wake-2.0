@@ -54,7 +54,7 @@
             # email
             (link (cons "email" (: em)))
             # confirmed?
-            (link (cons "confirmed" (if (: confirmed) "true" "false")))
+            (link (cons "confirmed" (if (: confirmed) 'true 'false)))
             # memorials
             # NOTE - a lot of nested make/link'ing here
             (link 
@@ -62,7 +62,6 @@
                   (for M (: memorials)
                      (link (json> M)) ) ) ) ) ) ) )
 
-   
 ############
 
 #########################
@@ -93,10 +92,50 @@
             (make (link "items" T)
                (for M (: chronicle)
                   (link (json> M)) ) ) ) ) ) )
-############
 
-##########################
-#  +Chronicle
+(allow "!newMemorial")
+(de newMemorial ()
+   (let [Json (json~decode *Post)
+         Nm   (getJson "nm" Json)
+         Born (getJson "born" Json)
+         Died (getJson "died" Json)
+         UserId  (getJson "sub" (decodeJWT *Secret (getJson "loginToken" Json))) ]
+      (if (db 'id '+User UserId)
+         (with  # new +Memorial => This
+            [new! '(+Memorial)
+              'id (genKey 'id '+Memorial)
+              'nm Nm
+              'usr (db 'id '+User UserId)
+              'born Born
+              'died Died ]
+            # upload image
+            (when (getJson "img" Json)  # '@' now contains base64 data URL
+              (put!> This 'img T)
+              (pipe
+                 # send to base64 utility to decode
+                 (out '(base64 "-d") 
+                    # remove "data:image/<type>;base64," from URL
+                    (prin (pack (stem (chop @) ",") ) ) )
+                 # write decoded image to db blob file
+                 (out (blob This 'img) (echo) ) ) )
+            # +Chronicle entry for birth
+            (new! '(+Chronicle) 
+              'id (genKey 'id '+Chronicle)
+              'memorial This
+              'title (pack Nm " was born")
+              'date Born )
+            # +Chronicle entry for death
+            (new! '(+Chronicle) 
+              'id (genKey 'id '+Chronicle)
+              'memorial This
+              'title (pack Nm " passed away")
+              'date Died )
+            (respondJson (json> This)) ) ) ) )
+
+##########
+
+########################
+  +Chronicle
 (class +Chronicle +Entity)
 
 # link back to memorial
