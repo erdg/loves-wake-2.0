@@ -82,16 +82,17 @@
 #  chronicle is simply a list of '+Chronicle's
 
 
-(dm json> ()
+(dm json> (Flag)  # flag to display +Chronicle
    (make
       (link (cons "name" (: nm)))
       (if (: born) (link (cons "born" @)))
       (if (: died) (link (cons "died" @)))
       (if (: img) (link (cons "avatar" (pack *API (blob This 'img)))))
-      (link 
-         (make (link "items" T)
-            (for M (: chronicle)
-               (link (json> M)) ) ) ) ) )
+      (if Flag
+         (link 
+            (make (link "items" T)
+               (for M (: chronicle)
+                  (link (json> M)) ) ) ) ) ) )
 ############
 
 ##########################
@@ -121,7 +122,7 @@
 (allow "!getChronicle")
 (de getChronicle (Nm)
    (if (db 'nm '+Memorial Nm)
-      (respondJson (json> @))
+      (respondJson (json> @ T))
       (respondJsonError "This memorial does not exist") ) )
 
 # API/!postChronicle
