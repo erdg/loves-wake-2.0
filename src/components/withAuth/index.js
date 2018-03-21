@@ -65,7 +65,7 @@ const withAuth = ComposedComponent =>
                <div class="centered loading loading-xl" />
             );
          } else {
-            return (<ComposedComponent user={this.props.user} />);
+            return (<ComposedComponent user={this.props.user} name={this.props.name} />);
          }
       }
    }
