@@ -23,6 +23,7 @@ if (module.hot) {
 }
 
 const UserWithAuth = withAuth(User);
+const CreateShrineWithAuth = withAuth(CreateShrine);
 
 export default class App extends Component {
    state = {
@@ -53,7 +54,10 @@ export default class App extends Component {
 
                <Login path="/login" />
                <Signup path="/signup" />
-               <CreateShrine path="/create-shrine" />
+               <CreateShrineWithAuth path="/create-shrine" 
+                  setUserData={(user) => this.setUserData(user)}
+                  user={this.state.user}
+               />
 
                { /* public shrines */ }
                { /* ============== */ }
