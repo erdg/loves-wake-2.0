@@ -1,4 +1,5 @@
 import { h, Component } from 'preact';
+import { route } from 'preact-router';
 
 const MemorialList = (props) => (
    <div>
@@ -25,7 +26,10 @@ const MemorialTile = (props) => (
          </p>
       </div>
       <div class="tile-action">
-         <button class="btn"> 
+         <button 
+            class="btn"
+            onClick={() => route("/user/manage-memorial/" + props.name.split(" ").join(""))}
+         > 
             Manage content
          </button>
       </div>
