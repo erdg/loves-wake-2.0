@@ -17,6 +17,7 @@ const Header = (props) => {
             </section>
             :
             <section class="navbar-section">
+               <AddDropdown />
                <UserName name={props.name || props.email} />
                <AvatarDropdown name={props.name || props.email} notifications={props.notifications || []}/>
             </section>
@@ -59,20 +60,18 @@ const AvatarDropdown = (props) => {
    )
 }
 
-const AddDropdown = (props) => {
-   return (
+const AddDropdown = (props) => (
       <div class="dropdown mx-2">
          <button class="dropdown-toggle btn btn-link" tabindex="0">
             <i class="icon icon-plus" />
             <i class="icon icon-caret" />
          </button>
          <ul class="menu">
-            <li>Start a memorial</li>
+            <li class="menu-item"><a href="/create-shrine">Start a memorial</a></li>
             <li class="divider" />
             <li>Invite others</li>
          </ul>
       </div>
-   )
-}
+)
 
 export default Header;
