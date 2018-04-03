@@ -32,6 +32,12 @@ const MemorialTile = (props) => (
          > 
             Manage content
          </button>
+         <button 
+            class="btn"
+            onClick={() => route("/" + props.name.split(" ").join("") + "/chronicle")}
+         > 
+            View Chronicle
+         </button>
       </div>
    </div>
 )
