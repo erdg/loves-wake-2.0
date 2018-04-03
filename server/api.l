@@ -28,6 +28,7 @@
    (prinl "Access-Control-Allow-Origin: *^M")
    (prinl "^M") )
 
+
 #####################
 # user
 (class +User +Entity)
@@ -68,22 +69,46 @@
 #  +Memorial
 (class +Memorial +Entity)
 
-(rel usr (+Joint) memorials (+User))   # created by
-(rel id (+Key +Number))                # memorial id
+(rel usr (+Joint) memorials (+User))   # created by user
+(rel id (+Key +Number))                # unique memorial id number
+(rel urlStr (+Ref +String))            # 8 char base64 string, e.g. "8bez73Ka"
 
-(rel nm (+Ref +String))                # name
+(rel urlNm (+Ref +String))             # concatenated name, e.g. "MichaelJFox"
+(rel nm (+Idx +String))                # full name with spaces, e.g. "Michael J Fox"
+(rel nm1 (+Idx +String))               # first name, e.g. "Michael"
+(rel nm2 (+String))                    # middle name or initial, e.g. "J"
+(rel nm3 (+Idx +String))               # last name, e.g. "Fox"
 (rel born (+Ref +String))              # date of birth
 (rel died (+Ref +String))              # date of passing
 (rel img (+Blob))                      # memorial avatar
 
 # links to chronicle data
+# a chronicle is simply a list of '+Chronicle's
 (rel chronicle (+List +Joint) memorial (+Chronicle))
-#  chronicle is simply a list of '+Chronicle's
 
+# generates a random 8 character string, with no bad words in it ;)
+(de genUrlStr ()
+   (let Str (fmt64 (rand 10000000000000 99999999999999))
+      (ifn (hasBadWord Str)
+         Str
+         (genUrlStr) ) ) )
+
+(setq *BadWords
+   (list ":" ";" 
+      # add bad words here!
+      "shit" "fart" "ass" "piss" "cock" "cunt" "fuck"
+      ) )
+
+(de hasBadWord (Str)
+   (when (trim (mapcar '((W) (sub? W Str)) *BadWords))
+      Str ) )
 
 (dm json> (Flag)  # flag to display +Chronicle
    (make
       (link (cons "name" (: nm)))
+      (link (cons "firstName" (: nm1)))
+      (if (: nm2) (cons "middleName" (: nm2)))
+      (if (: nm3) (cons "lastName" (: nm3)))
       (if (: born) (link (cons "born" @)))
       (if (: died) (link (cons "died" @)))
       (if (: img) (link (cons "avatar" (pack *API (blob This 'img)))))
@@ -96,16 +121,23 @@
 (allow "!newMemorial")
 (de newMemorial ()
    (let [Json (json~decode *Post)
-         Nm   (getJson "nm" Json)
+         Nm1   (getJson "nm1" Json)
+         Nm2   (getJson "nm2" Json)
+         Nm3   (getJson "nm3" Json)
          Born (getJson "born" Json)
          Died (getJson "died" Json)
          UserId  (getJson "sub" (decodeJWT *Secret (getJson "loginToken" Json))) ]
-      (if (db 'id '+User UserId)
+      (if (db 'id '+User UserId)  # => @
          (with  # new +Memorial => This
             [new! '(+Memorial)
               'id (genKey 'id '+Memorial)
-              'nm Nm
-              'usr (db 'id '+User UserId)
+              'urlStr (genUrlStr)
+              'urlNm (pack Nm1 Nm2 Nm3)
+              'nm (glue " " (filter '((S) (not (= NIL S))) (list Nm1 Nm2 Nm3)))
+              'nm1 Nm1
+              'nm2 Nm2
+              'nm3 Nm3
+              'usr @  # bound from 'if' statement
               'born Born
               'died Died ]
             # upload image
@@ -122,14 +154,15 @@
             (new! '(+Chronicle) 
               'id (genKey 'id '+Chronicle)
               'memorial This
-              'title (pack Nm " was born")
+              'title (pack Nm1 " was born")
               'date Born )
             # +Chronicle entry for death
-            (new! '(+Chronicle) 
-              'id (genKey 'id '+Chronicle)
-              'memorial This
-              'title (pack Nm " passed away")
-              'date Died )
+            (if Died
+               (new! '(+Chronicle) 
+                 'id (genKey 'id '+Chronicle)
+                 'memorial This
+                 'title (pack Nm1 " passed away")
+                 'date Died ) )
             (respondJson (json> This)) ) ) ) )
 
 (allow "!getMemorial")
@@ -200,7 +233,11 @@
             (respondJson 
                (json> This) ) ) ) ) )
 
-
+(allow "!updateChronicle")
+(de updateChronicle ()
+   (let [Json (json~decode *Post)
+         UserId (getJson "sub" (decodeJWT *Secret (getJson "loginToken" Json))) ]
+         ) )
 ############
 
 # API
@@ -234,6 +271,7 @@
             (new! '(+User)
                'id (genKey 'id '+User)
                'em Em
+               'created (stamp)
                'pw (bcrypt~hashpw Pw 14)
                'confirmationNumber Rand )
             (sendConfirmationEmail Em Rand)
