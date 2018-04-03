@@ -6,14 +6,17 @@ import '../../style/timeline.css';
 
 export default class TimeLine extends Component {
 
-   componentDidMount() {
+   createTimeline = () => {
       let born = this.props.born;
+      let min = (parseInt(born) - 10).toString();
 
-      this.timelineDataSet = new vis.DataSet();
+      this.timelineDataSet = new vis.DataSet(this.props.data);
 
       this.timeline = new vis.Timeline(this.refs.timeline, this.timelineDataSet, {
          //options
          // NOTE - start/min of timeline set dynamically below, after data has loaded
+         min: min,
+         start: born,
          max: '2025',
          end: '2020',
 
@@ -26,9 +29,9 @@ export default class TimeLine extends Component {
          // stack: false,
          type: 'point',
          // one year
-         // zoomMin: 31557600000,
+         zoomMin: 31557600000,
          // // fifty years
-         // zoomMax: 1577880000000
+         zoomMax: 1577880000000
       });
 
       // 'properties' not to be confused with 'props'
@@ -54,23 +57,21 @@ export default class TimeLine extends Component {
    }
 
    componentDidUpdate () {
-      // dynamic timeline start date (birth)
-      this.timeline.setOptions({ 
-         min: this.props.born,
-      });
-      // add data set
-      this.timelineDataSet.add(this.props.data);
-      // focus timeline on current item
+      this.createTimeline();
       this.selectItem(this.props.data[0]);
       this.timeline.redraw();
    }
 
    render (props) {
-      return (
-         <div 
-            ref={ this.linkRef('timeline') } 
-         />
-      )
+      if (!this.props.born) {
+         return ( <div class="loading loading-lg" /> );
+      } else {
+         return (
+            <div 
+               ref={ this.linkRef('timeline') } 
+            />
+         );
+      }
    }
 }
 
