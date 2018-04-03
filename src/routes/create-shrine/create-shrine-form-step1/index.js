@@ -6,8 +6,7 @@ import { NextStepButton } from '../next-step-button';
 
 class CreateShrineFormStep1 extends Component {
    state = {
-      firstNameError: false,
-      lastNameError: false
+      firstNameError: false
    }
 
    _handleNextStep = () => {
@@ -16,14 +15,8 @@ class CreateShrineFormStep1 extends Component {
       } else {
          this.setState({ firstNameError: true });
       } 
-      
-      if (!(this.props.lastName === '')) {
-         this.setState({ lastNameError: false});
-      } else {
-         this.setState({ lastNameError: true });
-      } 
-      
-      if (this.state.firstNameError || this.state.lastNameError) {
+
+      if (this.state.firstNameError) {
          return
       }
 
@@ -41,16 +34,12 @@ class CreateShrineFormStep1 extends Component {
          'form-input-hint', { 'd-hide': !this.state.firstNameError }
       );
 
-      let lastNameHintClasses = classNames(
-         'form-input-hint', { 'd-hide': !this.state.lastNameError }
-      );
-
       return (
 
          <div class={ formClasses }>
 
             <TextInput 
-               label="First Name" 
+               label="First name" 
                firstName={ props.firstName }
                name="firstName"
                value={props.firstName}
@@ -61,17 +50,20 @@ class CreateShrineFormStep1 extends Component {
                Please enter a first name
             </p>
 
+            <TextInput
+               label="Middle name(s) or initial"
+               name="middleName"
+               value={props.middleName}
+               onChange={props.onChange}
+            />
+
             <TextInput 
-               label="Last Name" 
+               label="Last name" 
                lastName={ props.lastName }
                name="lastName"
                value={props.lastName}
                onChange={ props.onChange }
             />
-
-            <p class={ lastNameHintClasses }>
-               Please enter a last name
-            </p>
 
             <div class="row my-2">
 

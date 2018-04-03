@@ -17,6 +17,7 @@ class CreateShrineFormContainer extends Component {
                   onChange={props.onChange}
 
                   firstName={ props.firstName }
+                  middleName={props.middleName}
                   lastName={ props.lastName }
 
                   handleNextStep={ props.handleNextStep }
@@ -51,6 +52,7 @@ class CreateShrineFormContainer extends Component {
                   handleDeath={ props.handleDeath }
 
                   newMemorial={props.newMemorial}
+                  loading={props.loading}
 
                   handleNextStep={ props.handleNextStep }
                   handlePrevStep={ props.handlePrevStep }

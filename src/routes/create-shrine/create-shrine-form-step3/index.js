@@ -1,4 +1,5 @@
 import { h, Component } from 'preact';
+import classnames from 'classnames';
 
 import { TextInput, Radio, Label } from '../../../components/form-inputs/';
 import { NextStepButton } from '../next-step-button';
@@ -10,6 +11,9 @@ import { StillWithUs } from './still-with-us';
 import { DateOfDeath } from './date-of-death';
 
 const CreateShrineFormStep3 = (props) => {
+   let createBtnClasses = classnames(
+      "btn", "btn-primary", "float-right", { loading: props.loading }
+   );
    return (
       <div>
 
@@ -41,23 +45,22 @@ const CreateShrineFormStep3 = (props) => {
             died={props.died}
          />
 
-         {/*
          <div class="row my-2">
             <PrevStepButton
                onClick={ props.handlePrevStep }
             />
+         {/*
             <NextStepButton 
                onClick={ props.handleNextStep }
             />
-         </div>
          */}
 
-         <button class="btn btn-primary"
-            onClick={props.newMemorial}
-         >
-            Create Memorial
-         </button>
-
+            <button class={createBtnClasses}
+               onClick={props.newMemorial}
+            >
+               Create Memorial
+            </button>
+         </div>
       </div>
    );
 }
