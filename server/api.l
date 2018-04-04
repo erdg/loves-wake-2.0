@@ -105,10 +105,12 @@
 
 (dm json> (Flag)  # flag to display +Chronicle
    (make
-      (link (cons "name" (: nm)))
-      (link (cons "firstName" (: nm1)))
-      (if (: nm2) (cons "middleName" (: nm2)))
-      (if (: nm3) (cons "lastName" (: nm3)))
+      (link (cons "urlNm" (: urlNm)))
+      (link (cons "urlStr" (: urlStr)))
+      (link (cons "nm" (: nm)))
+      (link (cons "nm1" (: nm1)))
+      (if (: nm2) (link (cons "nm2" @)))
+      (if (: nm3) (link (cons "nm3" @)))
       (if (: born) (link (cons "born" @)))
       (if (: died) (link (cons "died" @)))
       (if (: img) (link (cons "avatar" (pack *API (blob This 'img)))))
@@ -202,16 +204,16 @@
 
 # API/!getChronicle
 (allow "!getChronicle")
-(de getChronicle (Nm)
-   (if (db 'nm '+Memorial Nm)
+(de getChronicle (UrlStr UrlNm)
+   (if (db 'urlNm '+Memorial UrlNm 'urlStr UrlStr)
       (respondJson (json> @ T))
       (respondJsonError "This memorial does not exist") ) )
 
 # API/!postChronicle
 (allow "!postChronicle")
-(de postChronicle (Nm)
+(de postChronicle (UrlNm)
    (let Json (json~decode *Post)
-      (if (db 'nm '+Memorial Nm)  # -> '@'
+      (if (db 'urlNm '+Memorial UrlNm)  # -> '@'
          (with 
             # new +Chronicle -> 'This' for rest of prg
             [new! '(+Chronicle)
