@@ -5,6 +5,9 @@ import '../../style/vis-timeline-graph2d.min.css';
 import '../../style/timeline.css';
 
 export default class TimeLine extends Component {
+   state = {
+      created: false
+   }
 
    createTimeline = () => {
       let born = this.props.born;
@@ -44,6 +47,8 @@ export default class TimeLine extends Component {
 
    addItem = (item) => {
       this.timelineDataSet.add(item);
+      this.selectItem(item);
+      this.timeline.redraw();
    }
 
    selectItem = (item) => {
@@ -57,9 +62,11 @@ export default class TimeLine extends Component {
    }
 
    componentDidUpdate () {
-      this.createTimeline();
-      this.selectItem(this.props.data[0]);
-      this.timeline.redraw();
+      if (!this.state.created) {
+         this.createTimeline();
+         this.setState({ created: true });
+         this.selectItem(this.props.data[0]);
+      }
    }
 
    render (props) {

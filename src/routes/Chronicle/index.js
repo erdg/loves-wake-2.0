@@ -104,6 +104,7 @@ export default class Chronicle extends Component {
                // will likely go into a holding container to await
                // editing/approval by shrine moderator
                // this.refs.timeline.addItem(json);
+               this.addItem(json);
             })
             .then( this.setState({ 
                title: '',
@@ -141,6 +142,7 @@ export default class Chronicle extends Component {
             // will likely go into a holding container to await
             // editing/approval by shrine moderator
             // this.refs.timeline.addItem(json);
+            this.addItem(json);
          })
          .then( this.setState({ 
             title: '',
@@ -153,6 +155,13 @@ export default class Chronicle extends Component {
 
       }
 
+   }
+
+   addItem = (item) => {
+      this.refs.timeline.addItem(item);
+      let newState = [...this.state.items, item];
+      let sortedState = newState.sort((a, b) => parseInt(a.start) - parseInt(b.start));
+      this.setState({ items: newState, currentItem: item });
    }
 
    componentDidMount () {
