@@ -154,7 +154,7 @@ export default class Chronicle extends Component {
 
    }
 
-   componentWillMount () {
+   componentDidMount () {
       // "KarenFox" -> "Karen Fox", props.name comes from URL
       let urlName = this.props.name.split(/(?=[A-Z])/).join(" ");
 
