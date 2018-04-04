@@ -1,11 +1,12 @@
 import { h, Component } from 'preact';
 import classnames from 'classnames';
 import { TextArea, TextInput, DateInput } from '../../components/form-inputs';
+import ChronicleCard from './ChronicleCard';
 
 // add a new item to chronicle
 const ChronicleModal = (props) => {
    let modalClasses = classnames(
-      "modal", { "active": props.showModal }, { "has-error": props.modalError}
+      "modal", "modal-lg", { "active": props.showModal }, { "has-error": props.modalError}
    );
 
    let errorHint = classnames(
@@ -36,9 +37,19 @@ const ChronicleModal = (props) => {
             </div>
 
             <div class="modal-body">
-               <div class="content">
+               <div class="content container columns">
 
-                  <form class="form-group">
+                  <div class="column col-7">
+                     <ChronicleCard 
+                        title={props.title}
+                        location={props.location}
+                        date={props.date}
+                        src={props.src}
+                        style
+                     />
+                  </div>
+
+                  <form class="form-group column col-5">
 
                      <TextInput 
                         label="Title" 

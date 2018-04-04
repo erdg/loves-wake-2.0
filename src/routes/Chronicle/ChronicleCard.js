@@ -3,25 +3,28 @@ import style from './style';
 
 const ChronicleCard = (props) => (
 
-   <div class={ "panel " + style.ChronicleCard }>
+   <div 
+      class={props.stylesheet ? "panel " + style.ChronicleCard : "panel"}
+      style={props.style ? "min-height:400px;" : ""}
+   >
 
       <div class="panel-body mt-2">
 
          {/* no need to render image if it doesn't exist */}
-         { props.currentItem.src &&
+         { props.src &&
             <img 
-               src={props.currentItem.src} 
-               alt={props.currentItem.title} 
+               src={props.src} 
+               alt={props.title} 
                class="img-responsive my-2"
             />
          }
 
-         <h4>{props.currentItem.title}</h4>
+         <h4>{props.title}</h4>
 
-         <div class="text-gray d-inline">{props.currentItem.location}</div> 
-         <div class="text-gray d-inline mx-2">{props.currentItem.start}</div>
+         <div class="text-gray d-inline">{props.location}</div> 
+         <div class="text-gray d-inline mx-2">{props.date}</div>
 
-         <p>{props.currentItem.caption}</p>
+         <p>{props.caption}</p>
 
       </div>
 

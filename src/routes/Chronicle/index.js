@@ -26,6 +26,7 @@ export default class Chronicle extends Component {
       date: '',
       // txt: '',    // description
       file: '',   // image file
+      src: '',    // image file url, for preview
 
       nm: '',
       nm1: '',
@@ -47,6 +48,17 @@ export default class Chronicle extends Component {
    onFileChange = (e) => {
       // console.log(e);
       this.setState({ file: e.target.files[0] });
+      this.makeFileURL();
+   }
+
+   makeFileURL = () => {
+      let reader = new FileReader();
+
+      reader.onload = (e) => {
+        this.setState({ src: e.target.result })
+      }
+
+      reader.readAsDataURL(this.state.file);
    }
 
    postChronicle = () => {
@@ -232,7 +244,12 @@ export default class Chronicle extends Component {
             contentColumn={
                <div class={style.ContentColumnContainer}>
 
-                  <ChronicleCard class="column" currentItem={this.state.currentItem} />
+                  <ChronicleCard class="column" stylesheet
+                     title={this.state.currentItem.title}
+                     location={this.state.currentItem.location}
+                     date={this.state.currentItem.start}
+                     src={this.state.currentItem.src}
+                  />
 
                   {/* add something button... these should be rewritten as components */}
                   <button 
@@ -282,6 +299,7 @@ export default class Chronicle extends Component {
                      date={this.state.date}
                      txt={this.state.txt}
                      file={this.state.file}
+                     src={this.state.src}
 
                      postChronicle={this.postChronicle}
                   />
