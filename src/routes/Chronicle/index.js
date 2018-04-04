@@ -174,6 +174,11 @@ export default class Chronicle extends Component {
          this.setState({ 
             items: sorted, 
             currentItem: sorted[0],
+
+            nm: json.nm,
+            nm1: json.nm1,
+            nm2: json.nm2,
+            nm3: json.nm3,
             avatar: json.avatar,
             born: json.born,
             died: json.died
@@ -266,7 +271,7 @@ export default class Chronicle extends Component {
                      hideModal={this.hideModal}
                      modalError={this.state.modalError}
 
-                     name={name}
+                     name={this.state.nm1}
 
                      onChange={this.onChange}
                      onFileChange={this.onFileChange}
