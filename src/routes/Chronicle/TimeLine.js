@@ -23,6 +23,10 @@ export default class TimeLine extends Component {
          max: '2025',
          end: '2020',
 
+         margin: {
+            axis: 10,
+         },
+
          height: '160px',
 
          // clickable stuff
@@ -34,7 +38,13 @@ export default class TimeLine extends Component {
          // one year
          zoomMin: 31557600000,
          // // fifty years
-         zoomMax: 1577880000000
+         zoomMax: 1577880000000,
+
+         onInitialDrawComplete: () => {
+            console.log('timeline draw complete');
+            this.setState((prevState) => ({ created: !prevState.created }));
+            this.forceUpdate();
+         }
       });
 
       // 'properties' not to be confused with 'props'
@@ -43,6 +53,7 @@ export default class TimeLine extends Component {
          if (!properties.items[0]) { return };
          this.props.changeItem(properties.items[0]);
       });
+
    }
 
    addItem = (item) => {
@@ -64,21 +75,18 @@ export default class TimeLine extends Component {
    componentDidUpdate () {
       if (!this.state.created) {
          this.createTimeline();
-         this.setState({ created: true });
+         // this.setState((prevState) => ({ created: !prevState.created }));
          this.selectItem(this.props.data[0]);
       }
    }
 
    render (props) {
-      if (!this.props.born) {
-         return ( <div class="loading loading-lg" /> );
-      } else {
-         return (
-            <div 
-               ref={ this.linkRef('timeline') } 
-            />
-         );
-      }
+      return (
+         <div 
+            ref={ this.linkRef('timeline') }
+            class={ !this.state.created ? "loading loading-lg" : "" }
+         />
+      );
    }
 }
 
