@@ -160,8 +160,8 @@ export default class Chronicle extends Component {
    addItem = (item) => {
       this.refs.timeline.addItem(item);
       let newState = [...this.state.items, item];
-      let sortedState = newState.sort((a, b) => parseInt(a.start) - parseInt(b.start));
-      this.setState({ items: newState, currentItem: item });
+      let sortedState = newState.sort((a, b) => parseInt(a.start.split("-").join("")) - parseInt(b.start.split("-").join("")));
+      this.setState({ items: sortedState, currentItem: item });
    }
 
    componentDidMount () {
@@ -170,7 +170,7 @@ export default class Chronicle extends Component {
       .then(res => res.json())
       .then(json => {
          // sort items by date, earliest first
-         let sorted = json.items.sort((a, b) => parseInt(a.start) - parseInt(b.start));
+         let sorted = json.items.sort((a, b) => parseInt(a.start.split("-").join("")) - parseInt(b.start.split("-").join("")));
          this.setState({ 
             items: sorted, 
             currentItem: sorted[0],
