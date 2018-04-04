@@ -3,6 +3,7 @@ import API_ENDPOINT from '../../api';
 
 import ContentList from './ContentList';
 import EditModal from './EditModal';
+import PublicUrl from './PublicUrl';
 
 class ManageMemorial extends Component {
    state = {
@@ -40,7 +41,8 @@ class ManageMemorial extends Component {
       reader.readAsDataURL(this.state.item.file);
    }
 
-   updateItem = () => {
+   updChronicle = () => {
+      console.log('updChronicle');
       this.hideModal();
       let oldState = this.state.item;
       let newState = this.state.item;
@@ -48,10 +50,13 @@ class ManageMemorial extends Component {
       this.setState({ oldState: newState });
    }
 
+   newChronicle = () => {
+      this.hideModal();
+      console.log('newChronicle');
+   }
 
    showModal = (id) => {
-      let urlName = this.props.name.split(/(?=[A-Z])/).join(" ");
-      let memorial = this.props.user.memorials.find(m => m.name === urlName);
+      let memorial = this.props.user.memorials.find(m => m.urlNm === this.props.urlNm);
       this.setState({ showModal: true, item: memorial.items.find(item => item.id === id) });
    }
 
@@ -72,14 +77,14 @@ class ManageMemorial extends Component {
    }
 
    render () {
-      let urlName = this.props.name.split(/(?=[A-Z])/).join(" ");
-      let memorial = this.props.user.memorials.find(m => m.name === urlName);
+      let memorial = this.props.user.memorials.find(m => m.urlNm === this.props.urlNm);
       return (
          <div>
-            <h2>{memorial.name}</h2>
+            <h2>{memorial.nm}</h2>
             <figure class="avatar avatar-xxl">
                <img src={memorial.avatar} />
             </figure>
+            <PublicUrl nm1={memorial.nm1} urlStr={memorial.urlStr} urlNm={memorial.urlNm}/>
             <ContentList 
                showModal={this.showModal} 
                items={memorial.items} 
@@ -89,7 +94,8 @@ class ManageMemorial extends Component {
                showModal={this.state.showModal}
                hideModal={this.hideModal}
 
-               updateItem={this.updateItem}
+               updChronicle={this.updChronicle}
+               newChronicle={this.newChronicle}
 
                onChange={this.onChange}
                onFileChange={this.onFileChange}

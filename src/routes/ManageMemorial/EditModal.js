@@ -113,7 +113,7 @@ class EditModal extends Component {
 
                   <button 
                      class="btn btn-primary"
-                     onClick={props.updateItem} 
+                     onClick={ props.item.id ? props.updChronicle : props.newChronicle } 
                   >
                      { props.item.id ?
                         "Update item"
