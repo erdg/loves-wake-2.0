@@ -66,10 +66,10 @@ export default class App extends Component {
                { /* public shrines */ }
                { /* ============== */ }
                { /* shrine landing page */ }
-               <Entry path="/:name" />
-               <Shrine path="/:name/shrine" />
-               <Chronicle path="/:name/chronicle" />
-               <Atlas path="/:name/atlas" />
+               <Entry path="/:urlStr/:urlNm" />
+               <Shrine path="/:urlStr/:urlNm/shrine" />
+               <Chronicle path="/:urlStr/:urlNm/chronicle" />
+               <Atlas path="/:urlStr/:urlNm/atlas" />
 
                { /* user profiles */ }
                <UserWithAuth path="/user" 

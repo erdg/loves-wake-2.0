@@ -27,6 +27,10 @@ export default class Chronicle extends Component {
       // txt: '',    // description
       file: '',   // image file
 
+      nm: '',
+      nm1: '',
+      nm2: '',
+      nm3: '',
       // avatar image url
       avatar: '',
       born: '',
@@ -57,9 +61,6 @@ export default class Chronicle extends Component {
       // is basically repeated. look into async/await or a promise.
       this.hideModal();
 
-      // "KarenFox" -> "Karen Fox", props.name comes from URL
-      let name = this.props.name.split(/(?=[A-Z])/).join(" ");
-
       // if there's an image to upload...
       if (this.state.file) {
 
@@ -82,7 +83,7 @@ export default class Chronicle extends Component {
             // base64 string without padding
             let str = e.target.result.split('=')[0]
 
-            fetch( API_ENDPOINT + "!postChronicle?" + name,
+            fetch( API_ENDPOINT + "!postChronicle?" + this.props.urlNm,
                { 
                   method: "POST", 
                   body: JSON.stringify({ 
@@ -120,7 +121,7 @@ export default class Chronicle extends Component {
       } else {
 
          // EDIT URL BELOW
-         fetch( API_ENDPOINT + "!postChronicle?" + name,
+         fetch( API_ENDPOINT + "!postChronicle?" + this.props.urlNm,
             { 
                method: "POST", 
                body: JSON.stringify({ 
@@ -155,11 +156,8 @@ export default class Chronicle extends Component {
    }
 
    componentDidMount () {
-      // "KarenFox" -> "Karen Fox", props.name comes from URL
-      let urlName = this.props.name.split(/(?=[A-Z])/).join(" ");
-
       // fetch chronicle items
-      fetch( API_ENDPOINT + "!getChronicle?" + urlName )
+      fetch( API_ENDPOINT + "!getChronicle?" + this.props.urlStr + "&" + this.props.urlNm)
       .then(res => res.json())
       .then(json => {
          // sort items by date, earliest first
@@ -206,13 +204,13 @@ export default class Chronicle extends Component {
    }
 
    // Note: `user` comes from the URL, courtesy of our router
-   render ({ name }, state) {
+   render (props, state) {
       return (
          <GridContainer
             avatarColumn={
                <AvatarRail 
-                  firstName={name.split(/(?=[A-Z])/)[0]} 
-                  urlName={name}
+                  firstName={this.state.nm1} 
+                  name={props.urlNm}
                   avatar={this.state.avatar}
                />
             }
