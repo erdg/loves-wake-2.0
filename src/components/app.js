@@ -78,7 +78,7 @@ export default class App extends Component {
                />
 
                <ManageMemorialWithAuth 
-                  path="/user/manage-memorial/:name"
+                  path="/user/manage-memorial/:urlNm"
                   user={this.state.user}
                   setUserData={(user) => this.setUserData(user)}
                />

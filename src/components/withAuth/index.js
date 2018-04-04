@@ -26,7 +26,6 @@ const withAuth = ComposedComponent =>
             return;
          }
 
-         console.log(loginToken);
          // fetch user data if needed
          if (!this.props.user.email) {
             fetch(API_ENDPOINT + "!getUserData",
@@ -65,7 +64,7 @@ const withAuth = ComposedComponent =>
                <div class="centered loading loading-xl" />
             );
          } else {
-            return (<ComposedComponent user={this.props.user} name={this.props.name} />);
+            return (<ComposedComponent user={this.props.user} urlNm={this.props.urlNm} />);
          }
       }
    }
