@@ -5,8 +5,15 @@ const MemorialList = (props) => (
    <div>
       <h3>Memorials</h3>
       { 
-         props.memorials.map((obj) => (
-            <MemorialTile name={obj.name} born={obj.born} died={obj.died} avatar={obj.avatar}/>
+         props.memorials.map((m) => (
+            <MemorialTile 
+               urlNm={m.urlNm}
+               urlStr={m.urlStr}
+               nm={m.nm} 
+               born={m.born} 
+               died={m.died} 
+               avatar={m.avatar}
+            />
          ))
       }
    </div>
@@ -20,7 +27,7 @@ const MemorialTile = (props) => (
          </figure>
       </div>
       <div class="tile-content">
-         <p class="tile-title">{props.name}</p>
+         <p class="tile-title">{props.nm}</p>
          <p class="tile-subtitle text-gray">
             {props.born} - {props.died}
          </p>
@@ -28,13 +35,13 @@ const MemorialTile = (props) => (
       <div class="tile-action">
          <button 
             class="btn"
-            onClick={() => route("/user/manage-memorial/" + props.name.split(" ").join(""))}
+            onClick={() => route("/user/manage-memorial/" + props.urlNm)}
          > 
             Manage content
          </button>
          <button 
             class="btn"
-            onClick={() => route("/" + props.name.split(" ").join("") + "/chronicle")}
+            onClick={() => route("/" + props.urlStr + "/" + props.urlNm + "/chronicle")}
          > 
             View Chronicle
          </button>
