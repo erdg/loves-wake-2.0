@@ -1,34 +1,5 @@
 # api.l - api endpoints and data structures
 
-# UTILS
-(de respondJson (Lst)
-   (let Json (json~encode Lst)
-      (http1 "application/json" 0)
-      (prinl "Access-Control-Allow-Origin: *^M")
-      (prinl "Content-Length: " (size Json) "^M^J^M")
-      (prin Json) ) )
-
-# get json val from list
-(de getJson (Key Lst)
-   (cdr (assoc Key Lst)) )
-
-# by this convention, server-side errors are returned as,
-# 
-#    { error: "Server-side error text here" }
-#
-# to be displayed on the client.
-(de respondJsonError (Str)
-   (respondJson
-      (list
-         (cons "error"
-            Str ) ) ) )
-
-(de forbidden ()
-   (prinl "HTTP/1.0 403 Forbidden^M")
-   (prinl "Access-Control-Allow-Origin: *^M")
-   (prinl "^M") )
-
-
 #####################
 # user
 (class +User +Entity)
@@ -58,7 +29,7 @@
             (link (cons "confirmed" (if (: confirmed) 'true 'false)))
             # memorials
             # NOTE - a lot of nested make/link'ing here
-            (link 
+            (link
                (make (link "memorials" T)
                   (for M (: memorials)
                      (link (json> M T)) ) ) ) ) ) ) )
@@ -94,7 +65,7 @@
          (genUrlStr) ) ) )
 
 (setq *BadWords
-   (list ":" ";" 
+   (list ":" ";"
       # add bad words here!
       "shit" "fart" "ass" "piss" "cock" "cunt" "fuck"
       ) )
@@ -115,7 +86,7 @@
       (if (: died) (link (cons "died" @)))
       (if (: img) (link (cons "avatar" (pack *API (blob This 'img)))))
       (if Flag
-         (link 
+         (link
             (make (link "items" T)
                (for M (: chronicle)
                   (link (json> M)) ) ) ) ) ) )
@@ -147,13 +118,13 @@
               (put!> This 'img T)
               (pipe
                  # send to base64 utility to decode
-                 (out '(base64 "-d") 
+                 (out '(base64 "-d")
                     # remove "data:image/<type>;base64," from URL
                     (prin (pack (stem (chop @) ",") ) ) )
                  # write decoded image to db blob file
                  (out (blob This 'img) (echo) ) ) )
             # +Chronicle entry for birth
-            (new! '(+Chronicle) 
+            (new! '(+Chronicle)
               'id (genKey 'id '+Chronicle)
               'memorial This
               'title (pack Nm1 " was born")
@@ -440,3 +411,32 @@
    (4 (+Chronicle id location date))
    (4 (+User id em confirmed))
 )
+
+
+# utils
+(de respondJson (Lst)
+   (let Json (json~encode Lst)
+      (http1 "application/json" 0)
+      (prinl "Access-Control-Allow-Origin: *^M")
+      (prinl "Content-Length: " (size Json) "^M^J^M")
+      (prin Json) ) )
+
+# get json val from list
+(de getJson (Key Lst)
+   (cdr (assoc Key Lst)) )
+
+# by this convention, server-side errors are returned as,
+# 
+#    { error: "Server-side error text here" }
+#
+# to be displayed on the client.
+(de respondJsonError (Str)
+   (respondJson
+      (list
+         (cons "error"
+            Str ) ) ) )
+
+(de forbidden ()
+   (prinl "HTTP/1.0 403 Forbidden^M")
+   (prinl "Access-Control-Allow-Origin: *^M")
+   (prinl "^M") )
