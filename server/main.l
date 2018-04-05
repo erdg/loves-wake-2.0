@@ -40,7 +40,7 @@
 
 [setq 
    *Pool "db/loves-wake/"
-   *Blob "db/loves-wake/blob/"
+   *Blob "uploads/"
    *API 
       (if *Dbg
          "http://localhost:8888/"
