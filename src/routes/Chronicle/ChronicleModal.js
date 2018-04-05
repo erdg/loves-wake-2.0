@@ -55,7 +55,7 @@ const ChronicleModal = (props) => {
                         label="Title" 
                         name="title" 
                         value={props.title} 
-                        onChange={props.onChange} 
+                        onInput={props.onChange} 
                      />
 
                      {/*
@@ -71,7 +71,7 @@ const ChronicleModal = (props) => {
                         label="Location" 
                         name="location"
                         value={props.location}
-                        onChange={props.onChange}
+                        onInput={props.onChange}
                      />
 
                      <DateInput 
