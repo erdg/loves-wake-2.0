@@ -27,6 +27,9 @@
 
 # jwt secret key
 (setq *Secret (in "/dev/urandom" (rd 12)))
+# WARNING -- CHANGE THIS SUPER SECRET KEY TO 
+# SOMETHING SECURE FOR PRODUCTION
+# (setq *Secret "Secret")
 # (setq *Secret (rc "lovesWake/.config" '*Secret))
 
 # email address
