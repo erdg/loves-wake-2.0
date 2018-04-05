@@ -104,6 +104,13 @@ const ChronicleModal = (props) => {
                         />
                      </label>
 
+                     <button
+                        class="btn float-right"
+                        onClick={props.clearModalFields}
+                     >
+                        Clear fields
+                     </button>
+
                   </form>
 
                </div>

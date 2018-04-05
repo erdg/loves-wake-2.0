@@ -203,6 +203,17 @@ export default class Chronicle extends Component {
       this.setState({ currentItem:  current });
    }
 
+   clearModalFields = (e) => {
+      e.preventDefault();
+      this.setState({
+         title: '',
+         location: '',
+         date: '',
+         file: '',
+         src: ''
+      })
+   }
+
    showModal = () => {
       this.setState({ showModal: true });
    }
@@ -302,6 +313,7 @@ export default class Chronicle extends Component {
                      src={this.state.src}
 
                      postChronicle={this.postChronicle}
+                     clearModalFields={this.clearModalFields}
                   />
 
                </div>
