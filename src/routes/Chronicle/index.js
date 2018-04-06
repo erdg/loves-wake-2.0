@@ -14,10 +14,12 @@ import TimeLine from './TimeLine';
 import ChronicleCard from './ChronicleCard';
 import ChronicleModal from './ChronicleModal';
 import AddSomethingBtn from './AddSomethingBtn';
+import AddWrittenModal from './AddWrittenModal';
 
 export default class Chronicle extends Component {
    state = {
       showModal: false,
+      showWrittenModal: false,
       modalError: false,
 
       // modal fields
@@ -219,8 +221,16 @@ export default class Chronicle extends Component {
       this.setState({ showModal: true });
    }
 
+   showWrittenModal = () => {
+      this.setState({ showWrittenModal: true });
+   }
+
    hideModal = () => {
-      this.setState({ showModal: false, modalError: false });
+      this.setState({ 
+         showModal: false, 
+         showWrittenModal: false, 
+         modalError: false 
+      });
    }
 
    prevItem = () => {
@@ -263,7 +273,10 @@ export default class Chronicle extends Component {
                      src={this.state.currentItem.src}
                   />
 
-                  <AddSomethingBtn showModal={this.showModal} />
+                  <AddSomethingBtn 
+                     showModal={this.showModal} 
+                     showWrittenModal={this.showWrittenModal}
+                  />
 
                   {/* left arrow button */}
                   <button 
@@ -308,6 +321,12 @@ export default class Chronicle extends Component {
 
                      postChronicle={this.postChronicle}
                      clearModalFields={this.clearModalFields}
+                  />
+
+                  <AddWrittenModal
+                     showWrittenModal={this.state.showWrittenModal}
+                     hideModal={this.hideModal}
+                     name={this.state.nm1}
                   />
 
                </div>
