@@ -26,11 +26,12 @@
 ## load config values
 
 # jwt secret key
-(setq *Secret (in "/dev/urandom" (rd 12)))
 # WARNING -- CHANGE THIS SUPER SECRET KEY TO 
 # SOMETHING SECURE FOR PRODUCTION
 # (setq *Secret "Secret")
-# (setq *Secret (rc "lovesWake/.config" '*Secret))
+
+# production
+(setq *Secret (rc "loves-wake-2.0/.config" '*Secret))
 
 # email address
 (setq *Email "erik@erikdgustafson.com")
@@ -53,6 +54,11 @@
 # Make sure that it can only be written by the picolisp 
 # process. Or just send images to the client instead of
 # referencing them on the server.
+
+# UPDATE - *Blob is now seperate from the DB directory.
+# DB directory access is blocked by nginx. No outside traffic
+# allowed to access it, only the locally running PL process.
+# Secure? It will have to do for now.
 (allow *Blob T)
 
 (de main ()
