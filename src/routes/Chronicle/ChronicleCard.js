@@ -20,7 +20,7 @@ const ChronicleCard = (props) => (
                   <img 
                      src={props.src} 
                      alt={props.title} 
-                     class="img-responsive my-2"
+                     class="img-responsive centered my-2"
                   />
                }
                <h4>{props.title}</h4>
