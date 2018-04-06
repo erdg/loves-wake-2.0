@@ -57,9 +57,7 @@
 
 (de main ()
    (call "mkdir" "-p" "db/loves-wake/" *Blob)
-   (pool *Pool *Dbs)
-   (unless (seq *DB) 
-      (load "loves-wake-2.0/server/init.l") ) )
+   (pool *Pool *Dbs) )
 
 (de go () 
    (retire 10)
