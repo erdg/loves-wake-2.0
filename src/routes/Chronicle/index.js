@@ -13,6 +13,7 @@ import AvatarRail from '../../components/AvatarRail';
 import TimeLine from './TimeLine';
 import ChronicleCard from './ChronicleCard';
 import ChronicleModal from './ChronicleModal';
+import AddSomethingBtn from './AddSomethingBtn';
 
 export default class Chronicle extends Component {
    state = {
@@ -262,14 +263,7 @@ export default class Chronicle extends Component {
                      src={this.state.currentItem.src}
                   />
 
-                  {/* add something button... these should be rewritten as components */}
-                  <button 
-                     class={"circle btn btn-primary float-right tooltip tooltip-left " + style.AddSomething}
-                     data-tooltip="Add Something"
-                     onClick={this.showModal}
-                  >
-                     <i class="icon icon-plus" />
-                  </button>
+                  <AddSomethingBtn showModal={this.showModal} />
 
                   {/* left arrow button */}
                   <button 
