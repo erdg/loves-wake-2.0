@@ -1,5 +1,6 @@
 import { h, Component } from 'preact';
 import style from './style';
+import marked from 'marked';
 
 const ChronicleCard = (props) => (
 
@@ -10,22 +11,23 @@ const ChronicleCard = (props) => (
 
       <div class="panel-body mt-2">
 
-         {/* no need to render image if it doesn't exist */}
-         { props.src &&
-            <img 
-               src={props.src} 
-               alt={props.title} 
-               class="img-responsive my-2"
-            />
+         {/* if markdown, render. else, render as polaroid style card */}
+         { props.txt ?
+            <div dangerouslySetInnerHTML={{__html: marked(props.txt.split("^J^J").join("\n"))}} />
+               :
+            <div>
+               { props.src &&
+                  <img 
+                     src={props.src} 
+                     alt={props.title} 
+                     class="img-responsive my-2"
+                  />
+               }
+               <h4>{props.title}</h4>
+               <div class="text-gray d-inline">{props.location}</div> 
+               <div class="text-gray d-inline mx-2">{props.date}</div>
+            </div>
          }
-
-         <h4>{props.title}</h4>
-
-         <div class="text-gray d-inline">{props.location}</div> 
-         <div class="text-gray d-inline mx-2">{props.date}</div>
-
-         <p>{props.caption}</p>
-
       </div>
 
       {/*

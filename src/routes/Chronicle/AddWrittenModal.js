@@ -2,6 +2,7 @@ import { h, Component } from 'preact';
 import marked from 'marked';
 import classnames from 'classnames';
 import { TextArea, TextInput, DateInput } from '../../components/form-inputs';
+import API_ENDPOINT from '../../api';
 
 // add a new item to chronicle
 class AddWrittenModal extends Component {
@@ -13,14 +14,63 @@ class AddWrittenModal extends Component {
    }
 
    state = {
+      modalError: false,
+
       title: '',
       date: '',
-      text: ''
+      text: '',
+      html: ''
    }
 
    onChange = (e) => {
-      this.setState({ text: e.target.value })
+      this.setState({ [e.target.name]: e.target.value });
    }
+
+   clearData = () => {
+      this.setState({
+         title: '',
+         date: '',
+         text: ''
+      })
+   }
+
+   postWrittenChronicle = () => {
+      // handle errors
+      if (!(this.state.title && this.state.date)) {
+         this.setState({ modalError: true });
+         return;
+      }
+      this.setState({ modalError: false });
+
+      // NOTE - this whole thing feels like a hack as the fetch call
+      // is basically repeated. look into async/await or a promise.
+
+      // EDIT URL BELOW
+      fetch( API_ENDPOINT + "!postWrittenChronicle?" + this.props.urlNm,
+         { 
+            method: "POST", 
+            body: JSON.stringify({ 
+               title: this.state.title,
+               date: this.state.date,
+               txt: this.state.text,
+            }) 
+         }
+      )
+      .then( res => res.json() )
+      .then( json => {
+         console.log(json);
+         // UPDATE TIMELINE STATE HERE
+         // NOTE - this may not be necessary, as new entries
+         // will likely go into a holding container to await
+         // editing/approval by shrine moderator
+         // this.refs.timeline.addItem(json);
+         this.props.addItem(json);
+      })
+      .then(this.clearData());
+
+      this.props.hideModal();
+   }
+
 
    render (props) {
       let modalClasses = classnames(
@@ -69,7 +119,7 @@ class AddWrittenModal extends Component {
                            label="Title" 
                            name="title" 
                            value={this.state.title} 
-                           onInput={props.onChange} 
+                           onChange={this.onChange} 
                         />
 
                         <DateInput 
@@ -103,13 +153,14 @@ class AddWrittenModal extends Component {
 
                   <button
                      class="btn"
-                     onClick={() => this.setState({ text: '' })}
+                     onClick={this.clearData}
                   >
                      Clear
                   </button>
 
                   <button 
                      class="btn btn-primary mx-2"
+                     onClick={this.postWrittenChronicle}
                   >
                      Add
                   </button>

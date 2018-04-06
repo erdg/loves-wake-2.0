@@ -271,6 +271,7 @@ export default class Chronicle extends Component {
                      location={this.state.currentItem.location}
                      date={this.state.currentItem.start}
                      src={this.state.currentItem.src}
+                     txt={this.state.currentItem.txt}
                   />
 
                   <AddSomethingBtn 
@@ -327,6 +328,8 @@ export default class Chronicle extends Component {
                      showWrittenModal={this.state.showWrittenModal}
                      hideModal={this.hideModal}
                      name={this.state.nm1}
+                     addItem={(item) => this.addItem(item)}
+                     urlNm={props.urlNm}
                   />
 
                </div>

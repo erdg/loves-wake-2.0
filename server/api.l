@@ -160,7 +160,7 @@
 (rel title (+Idx +String))
 (rel location (+Ref +String))
 (rel date (+Ref +String))
-(rel txt (+Blob))                      # story text
+(rel txt (+Blob))                      # story text (markdown)
 (rel img (+Blob))                      # image
 
 (dm json> ()
@@ -170,7 +170,7 @@
       (if (: location) (link (cons "location" @)))
       # use 'start' for vis.Timeline - start date (the 'point') on timeline
       (if (: date) (link (cons "start" @)))
-      # (cons "caption" (: txt))
+      (if (: txt) (link (cons "txt" (glue "\n\n" (make (in (blob This 'txt) (until (eof) (link (line T)))))))))
       (if (: img) (link (cons "src" (pack *API (blob This 'img))))) ) )
 
 # API/!getChronicle
@@ -192,8 +192,7 @@
                'id (genKey 'id '+Chronicle)
                'title (getJson "title" Json)
                'location (getJson "location" Json)
-               'date (getJson "date" Json)
-               'txt (getJson "txt" Json) ]
+               'date (getJson "date" Json) ]
             (when (getJson "image" Json)  # '@' now contains base64 data URL
                (put!> This 'img T)
                (pipe
@@ -203,6 +202,26 @@
                      (prin (pack (stem (chop @) ",") ) ) )
                   # write decoded image to db blob file
                   (out (blob This 'img) (echo) ) ) )
+            (respondJson 
+               (json> This) ) ) ) ) )
+
+# API/!postChronicle
+(allow "!postWrittenChronicle")
+(de postWrittenChronicle (UrlNm)
+   (out 2 (prinl *Post))
+   (let Json (json~decode *Post)
+      (if (db 'urlNm '+Memorial UrlNm)  # -> '@'
+         (with 
+            # new +Chronicle -> 'This' for rest of prg
+            [new! '(+Chronicle)
+               'memorial @  # '@' bound from 'if' statement, see above 
+               'id (genKey 'id '+Chronicle)
+               'title (getJson "title" Json)
+               'location (getJson "location" Json)
+               'date (getJson "date" Json) ]
+            (when (getJson "txt" Json)  # '@' now contains base64 data URL
+               (put!> This 'txt T)
+               (out (blob This 'txt) (prin @)) )
             (respondJson 
                (json> This) ) ) ) ) )
 
