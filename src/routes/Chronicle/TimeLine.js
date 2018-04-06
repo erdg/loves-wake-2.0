@@ -41,7 +41,7 @@ export default class TimeLine extends Component {
          zoomMax: 1577880000000,
 
          onInitialDrawComplete: () => {
-            console.log('timeline draw complete');
+            // console.log('timeline draw complete');
             this.setState((prevState) => ({ created: !prevState.created }));
             this.forceUpdate();
          }
@@ -49,7 +49,7 @@ export default class TimeLine extends Component {
 
       // 'properties' not to be confused with 'props'
       this.timeline.on('select', (properties) => {
-         console.log(properties.items[0]);
+         // console.log(properties.items[0]);
          if (!properties.items[0]) { return };
          this.props.changeItem(properties.items[0]);
       });
