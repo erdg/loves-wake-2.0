@@ -1,4 +1,5 @@
 import { h, Component } from 'preact';
+import { route } from 'preact-router';
 // import style from './style';
 
 import Toast from '../../components/toast';
@@ -8,22 +9,6 @@ import MemorialList from './MemorialList';
 export default class User extends Component {
    state = {
       showModal: true,
-
-      // this now comes from the 'withAuth' HOC
-      // // object of all user data
-      // user: {
-      //    nm: '',
-      //    em: '',
-      //    // avatar image URL
-      //    avatar: '',
-      //    confirmed: false,
-      //    memorials: [
-      //       // {name: "Randy", born: 1924, died: 1993},
-      //       // {name: "Roger", born: 1946, died: 2003},
-      //       // {name: "Robin", born: 1924, died: 2012},
-      //    ]
-      // }
-
    }
 
    hideModal = () => {
@@ -41,7 +26,7 @@ export default class User extends Component {
 
             <h1>User Profile: {this.props.user.name || this.props.user.email}</h1>
             {/* has user confirmed account? display proper toast */}           
-            { this.props.user.confirmed ?
+            {/* this.props.user.confirmed ?
                <Toast success active >
                   You're all set!
                   <button 
@@ -53,7 +38,7 @@ export default class User extends Component {
                <Toast error active >
                   You must confirm your account before saving any changes
                </Toast>
-            }
+            */}
 
             { !this.props.user.confirmed &&
                <ConfirmAccountModal
@@ -64,11 +49,12 @@ export default class User extends Component {
 
 
             {/* list memorials, or 'Start a memorial' button if none */}
-            { this.props.user.memorials ?
+            { this.props.user.memorials[0] ?
                   <MemorialList memorials={this.props.user.memorials} />
                      :
                   <button
                      class="btn btn-primary"
+                     onClick={() => route("/create-shrine")}
                   >
                      Start a memorial
                   </button>
