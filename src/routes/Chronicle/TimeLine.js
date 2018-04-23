@@ -84,7 +84,7 @@ export default class TimeLine extends Component {
       return (
          <div 
             ref={ this.linkRef('timeline') }
-            class={ !this.state.created ? "loading loading-lg" : "" }
+            class={ !this.state.created ? "loading loading-lg" : "my-2" }
          />
       );
    }

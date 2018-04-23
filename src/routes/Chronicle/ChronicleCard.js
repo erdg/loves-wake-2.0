@@ -9,7 +9,7 @@ const ChronicleCard = (props) => (
       style={props.style ? "min-height:400px;" : ""}
    >
 
-      <div class="panel-body mt-2">
+      <div class="panel-body my-2">
 
          {/* if markdown, render. else, render as polaroid style card */}
          { props.txt ?

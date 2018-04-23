@@ -256,16 +256,16 @@ export default class Chronicle extends Component {
       return (
          <GridContainer
             avatarColumn={
-               <AvatarRail 
+               <AvatarRail
                   firstName={this.state.nm1} 
-                  name={props.urlNm}
+                  urlNm={props.urlNm}
+                  urlStr={props.urlStr}
                   avatar={this.state.avatar}
                />
             }
 
             contentColumn={
                <div class={style.ContentColumnContainer}>
-
                   <ChronicleCard class="column" stylesheet
                      title={this.state.currentItem.title}
                      location={this.state.currentItem.location}

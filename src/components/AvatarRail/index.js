@@ -19,15 +19,18 @@ const AvatarRail = (props) => {
          <MenuDivider></MenuDivider>
 
          <MenuItem>
-            <Link activeClass="active" href={"/" + props.urlName + "/shrine"}>Shrine</Link>
+            <Link activeClass="active" 
+               href={"/" + props.urlStr + "/" + props.urlNm + "/shrine"} >Shrine</Link>
          </MenuItem>
 
          <MenuItem>
-            <Link activeClass="active" href={"/" + props.urlName + "/chronicle"}>Chronicle</Link>
+            <Link activeClass="active" 
+               href={"/" + props.urlStr + "/" + props.urlNm + "/chronicle"}>Chronicle</Link>
          </MenuItem>
 
          <MenuItem>
-            <Link activeClass="active" href={"/" + props.urlName + "/atlas"}>Atlas</Link>
+            <Link activeClass="active" 
+               href={"/" + props.urlStr + "/" + props.urlNm + "/atlas"}>Atlas</Link>
          </MenuItem>
 
       </Menu>

@@ -6,6 +6,19 @@
    margin: 48px;
 }
 
+.avatarColumn {
+   flex: 0 0 16%;
+   max-width: 200px;
+   margin-bottom: 16px
+}
+
+.contentColumn { 
+   /* flex: 0 1 1000px; */
+   flex: 0 1 66%;
+   align-self: stretch;
+   margin-right: 2vw;
+}
+
 @media (max-width: 960px) {
    .gridContainer {
       flex-direction: column;
@@ -14,20 +27,17 @@
    }
    .avatarColumn {
       flex: 0 0 100%;
-      margin: 0 auto;
+      max-width: 100%;
    }
    .contentColumn {
       flex: 0 0 100%;
+      margin-left: 4vw;
    }
 }
 
-.avatarColumn {
-   flex: 0 0 16%;
-   max-width: 200px;
-}
-
-.contentColumn { 
-   /* flex: 0 1 1000px; */
-   flex: 0 1 66%;
-   align-self: stretch;
+@media (max-width: 840px) {
+   .contentColumn {
+      margin-left: unset;
+      margin-right: unset;
+   }
 }
