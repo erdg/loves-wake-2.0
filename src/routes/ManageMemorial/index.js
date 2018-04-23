@@ -8,7 +8,7 @@ import PublicUrl from './PublicUrl';
 class ManageMemorial extends Component {
    state = {
       item: {},
-      showModal: false
+      showModal: false,
    }
 
    onChange = (e) => {
@@ -51,8 +51,101 @@ class ManageMemorial extends Component {
    }
 
    newChronicle = () => {
-      this.hideModal();
       console.log('newChronicle');
+      // handle errors
+      if (!(this.state.item.title && this.state.item.start)) {
+         alert("A new item must have a title and a date");
+         return;
+      }
+
+      // NOTE - this whole thing feels like a hack as the fetch call
+      // is basically repeated. look into async/await or a promise.
+
+      // if there's an image to upload...
+      if (this.state.item.file) {
+
+         let reader = new FileReader();
+
+         reader.readAsDataURL(this.state.item.file);
+
+         reader.onload = (e) => {
+            // NOTE - must remove padding for picolisp
+            //
+            // base64 strings are padded with one or two '='s to make sure it aligns
+            // to proper byte boundaries. the picolisp server does not handle this 
+            // well. so we must remove any padding before it is sent. after picolisp
+            // has parsed the http request, we can add the appropriate padding back
+            // to the string by checking if it is an even multiple of 4.
+            //
+            // see 'server.l' for the picolisp side.
+            //
+            // NOTE - turns out that we don't need to add padding back on the server
+            // as the base64 utility is still able to decode.
+
+            // base64 string without padding
+            let str = e.target.result.split('=')[0]
+
+            fetch( API_ENDPOINT + "!postChronicle?" + this.props.urlNm,
+               { 
+                  method: "POST", 
+                  body: JSON.stringify({ 
+                     title: this.state.item.title,
+                     subtitle: this.state.item.subtitle,
+                     location: this.state.item.location,
+                     date: this.state.item.start,
+                     txt: this.state.item.txt,
+                     image: str
+                  }) 
+               }
+            )
+            .then( res => res.json() )
+            .then( json => {
+               console.log(json);
+               // UPDATE TIMELINE STATE HERE
+               // NOTE - this may not be necessary, as new entries
+               // will likely go into a holding container to await
+               // editing/approval by shrine moderator
+               // this.refs.timeline.addItem(json);
+               this.addItem(json);
+            })
+            .then( this.setState({ 
+               item: {}
+            }));
+            
+         }
+
+      } else {
+
+         // EDIT URL BELOW
+         fetch( API_ENDPOINT + "!postChronicle?" + this.props.urlNm,
+            { 
+               method: "POST", 
+               body: JSON.stringify({ 
+                  title: this.state.item.title,
+                  subtitle: this.state.item.subtitle,
+                  location: this.state.item.location,
+                  date: this.state.item.start,
+                  txt: this.state.item.txt,
+               }) 
+            }
+         )
+         .then( res => res.json() )
+         .then( json => {
+            console.log(json);
+            // UPDATE TIMELINE STATE HERE
+            // NOTE - this may not be necessary, as new entries
+            // will likely go into a holding container to await
+            // editing/approval by shrine moderator
+            // this.refs.timeline.addItem(json);
+            this.addItem(json);
+         })
+         .then( this.setState({ 
+            item: {}
+         }));
+
+      }
+
+      this.hideModal();
    }
 
    showModal = (id) => {
