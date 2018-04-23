@@ -13,6 +13,8 @@ const ChronicleModal = (props) => {
       "form-input-hint", "float-left", { "d-hide": !props.modalError }
    );
 
+   var width = window.innerWidth || document.documentElement.clientWidth || document.body.client.width;
+
    return (
       <div class={modalClasses}>
 
@@ -34,22 +36,20 @@ const ChronicleModal = (props) => {
                   Add Something to {props.name}'s Chronicle
                </div>
 
+               { width < 840 &&
+                  <div class="text-center text-gray" style="font-size:smaller;">
+                     - Scroll down to see a preview -
+                  </div>
+               }
+
+
             </div>
 
             <div class="modal-body">
-               <div class="content container columns">
+               <div class={ width < 840 ? "content" : "content container columns"}>
 
-                  <div class="column col-7">
-                     <ChronicleCard 
-                        title={props.title}
-                        location={props.location}
-                        date={props.date}
-                        src={props.src}
-                        style
-                     />
-                  </div>
 
-                  <form class="form-group column col-5">
+                  <form class={ width < 840 ? "form-group" : "form-group column col-5"}>
 
                      <TextInput 
                         label="Title" 
@@ -105,7 +105,7 @@ const ChronicleModal = (props) => {
                      </label>
 
                      <button
-                        class="btn float-right"
+                        class={ width < 840 ? "btn" : "btn float-right" }
                         onClick={props.clearModalFields}
                      >
                         Clear fields
@@ -113,6 +113,15 @@ const ChronicleModal = (props) => {
 
                   </form>
 
+                  <div class={ width < 840 ? "" : "column col-7" }>
+                     <ChronicleCard 
+                        title={props.title}
+                        location={props.location}
+                        date={props.date}
+                        src={props.src}
+                        style
+                     />
+                  </div>
                </div>
 
             </div>
