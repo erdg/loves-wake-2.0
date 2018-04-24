@@ -139,13 +139,13 @@
             (respondJson (json> This)) ) ) ) )
 
 (allow "!getMemorial")
-(de getMemorial (Nm)
+(de getMemorial (UrlNm)
    (let [Json   (json~decode *Post)
-         Mem    (db 'nm '+Memorial Nm)
-         UserId (getJson "sub" (decodeJWT *Secret (getJson "loginToken" Json))) ]
+         Mem    (db 'urlNm '+Memorial UrlNm)
+         ]
       # if memorial exists and belongs to user
-      (if (and Mem (= (db 'id '+User UserId) (; Mem usr)))
-         (respondJson (json> Mem T))
+      (if Mem
+         (respondJson (json> @))
          (respondJsonError "sorry") ) ) )
 
 ##########

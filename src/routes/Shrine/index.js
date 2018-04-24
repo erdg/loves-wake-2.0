@@ -1,12 +1,31 @@
 import { h, Component } from 'preact';
+import API_ENDPOINT from '../../api';
 // import style from './style';
 
 export default class Shrine extends Component {
+   // this should be in a higher order component
+   componentDidMount () {
+      fetch(API_ENDPOINT + "!getMemorial?" + this.props.urlNm)
+         .then(res => res.json())
+         .then(json => {
+            this.setState({
+               nm: json.nm,
+               nm1: json.nm1,
+               nm2: json.nm2,
+               nm3: json.nm3,
+               born: json.born,
+               died: json.died,
+               avatar: json.avatar
+            })
+         })
+   }
+
+
 	// Note: `name` comes from the URL, courtesy of our router
-	render ({ name }, {}) {
+	render () {
 		return (
 			<div>
-				<h1>{ name }'s Shrine</h1>
+				<h1>{ this.state.nm }'s Shrine</h1>
 			</div>
 		);
 	}
