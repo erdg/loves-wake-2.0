@@ -3424,25 +3424,12 @@ function user__possibleConstructorReturn(self, call) { if (!self) { throw new Re
 function user__inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 
+
 // import style from './style';
 
 
 
 
-
-var user__ref = Object(preact_min["h"])(
-   toast,
-   { error: true, active: true },
-   'You must confirm your account before saving any changes'
-);
-
-var user__ref2 = Object(preact_min["h"])(
-   'button',
-   {
-      'class': 'btn btn-primary'
-   },
-   'Start a memorial'
-);
 
 var user_User = function (_Component) {
    user__inherits(User, _Component);
@@ -3458,22 +3445,6 @@ var user_User = function (_Component) {
 
       return _ret = (_temp = (_this = user__possibleConstructorReturn(this, _Component.call.apply(_Component, [this].concat(args))), _this), _this.state = {
          showModal: true
-
-         // this now comes from the 'withAuth' HOC
-         // // object of all user data
-         // user: {
-         //    nm: '',
-         //    em: '',
-         //    // avatar image URL
-         //    avatar: '',
-         //    confirmed: false,
-         //    memorials: [
-         //       // {name: "Randy", born: 1924, died: 1993},
-         //       // {name: "Roger", born: 1946, died: 2003},
-         //       // {name: "Robin", born: 1924, died: 2012},
-         //    ]
-         // }
-
       }, _this.hideModal = function () {
          _this.setState({ showModal: false });
       }, _this.neverShowConfirmationToastAgain = function () {
@@ -3492,20 +3463,20 @@ var user_User = function (_Component) {
             'User Profile: ',
             this.props.user.name || this.props.user.email
          ),
-         this.props.user.confirmed ? Object(preact_min["h"])(
-            toast,
-            { success: true, active: true },
-            'You\'re all set!',
-            Object(preact_min["h"])('button', {
-               'class': 'btn btn-clear float-right',
-               onClick: this.neverShowConfirmationToastAgain
-            })
-         ) : user__ref,
          !this.props.user.confirmed && Object(preact_min["h"])(user_ConfirmAccountModal, {
             showModal: this.state.showModal,
             hideModal: this.hideModal
          }),
-         this.props.user.memorials ? Object(preact_min["h"])(user_MemorialList, { memorials: this.props.user.memorials }) : user__ref2
+         this.props.user.memorials[0] ? Object(preact_min["h"])(user_MemorialList, { memorials: this.props.user.memorials }) : Object(preact_min["h"])(
+            'button',
+            {
+               'class': 'btn btn-primary',
+               onClick: function onClick() {
+                  return Object(preact_router_es["route"])("/create-shrine");
+               }
+            },
+            'Start a memorial'
+         )
       );
    };
 
@@ -4912,14 +4883,181 @@ var ManageMemorial_ManageMemorial = function (_Component) {
          reader.readAsDataURL(_this.state.item.file);
       }, _this.updChronicle = function () {
          console.log('updChronicle');
+
+         // handle errors
+         if (!(_this.state.item.title && _this.state.item.start)) {
+            alert("A new item must have a title and a date");
+            return;
+         }
+
+         // NOTE - this whole thing feels like a hack as the fetch call
+         // is basically repeated. look into async/await or a promise.
+
+         // if there's an image to upload...
+         if (_this.state.item.file) {
+
+            var reader = new FileReader();
+
+            reader.readAsDataURL(_this.state.item.file);
+
+            reader.onload = function (e) {
+               // NOTE - must remove padding for picolisp
+               //
+               // base64 strings are padded with one or two '='s to make sure it aligns
+               // to proper byte boundaries. the picolisp server does not handle this 
+               // well. so we must remove any padding before it is sent. after picolisp
+               // has parsed the http request, we can add the appropriate padding back
+               // to the string by checking if it is an even multiple of 4.
+               //
+               // see 'server.l' for the picolisp side.
+               //
+               // NOTE - turns out that we don't need to add padding back on the server
+               // as the base64 utility is still able to decode.
+
+               // base64 string without padding
+               var str = e.target.result.split('=')[0];
+
+               fetch(api + "!updChronicle?" + _this.props.urlNm, {
+                  method: "POST",
+                  body: JSON.stringify({
+                     loginToken: window.sessionStorage.getItem("loginToken"),
+                     id: _this.state.item.id,
+                     title: _this.state.item.title,
+                     location: _this.state.item.location,
+                     date: _this.state.item.start,
+                     txt: _this.state.item.txt,
+                     image: str
+                  })
+               }).then(function (res) {
+                  return res.json();
+               }).then(function (json) {
+                  console.log(json);
+                  // UPDATE TIMELINE STATE HERE
+                  // NOTE - this may not be necessary, as new entries
+                  // will likely go into a holding container to await
+                  // editing/approval by shrine moderator
+                  // this.refs.timeline.addItem(json);
+                  // this.addItem(json);
+               }).then(_this.setState({
+                  item: {}
+               }));
+            };
+         } else {
+
+            // EDIT URL BELOW
+            fetch(api + "!updChronicle?" + _this.props.urlNm, {
+               method: "POST",
+               body: JSON.stringify({
+                  loginToken: window.sessionStorage.getItem("loginToken"),
+                  id: _this.state.item.id,
+                  title: _this.state.item.title,
+                  location: _this.state.item.location,
+                  date: _this.state.item.start,
+                  txt: _this.state.item.txt
+               })
+            }).then(function (res) {
+               return res.json();
+            }).then(function (json) {
+               console.log(json);
+               // UPDATE TIMELINE STATE HERE
+               // NOTE - this may not be necessary, as new entries
+               // will likely go into a holding container to await
+               // editing/approval by shrine moderator
+               // this.refs.timeline.addItem(json);
+               // this.addItem(json);
+            }).then(_this.setState({
+               item: {}
+            }));
+         }
+
          _this.hideModal();
-         var oldState = _this.state.item;
-         var newState = _this.state.item;
-         newState["edited"] = false;
-         _this.setState({ oldState: newState });
       }, _this.newChronicle = function () {
-         _this.hideModal();
          console.log('newChronicle');
+         // handle errors
+         if (!(_this.state.item.title && _this.state.item.start)) {
+            alert("A new item must have a title and a date");
+            return;
+         }
+
+         // NOTE - this whole thing feels like a hack as the fetch call
+         // is basically repeated. look into async/await or a promise.
+
+         // if there's an image to upload...
+         if (_this.state.item.file) {
+
+            var reader = new FileReader();
+
+            reader.readAsDataURL(_this.state.item.file);
+
+            reader.onload = function (e) {
+               // NOTE - must remove padding for picolisp
+               //
+               // base64 strings are padded with one or two '='s to make sure it aligns
+               // to proper byte boundaries. the picolisp server does not handle this 
+               // well. so we must remove any padding before it is sent. after picolisp
+               // has parsed the http request, we can add the appropriate padding back
+               // to the string by checking if it is an even multiple of 4.
+               //
+               // see 'server.l' for the picolisp side.
+               //
+               // NOTE - turns out that we don't need to add padding back on the server
+               // as the base64 utility is still able to decode.
+
+               // base64 string without padding
+               var str = e.target.result.split('=')[0];
+
+               fetch(api + "!postChronicle?" + _this.props.urlNm, {
+                  method: "POST",
+                  body: JSON.stringify({
+                     title: _this.state.item.title,
+                     subtitle: _this.state.item.subtitle,
+                     location: _this.state.item.location,
+                     date: _this.state.item.start,
+                     txt: _this.state.item.txt,
+                     image: str
+                  })
+               }).then(function (res) {
+                  return res.json();
+               }).then(function (json) {
+                  console.log(json);
+                  // UPDATE TIMELINE STATE HERE
+                  // NOTE - this may not be necessary, as new entries
+                  // will likely go into a holding container to await
+                  // editing/approval by shrine moderator
+                  // this.refs.timeline.addItem(json);
+                  _this.addItem(json);
+               }).then(_this.setState({
+                  item: {}
+               }));
+            };
+         } else {
+
+            // EDIT URL BELOW
+            fetch(api + "!postChronicle?" + _this.props.urlNm, {
+               method: "POST",
+               body: JSON.stringify({
+                  title: _this.state.item.title,
+                  subtitle: _this.state.item.subtitle,
+                  location: _this.state.item.location,
+                  date: _this.state.item.start,
+                  txt: _this.state.item.txt
+               })
+            }).then(function (res) {
+               return res.json();
+            }).then(function (json) {
+               console.log(json);
+               // UPDATE TIMELINE STATE HERE
+               // NOTE - this may not be necessary, as new entries
+               // will likely go into a holding container to await
+               // editing/approval by shrine moderator
+               // this.refs.timeline.addItem(json);
+               _this.addItem(json);
+            }).then(_this.setState({
+               item: {}
+            }));
+         }
+
+         _this.hideModal();
       }, _this.showModal = function (id) {
          var memorial = _this.props.user.memorials.find(function (m) {
             return m.urlNm === _this.props.urlNm;
@@ -5255,7 +5393,8 @@ var AvatarRail_AvatarRail = function AvatarRail(props) {
          null,
          Object(preact_min["h"])(
             match["Link"],
-            { activeClass: 'active', href: "/" + props.urlName + "/shrine" },
+            { activeClass: 'active',
+               href: "/" + props.urlStr + "/" + props.urlNm + "/shrine" },
             'Shrine'
          )
       ),
@@ -5264,7 +5403,8 @@ var AvatarRail_AvatarRail = function AvatarRail(props) {
          null,
          Object(preact_min["h"])(
             match["Link"],
-            { activeClass: 'active', href: "/" + props.urlName + "/chronicle" },
+            { activeClass: 'active',
+               href: "/" + props.urlStr + "/" + props.urlNm + "/chronicle" },
             'Chronicle'
          )
       ),
@@ -5273,7 +5413,8 @@ var AvatarRail_AvatarRail = function AvatarRail(props) {
          null,
          Object(preact_min["h"])(
             match["Link"],
-            { activeClass: 'active', href: "/" + props.urlName + "/atlas" },
+            { activeClass: 'active',
+               href: "/" + props.urlStr + "/" + props.urlNm + "/atlas" },
             'Atlas'
          )
       )
@@ -5396,7 +5537,7 @@ var TimeLine_TimeLine = function (_Component) {
    TimeLine.prototype.render = function render(props) {
       return Object(preact_min["h"])('div', {
          ref: this.linkRef('timeline'),
-         'class': !this.state.created ? "loading loading-lg" : ""
+         'class': !this.state.created ? "loading loading-lg" : "my-2"
       });
    };
 
@@ -5423,7 +5564,7 @@ var ChronicleCard_ChronicleCard = function ChronicleCard(props) {
       },
       Object(preact_min["h"])(
          'div',
-         { 'class': 'panel-body mt-2' },
+         { 'class': 'panel-body my-2' },
          props.txt ? Object(preact_min["h"])('div', { dangerouslySetInnerHTML: { __html: marked_default()(props.txt.split("^J^J").join("\n")) } }) : Object(preact_min["h"])(
             'div',
             null,
@@ -5461,10 +5602,19 @@ var ChronicleCard_ChronicleCard = function ChronicleCard(props) {
 
 
 // add a new item to chronicle
+
+var ChronicleModal__ref = Object(preact_min["h"])(
+   'div',
+   { 'class': 'text-center text-gray', style: 'font-size:smaller;' },
+   '- Scroll down to see a preview -'
+);
+
 var ChronicleModal_ChronicleModal = function ChronicleModal(props) {
    var modalClasses = classnames_default()("modal", "modal-lg", { "active": props.showModal }, { "has-error": props.modalError });
 
    var errorHint = classnames_default()("form-input-hint", "float-left", { "d-hide": !props.modalError });
+
+   var width = window.innerWidth || document.documentElement.clientWidth || document.body.client.width;
 
    return Object(preact_min["h"])(
       'div',
@@ -5489,28 +5639,18 @@ var ChronicleModal_ChronicleModal = function ChronicleModal(props) {
                'Add Something to ',
                props.name,
                '\'s Chronicle'
-            )
+            ),
+            width < 840 && ChronicleModal__ref
          ),
          Object(preact_min["h"])(
             'div',
             { 'class': 'modal-body' },
             Object(preact_min["h"])(
                'div',
-               { 'class': 'content container columns' },
-               Object(preact_min["h"])(
-                  'div',
-                  { 'class': 'column col-7' },
-                  Object(preact_min["h"])(Chronicle_ChronicleCard, {
-                     title: props.title,
-                     location: props.location,
-                     date: props.date,
-                     src: props.src,
-                     style: true
-                  })
-               ),
+               { 'class': width < 840 ? "content" : "content container columns" },
                Object(preact_min["h"])(
                   'form',
-                  { 'class': 'form-group column col-5' },
+                  { 'class': width < 840 ? "form-group" : "form-group column col-5" },
                   Object(preact_min["h"])(form_inputs_TextInput, {
                      label: 'Title',
                      name: 'title',
@@ -5546,11 +5686,22 @@ var ChronicleModal_ChronicleModal = function ChronicleModal(props) {
                   Object(preact_min["h"])(
                      'button',
                      {
-                        'class': 'btn float-right',
+                        'class': width < 840 ? "btn" : "btn float-right",
                         onClick: props.clearModalFields
                      },
                      'Clear fields'
                   )
+               ),
+               Object(preact_min["h"])(
+                  'div',
+                  { 'class': width < 840 ? "" : "column col-7" },
+                  Object(preact_min["h"])(Chronicle_ChronicleCard, {
+                     title: props.title,
+                     location: props.location,
+                     date: props.date,
+                     src: props.src,
+                     style: true
+                  })
                )
             )
          ),
@@ -6080,7 +6231,8 @@ var Chronicle_Chronicle = function (_Component) {
       return Object(preact_min["h"])(components_GridContainer, {
          avatarColumn: Object(preact_min["h"])(components_AvatarRail, {
             firstName: this.state.nm1,
-            name: props.urlNm,
+            urlNm: props.urlNm,
+            urlStr: props.urlStr,
             avatar: this.state.avatar
          }),
 
