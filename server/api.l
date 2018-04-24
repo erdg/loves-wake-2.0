@@ -225,11 +225,47 @@
             (respondJson 
                (json> This) ) ) ) ) )
 
-(allow "!updateChronicle")
-(de updateChronicle ()
+(allow "!updChronicle")
+(de updChronicle (UrlNm)
    (let [Json (json~decode *Post)
-         UserId (getJson "sub" (decodeJWT *Secret (getJson "loginToken" Json))) ]
-         ) )
+         UserId (getJson "sub" (decodeJWT *Secret (getJson "loginToken" Json)))
+         User (db 'id '+User UserId)
+         Memorial (db 'urlNm '+Memorial UrlNm)
+         Item (db 'id '+Chronicle (getJson "id" Json)) ]
+      # check stuff
+      (nond
+         (User (respondJsonError "Bad user"))
+         (Memorial (respondJsonError "Bad memorial"))
+         (Item (respondJsonError "Bad item"))
+         # if user is NOT the creator of memorial, can't edit
+         # NOTE - this will need to change when functionality is added to allow multiple
+         # admins on a memorial
+         ((= (; Item memorial usr) User)
+            (respondJsonError "No permission to edit item") )
+         # check that chronicle item and memorial match
+         ((= (; Item memorial) Memorial)
+            (respondJsonError "Item not in chronicle") )
+
+         # update item
+         (NIL
+            (unless (= (; Item title) (getJson "title" Json))
+               (put!> Item 'title (getJson "title" Json)) )
+            (unless (= (; Item date) (getJson "date" Json))
+               (put!> Item 'date (getJson "date" Json)) )
+            (unless (= (; Item location) (getJson "location" Json))
+               (put!> Item 'location (getJson "location" Json)) )
+            (when (getJson "image" Json)  # '@' now contains base64 data URL
+               (pipe
+                  # send to base64 utility to decode
+                  (out '(base64 "-d") 
+                     # remove "data:image/<type>;base64," from URL
+                     (prin (pack (stem (chop @) ",") ) ) )
+                  # write decoded image to db blob file
+                  (out (blob Item 'img) (echo) ) ) )
+            (respondJson "Item updated") )
+         ) ) )
+
+
 ############
 
 # API
