@@ -6,7 +6,7 @@ import { Avatar } from '../avatar';
 
 const AvatarRail = (props) => {
    return (
-      <Menu>
+      <Menu style="z-index:1;">
 
          <figure class="avatar avatar-xxl centered mt-2" data-initial={props.firstName.charAt[0]}>
             <img src={props.avatar} />

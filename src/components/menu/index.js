@@ -1,7 +1,7 @@
 
 const Menu = (props) => {
    return (
-      <ul class={"menu " + props.class}>
+      <ul class={"menu " + props.class} style={props.style}>
          {props.children}
       </ul>
    )
