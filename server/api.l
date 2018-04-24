@@ -255,6 +255,7 @@
             (unless (= (; Item location) (getJson "location" Json))
                (put!> Item 'location (getJson "location" Json)) )
             (when (getJson "image" Json)  # '@' now contains base64 data URL
+               (ifn (; Item img) (put!> Item 'img T))
                (pipe
                   # send to base64 utility to decode
                   (out '(base64 "-d") 
