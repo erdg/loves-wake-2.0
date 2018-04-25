@@ -3,13 +3,19 @@
    flex-direction: row;
    /* justify-content: flex-start; */
    justify-content: space-between;
+   align-items: flex-start;
    margin: 48px;
 }
 
 .avatarColumn {
    flex: 0 0 16%;
-   max-width: 200px;
-   margin-bottom: 16px
+   margin-bottom: 16px;
+   min-width: 240px;
+}
+
+.avatarColumn > div {
+   position: fixed;
+   max-width: 240px;
 }
 
 .contentColumn { 
@@ -27,7 +33,12 @@
    }
    .avatarColumn {
       flex: 0 0 100%;
-      max-width: 100%;
+      width: 100%;
+      min-width: unset;
+   }
+   .avatarColumn > div {
+      position: unset;
+      max-width: unset;
    }
    .contentColumn {
       flex: 0 0 100%;

@@ -1,6 +1,8 @@
 import { h, Component } from 'preact';
 import API_ENDPOINT from '../../api';
 
+import GridContainer from '../../components/GridContainer';
+
 import ContentList from './ContentList';
 import EditModal from './EditModal';
 import PublicUrl from './PublicUrl';
@@ -264,30 +266,44 @@ class ManageMemorial extends Component {
    render () {
       let memorial = this.props.user.memorials.find(m => m.urlNm === this.props.urlNm);
       return (
-         <div>
-            <h2>{memorial.nm}</h2>
-            <figure class="avatar avatar-xxl">
-               <img src={memorial.avatar} />
-            </figure>
-            <PublicUrl nm1={memorial.nm1} urlStr={memorial.urlStr} urlNm={memorial.urlNm}/>
-            <ContentList 
-               showModal={this.showModal} 
-               items={memorial.items} 
-               newItem={this.newItem}
-            />
-            <EditModal 
-               showModal={this.state.showModal}
-               hideModal={this.hideModal}
+         <GridContainer
+            avatarColumn={
+               <div class="menu" style="z-index:1;">
+                     <figure class="centered avatar avatar-xxl"> 
+                        <img src={memorial.avatar} />
+                     </figure>
+                     <h3 class="text-center mt-2">{memorial.nm}</h3>
+               </div>
+            }
+            contentColumn={
+               <div>
+                  {/*
+                  <PublicUrl 
+                     nm1={memorial.nm1} 
+                     urlStr={memorial.urlStr} 
+                     urlNm={memorial.urlNm}
+                  />
+                  */}
+                  <ContentList 
+                     showModal={this.showModal} 
+                     items={memorial.items} 
+                     newItem={this.newItem}
+                  />
+                  <EditModal 
+                     showModal={this.state.showModal}
+                     hideModal={this.hideModal}
 
-               updChronicle={this.updChronicle}
-               newChronicle={this.newChronicle}
+                     updChronicle={this.updChronicle}
+                     newChronicle={this.newChronicle}
 
-               onChange={this.onChange}
-               onFileChange={this.onFileChange}
+                     onChange={this.onChange}
+                     onFileChange={this.onFileChange}
 
-               item={this.state.item}
-            />
-         </div>
+                     item={this.state.item}
+                  />
+               </div>
+            }
+         />
       )
    }
 }

@@ -11,6 +11,8 @@ class EditModal extends Component {
          "modal", "modal-lg", { "active": props.showModal }, { "has-error": props.modalError}
       );
 
+      var width = window.innerWidth || document.documentElement.clientWidth || document.body.client.width;
+
       return (
          <div class={modalClasses}>
 
@@ -36,18 +38,18 @@ class EditModal extends Component {
                      }
                   </div>
 
+               { width < 840 &&
+                  <div class="text-center text-gray" style="font-size:smaller;">
+                     - Scroll down to see a preview -
+                  </div>
+               }
+
                </div>
 
                <div class="modal-body">
-                  <div class="content container columns">
+                  <div class={ width < 840 ? "content" : "content container columns"}>
 
-                     <div class="column col-6">
-                        <EditCard item={props.item} />
-                     </div>
-
-                     {/* <div class="column col-1 divider-vert" /> */}
-
-                     <form class="form-group column col-6">
+                     <form class={ width < 840 ? "form-group" : "form-group column col-5"}>
 
                         <TextInput 
                            label="Title" 
@@ -55,15 +57,6 @@ class EditModal extends Component {
                            value={props.item.title} 
                            onChange={props.onChange} 
                         />
-
-                        {/*
-                        <TextInput 
-                           label="Subtitle" 
-                           name="subtitle"
-                           value={props.subtitle}
-                           onChange={props.onChange}
-                        />
-                        */}
 
                         <TextInput 
                            label="Location" 
@@ -79,16 +72,6 @@ class EditModal extends Component {
                            onChange={props.onChange}
                         />
 
-                        {/*
-                        <TextArea 
-                           label="Caption" 
-                           rows="6"
-                           name="txt"
-                           value={props.txt}
-                           onChange={props.onChange}
-                        />
-                        */}
-
                         <label
                            class="form-label"
                         >
@@ -103,6 +86,10 @@ class EditModal extends Component {
                         </label>
 
                      </form>
+
+                     <div class={ width < 840 ? "" : "column col-7" }>
+                        <EditCard item={props.item} />
+                     </div>
 
                   </div>
 
