@@ -17,8 +17,10 @@ const Header = (props) => {
             </section>
             :
             <section class="navbar-section">
+               {/*
                <AddDropdown />
                <UserName name={props.name || props.email} />
+               */}
                <AvatarDropdown name={props.name || props.email} notifications={props.notifications || []}/>
             </section>
          }
@@ -45,7 +47,7 @@ const AvatarDropdown = (props) => {
                data-badge={notifications === 0 ? "" : notifications.toString()}
                data-initial={initials}
             />
-            <i class="icon icon-caret" />
+            <i class="icon icon-menu" />
          </a>
          <ul class="menu">
             <li class="menu-item"><Link href="/user">Your Profile</Link></li>
@@ -54,7 +56,9 @@ const AvatarDropdown = (props) => {
             <li class="menu-item">Settings</li>
             <li class="menu-item">More Settings</li>
             <li class="divider" />
-            <li class="menu-item">Logout</li>
+            <li class="menu-item">
+               <Link href="/login" onClick={() => window.sessionStorage.removeItem("loginToken")}>Logout</Link>
+            </li>
          </ul>
       </div>
    )
