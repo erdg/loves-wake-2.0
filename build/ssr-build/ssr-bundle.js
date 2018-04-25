@@ -1994,8 +1994,6 @@ var header_Header = function Header(props) {
       !props.isLoggedIn ? header__ref2 : Object(preact_min["h"])(
          'section',
          { 'class': 'navbar-section' },
-         _ref3,
-         Object(preact_min["h"])(header_UserName, { name: props.name || props.email }),
          Object(preact_min["h"])(header_AvatarDropdown, { name: props.name || props.email, notifications: props.notifications || [] })
       )
    );
@@ -2004,48 +2002,44 @@ var header_Header = function Header(props) {
 var header_UserName = function UserName(props) {
    return Object(preact_min["h"])(
       'div',
-      { 'class': 'h5 mx-2', style: 'white-space:nowrap;' },
+      null,
       props.name
    );
 };
 
-var header__ref4 = Object(preact_min["h"])('i', { 'class': 'icon icon-caret' });
+var _ref3 = Object(preact_min["h"])('i', { 'class': 'icon icon-menu' });
 
-var header__ref5 = Object(preact_min["h"])(
-   'ul',
-   { 'class': 'menu' },
+var header__ref4 = Object(preact_min["h"])(
+   'li',
+   { 'class': 'menu-item' },
    Object(preact_min["h"])(
-      'li',
-      { 'class': 'menu-item' },
-      Object(preact_min["h"])(
-         match["Link"],
-         { href: '/user' },
-         'Your Profile'
-      )
-   ),
-   Object(preact_min["h"])(
-      'li',
-      { 'class': 'menu-item' },
-      'Notifications'
-   ),
-   Object(preact_min["h"])('li', { 'class': 'divider' }),
-   Object(preact_min["h"])(
-      'li',
-      { 'class': 'menu-item' },
-      'Settings'
-   ),
-   Object(preact_min["h"])(
-      'li',
-      { 'class': 'menu-item' },
-      'More Settings'
-   ),
-   Object(preact_min["h"])('li', { 'class': 'divider' }),
-   Object(preact_min["h"])(
-      'li',
-      { 'class': 'menu-item' },
-      'Logout'
+      match["Link"],
+      { href: '/user' },
+      'Your Profile'
    )
 );
+
+var header__ref5 = Object(preact_min["h"])(
+   'li',
+   { 'class': 'menu-item' },
+   'Notifications'
+);
+
+var header__ref6 = Object(preact_min["h"])('li', { 'class': 'divider' });
+
+var header__ref7 = Object(preact_min["h"])(
+   'li',
+   { 'class': 'menu-item' },
+   'Settings'
+);
+
+var _ref8 = Object(preact_min["h"])(
+   'li',
+   { 'class': 'menu-item' },
+   'More Settings'
+);
+
+var _ref9 = Object(preact_min["h"])('li', { 'class': 'divider' });
 
 var header_AvatarDropdown = function AvatarDropdown(props) {
    // let initials = props.name.split(' ')[0].charAt(0) + props.name.split(' ')[1].charAt(0);
@@ -2063,13 +2057,33 @@ var header_AvatarDropdown = function AvatarDropdown(props) {
             'data-badge': notifications === 0 ? "" : notifications.toString(),
             'data-initial': initials
          }),
-         header__ref4
+         _ref3
       ),
-      header__ref5
+      Object(preact_min["h"])(
+         'ul',
+         { 'class': 'menu' },
+         header__ref4,
+         header__ref5,
+         header__ref6,
+         header__ref7,
+         _ref8,
+         _ref9,
+         Object(preact_min["h"])(
+            'li',
+            { 'class': 'menu-item' },
+            Object(preact_min["h"])(
+               match["Link"],
+               { href: '/login', onClick: function onClick() {
+                     return window.sessionStorage.removeItem("loginToken");
+                  } },
+               'Logout'
+            )
+         )
+      )
    );
 };
 
-var header__ref6 = Object(preact_min["h"])(
+var _ref10 = Object(preact_min["h"])(
    'div',
    { 'class': 'dropdown mx-2' },
    Object(preact_min["h"])(
@@ -2097,11 +2111,11 @@ var header__ref6 = Object(preact_min["h"])(
          'Invite others'
       )
    )
-),
-    AddDropdown = function AddDropdown(props) {
-   return header__ref6;
-},
-    _ref3 = Object(preact_min["h"])(AddDropdown, null);
+);
+
+var AddDropdown = function AddDropdown(props) {
+   return _ref10;
+};
 
 /* harmony default export */ var header = (header_Header);
 // CONCATENATED MODULE: ./routes/home/index.js
@@ -2363,7 +2377,7 @@ var login_form_LoginForm = function (_Component) {
       var passwordHintClasses = classnames_default()('form-input-hint', { 'd-hide': !props.passwordError });
 
       return Object(preact_min["h"])(
-         'div',
+         'form',
          { 'class': formClasses },
          login_form__ref,
          Object(preact_min["h"])(
@@ -2397,6 +2411,7 @@ var login_form_LoginForm = function (_Component) {
             Object(preact_min["h"])(
                'button',
                {
+                  type: 'submit',
                   'class': loginBtnClasses,
                   onClick: props.handleLogin
                },
@@ -2444,7 +2459,8 @@ var login_form_container_LoginFormContainer = function (_Component) {
       // this._handleLogin = this._handleLogin.bind(this);
       var _this = login_form_container__possibleConstructorReturn(this, _Component.call(this, props));
 
-      _this._handleLogin = function () {
+      _this._handleLogin = function (e) {
+         e.preventDefault();
          // if email is not valid
          if (!isEmail_default()(_this.state.email)) {
             // throw email error, don't submit
@@ -3001,6 +3017,32 @@ var signup_Signup = function (_Component) {
 }(preact_min["Component"]);
 
 /* harmony default export */ var signup = (signup_Signup);
+// EXTERNAL MODULE: ./components/GridContainer/style.css
+var style = __webpack_require__("cUJj");
+var style_default = /*#__PURE__*/__webpack_require__.n(style);
+
+// CONCATENATED MODULE: ./components/GridContainer/index.js
+
+
+
+var GridContainer_GridContainer = function GridContainer(props) {
+   return Object(preact_min["h"])(
+      'div',
+      { 'class': style_default.a.gridContainer },
+      Object(preact_min["h"])(
+         'div',
+         { 'class': style_default.a.avatarColumn },
+         props.avatarColumn
+      ),
+      Object(preact_min["h"])(
+         'div',
+         { 'class': style_default.a.contentColumn },
+         props.contentColumn
+      )
+   );
+};
+
+/* harmony default export */ var components_GridContainer = (GridContainer_GridContainer);
 // CONCATENATED MODULE: ./components/form-inputs/index.js
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -3186,7 +3228,7 @@ var form_inputs_PasswordInput = function (_Component) {
    return PasswordInput;
 }(preact_min["Component"]);
 
-var _ref8 = Object(preact_min["h"])("i", { "class": "form-icon" });
+var form_inputs__ref8 = Object(preact_min["h"])("i", { "class": "form-icon" });
 
 var form_inputs_ShowPasswordSwitch = function ShowPasswordSwitch(props) {
    return Object(preact_min["h"])(
@@ -3197,7 +3239,7 @@ var form_inputs_ShowPasswordSwitch = function ShowPasswordSwitch(props) {
          { "class": "form-switch" },
          Object(preact_min["h"])("input", _extends({ type: "checkbox"
          }, props)),
-         _ref8,
+         form_inputs__ref8,
          "Show password"
       )
    );
@@ -3328,45 +3370,73 @@ var ConfirmAccountModal_ConfirmAccountModal = function (_Component) {
 }(preact_min["Component"]);
 
 /* harmony default export */ var user_ConfirmAccountModal = (ConfirmAccountModal_ConfirmAccountModal);
+// EXTERNAL MODULE: ./routes/user/style.css
+var user_style = __webpack_require__("rQOQ");
+var user_style_default = /*#__PURE__*/__webpack_require__.n(user_style);
+
 // CONCATENATED MODULE: ./routes/user/MemorialList.js
+
+
 
 
 
 
 var MemorialList__ref = Object(preact_min["h"])(
    'h3',
-   null,
+   { 'class': 'col' },
    'Memorials'
 );
+
+var MemorialList__ref2 = Object(preact_min["h"])('div', { 'class': 'divider py-2' });
 
 var MemorialList_MemorialList = function MemorialList(props) {
    return Object(preact_min["h"])(
       'div',
       null,
-      MemorialList__ref,
-      props.memorials.map(function (m) {
-         return Object(preact_min["h"])(MemorialList_MemorialTile, {
-            urlNm: m.urlNm,
-            urlStr: m.urlStr,
-            nm: m.nm,
-            born: m.born,
-            died: m.died,
-            avatar: m.avatar
-         });
-      })
+      Object(preact_min["h"])(
+         'div',
+         { 'class': 'row' },
+         MemorialList__ref,
+         Object(preact_min["h"])(
+            'button',
+            { 'class': 'col btn btn-primary',
+               onClick: function onClick() {
+                  return Object(preact_router_es["route"])("/create-shrine");
+               }
+            },
+            'Start a New Memorial'
+         )
+      ),
+      MemorialList__ref2,
+      Object(preact_min["h"])(
+         'div',
+         {
+            style: "display:flex;" + "flex-direction:row;" + "flex-wrap:wrap;" + "align-items:flex-start;" + "justify-content:flex-start;"
+         },
+         props.memorials.map(function (m) {
+            return Object(preact_min["h"])(MemorialList_MemorialTile, {
+               urlNm: m.urlNm,
+               urlStr: m.urlStr,
+               nm: m.nm,
+               born: m.born,
+               died: m.died,
+               avatar: m.avatar
+            });
+         })
+      )
    );
 };
 
 var MemorialList_MemorialTile = function MemorialTile(props) {
    return Object(preact_min["h"])(
       'div',
-      { 'class': 'tile', style: 'max-width: 500px;' },
+      { 'class': 'tile tile-centered m-2 p-2', style: 'flex-wrap:wrap;' },
       Object(preact_min["h"])(
          'div',
          { 'class': 'tile-icon' },
          Object(preact_min["h"])(
             'figure',
-            { 'class': 'avatar avatar-lg' },
+            { 'class': "avatar avatar-xl " + user_style_default.a.tileAvatar },
             Object(preact_min["h"])('img', { src: props.avatar })
          )
       ),
@@ -3375,14 +3445,14 @@ var MemorialList_MemorialTile = function MemorialTile(props) {
          { 'class': 'tile-content' },
          Object(preact_min["h"])(
             'p',
-            { 'class': 'tile-title' },
+            { 'class': 'tile-title h5' },
             props.nm
          ),
          Object(preact_min["h"])(
             'p',
             { 'class': 'tile-subtitle text-gray' },
             props.born,
-            ' - ',
+            ' to ',
             props.died
          )
       ),
@@ -3392,7 +3462,7 @@ var MemorialList_MemorialTile = function MemorialTile(props) {
          Object(preact_min["h"])(
             'button',
             {
-               'class': 'btn',
+               'class': 'btn btn-sm row m-1',
                onClick: function onClick() {
                   return Object(preact_router_es["route"])("/user/manage-memorial/" + props.urlNm);
                }
@@ -3402,12 +3472,12 @@ var MemorialList_MemorialTile = function MemorialTile(props) {
          Object(preact_min["h"])(
             'button',
             {
-               'class': 'btn',
+               'class': 'btn btn-sm row m-1',
                onClick: function onClick() {
                   return Object(preact_router_es["route"])("/" + props.urlStr + "/" + props.urlNm + "/chronicle");
                }
             },
-            'View Chronicle'
+            'View chronicle'
          )
       )
    );
@@ -3426,6 +3496,7 @@ function user__inherits(subClass, superClass) { if (typeof superClass !== "funct
 
 
 // import style from './style';
+
 
 
 
@@ -3454,30 +3525,28 @@ var user_User = function (_Component) {
    }
 
    User.prototype.render = function render() {
-      return Object(preact_min["h"])(
-         'div',
-         null,
-         Object(preact_min["h"])(
-            'h1',
-            null,
-            'User Profile: ',
-            this.props.user.name || this.props.user.email
+      return Object(preact_min["h"])(components_GridContainer, {
+         avatarColumn: Object(preact_min["h"])(
+            'div',
+            { 'class': 'menu', style: 'z-index:1;' },
+            Object(preact_min["h"])(
+               'p',
+               null,
+               'logged in as: ',
+               this.props.user.name || this.props.user.email
+            ),
+            !this.props.user.confirmed && Object(preact_min["h"])(user_ConfirmAccountModal, {
+               showModal: this.state.showModal,
+               hideModal: this.hideModal
+            })
          ),
-         !this.props.user.confirmed && Object(preact_min["h"])(user_ConfirmAccountModal, {
-            showModal: this.state.showModal,
-            hideModal: this.hideModal
-         }),
-         this.props.user.memorials[0] ? Object(preact_min["h"])(user_MemorialList, { memorials: this.props.user.memorials }) : Object(preact_min["h"])(
-            'button',
-            {
-               'class': 'btn btn-primary',
-               onClick: function onClick() {
-                  return Object(preact_router_es["route"])("/create-shrine");
-               }
-            },
-            'Start a memorial'
+
+         contentColumn: Object(preact_min["h"])(
+            'div',
+            null,
+            Object(preact_min["h"])(user_MemorialList, { memorials: this.props.user.memorials })
          )
-      );
+      });
    };
 
    return User;
@@ -4554,32 +4623,6 @@ var create_shrine_CreateShrine = function (_Component) {
 }(preact_min["Component"]);
 
 /* harmony default export */ var create_shrine = (create_shrine_CreateShrine);
-// EXTERNAL MODULE: ./components/GridContainer/style.css
-var style = __webpack_require__("cUJj");
-var style_default = /*#__PURE__*/__webpack_require__.n(style);
-
-// CONCATENATED MODULE: ./components/GridContainer/index.js
-
-
-
-var GridContainer_GridContainer = function GridContainer(props) {
-   return Object(preact_min["h"])(
-      'div',
-      { 'class': style_default.a.gridContainer },
-      Object(preact_min["h"])(
-         'div',
-         { 'class': style_default.a.avatarColumn },
-         props.avatarColumn
-      ),
-      Object(preact_min["h"])(
-         'div',
-         { 'class': style_default.a.contentColumn },
-         props.contentColumn
-      )
-   );
-};
-
-/* harmony default export */ var components_GridContainer = (GridContainer_GridContainer);
 // CONCATENATED MODULE: ./routes/ManageMemorial/ContentList.js
 
 
@@ -4639,7 +4682,7 @@ var ContentList_ContentList = function ContentList(props) {
 var ContentList_ContentCard = function ContentCard(props) {
    return Object(preact_min["h"])(
       'div',
-      { 'class': 'card m-2', style: "width:200px;" + (props.edited ? "background:lightcoral;" : "") },
+      { 'class': 'card m-2', style: "width:200px;" },
       props.src && Object(preact_min["h"])('img', { 'class': 'responsive-img mt-2 mx-2 centered', src: props.src, style: 'max-width:182px' }),
       Object(preact_min["h"])(
          'div',
@@ -4883,6 +4926,9 @@ function ManageMemorial__inherits(subClass, superClass) { if (typeof superClass 
 
 
 
+
+
+var ManageMemorial__ref = Object(preact_min["h"])('div', { 'class': 'divider' });
 
 var ManageMemorial_ManageMemorial = function (_Component) {
    ManageMemorial__inherits(ManageMemorial, _Component);
@@ -5141,6 +5187,16 @@ var ManageMemorial_ManageMemorial = function (_Component) {
                'h3',
                { 'class': 'text-center mt-2' },
                memorial.nm
+            ),
+            ManageMemorial__ref,
+            Object(preact_min["h"])(
+               'li',
+               { 'class': 'menu-item' },
+               Object(preact_min["h"])(
+                  preact_router_es["Link"],
+                  { 'class': 'menu-item', href: "/" + memorial.urlStr + "/" + memorial.urlNm + "/chronicle" },
+                  'View Chronicle'
+               )
             )
          ),
          contentColumn: Object(preact_min["h"])(
@@ -5845,6 +5901,12 @@ function AddWrittenModal__inherits(subClass, superClass) { if (typeof superClass
 // add a new item to chronicle
 
 var AddWrittenModal__ref = Object(preact_min["h"])(
+   'div',
+   { 'class': 'text-center text-gray', style: 'font-size:smaller;' },
+   '- Scroll down to see a preview -'
+);
+
+var AddWrittenModal__ref2 = Object(preact_min["h"])(
    'label',
    { 'class': 'form-label' },
    'Markdown'
@@ -5926,6 +5988,8 @@ var AddWrittenModal_AddWrittenModal = function (_Component) {
 
       var errorHint = classnames_default()("form-input-hint", "float-left", { "d-hide": !props.modalError });
 
+      var width = window.innerWidth || document.documentElement.clientWidth || document.body.client.width;
+
       return Object(preact_min["h"])(
          'div',
          { 'class': modalClasses },
@@ -5949,24 +6013,18 @@ var AddWrittenModal_AddWrittenModal = function (_Component) {
                   'Add Something to ',
                   props.name,
                   '\'s Chronicle'
-               )
+               ),
+               width < 840 && AddWrittenModal__ref
             ),
             Object(preact_min["h"])(
                'div',
                { 'class': 'modal-body' },
                Object(preact_min["h"])(
                   'div',
-                  { 'class': 'content container columns' },
-                  Object(preact_min["h"])(
-                     'div',
-                     { 'class': 'card column col-7' },
-                     Object(preact_min["h"])('div', { 'class': 'card-body',
-                        dangerouslySetInnerHTML: { __html: marked_default()(this.state.text) }
-                     })
-                  ),
+                  { 'class': width < 840 ? "content" : "content container columns" },
                   Object(preact_min["h"])(
                      'form',
-                     { 'class': 'form-group column col-5' },
+                     { 'class': width < 840 ? "form-group" : "form-group column col-5" },
                      Object(preact_min["h"])(form_inputs_TextInput, {
                         label: 'Title',
                         name: 'title',
@@ -5979,13 +6037,20 @@ var AddWrittenModal_AddWrittenModal = function (_Component) {
                         value: this.state.date,
                         onChange: this.onChange
                      }),
-                     AddWrittenModal__ref,
+                     AddWrittenModal__ref2,
                      Object(preact_min["h"])('textarea', {
                         'class': 'form-input',
                         rows: '12',
                         name: 'text',
                         value: this.state.text,
                         onInput: this.onChange
+                     })
+                  ),
+                  Object(preact_min["h"])(
+                     'div',
+                     { 'class': width < 840 ? "card" : "card column col-7" },
+                     Object(preact_min["h"])('div', { 'class': 'card-body',
+                        dangerouslySetInnerHTML: { __html: marked_default()(this.state.text) }
                      })
                   )
                )
@@ -13339,6 +13404,14 @@ function isEmail(str, options) {
   return true;
 }
 module.exports = exports['default'];
+
+/***/ }),
+
+/***/ "rQOQ":
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+module.exports = {"tileAvatar":"tileAvatar__1s7RE"};
 
 /***/ }),
 
