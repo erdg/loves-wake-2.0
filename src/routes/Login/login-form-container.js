@@ -34,7 +34,8 @@ class LoginFormContainer extends Component {
       this.setState({ showPassword });
    }
 
-   _handleLogin = () => {
+   _handleLogin = (e) => {
+      e.preventDefault();
       // if email is not valid
       if (!(isEmail(this.state.email))) {
          // throw email error, don't submit

@@ -30,7 +30,7 @@ class LoginForm extends Component {
       );
 
       return (
-         <div class={ formClasses }>
+         <form class={ formClasses }>
 
             <h1>Login</h1>
 
@@ -60,6 +60,7 @@ class LoginForm extends Component {
 
             <div class="row">
                <button 
+                  type="submit"
                   class={ loginBtnClasses }
                   onClick={ props.handleLogin }
                >
@@ -74,7 +75,7 @@ class LoginForm extends Component {
 
             </div>
 
-         </div>
+         </form>
       )
    }
 }
