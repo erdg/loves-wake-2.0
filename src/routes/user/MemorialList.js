@@ -40,7 +40,7 @@ const MemorialList = (props) => (
 )
 
 const MemorialTile = (props) => (
-   <div class="tile tile-centered m-2 p-2" style="max-width:700px">
+   <div class="tile tile-centered m-2 p-2" style="flex-wrap:wrap;">
       <div class="tile-icon">
          <figure class={"avatar avatar-xl " + style.tileAvatar}> 
             <img src={props.avatar} />
