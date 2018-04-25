@@ -1,5 +1,6 @@
 import { h, Component } from 'preact';
 import API_ENDPOINT from '../../api';
+import { Link } from 'preact-router';
 
 import GridContainer from '../../components/GridContainer';
 
@@ -273,6 +274,12 @@ class ManageMemorial extends Component {
                         <img src={memorial.avatar} />
                      </figure>
                      <h3 class="text-center mt-2">{memorial.nm}</h3>
+                     <div class="divider" />
+                     <li class="menu-item">
+                        <Link class="menu-item" href={"/" + memorial.urlStr + "/" + memorial.urlNm + "/chronicle"}>
+                           View Chronicle
+                        </Link>
+                     </li>
                </div>
             }
             contentColumn={
