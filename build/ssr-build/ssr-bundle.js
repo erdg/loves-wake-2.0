@@ -4194,7 +4194,7 @@ var create_shrine_form_container_CreateShrineFormContainer = function (_Componen
 var menu_Menu = function Menu(props) {
    return Object(preact_min["h"])(
       "ul",
-      { "class": "menu " + props.class },
+      { "class": "menu " + props.class, style: props.style },
       props.children
    );
 };
@@ -4554,86 +4554,124 @@ var create_shrine_CreateShrine = function (_Component) {
 }(preact_min["Component"]);
 
 /* harmony default export */ var create_shrine = (create_shrine_CreateShrine);
+// EXTERNAL MODULE: ./components/GridContainer/style.css
+var style = __webpack_require__("cUJj");
+var style_default = /*#__PURE__*/__webpack_require__.n(style);
+
+// CONCATENATED MODULE: ./components/GridContainer/index.js
+
+
+
+var GridContainer_GridContainer = function GridContainer(props) {
+   return Object(preact_min["h"])(
+      'div',
+      { 'class': style_default.a.gridContainer },
+      Object(preact_min["h"])(
+         'div',
+         { 'class': style_default.a.avatarColumn },
+         props.avatarColumn
+      ),
+      Object(preact_min["h"])(
+         'div',
+         { 'class': style_default.a.contentColumn },
+         props.contentColumn
+      )
+   );
+};
+
+/* harmony default export */ var components_GridContainer = (GridContainer_GridContainer);
 // CONCATENATED MODULE: ./routes/ManageMemorial/ContentList.js
 
 
 
 
 var ContentList__ref = Object(preact_min["h"])(
-   'h3',
-   null,
-   'Items'
+   'h4',
+   { 'class': 'col' },
+   'Chronicle Items'
 );
+
+var ContentList__ref2 = Object(preact_min["h"])('div', { 'class': 'col' });
+
+var ContentList__ref3 = Object(preact_min["h"])('div', { 'class': 'divider' });
 
 var ContentList_ContentList = function ContentList(props) {
    return Object(preact_min["h"])(
       'div',
       null,
-      ContentList__ref,
       Object(preact_min["h"])(
-         'button',
-         {
-            'class': 'btn btn-primary',
-            onClick: props.newItem
-         },
-         'Add Item'
-      ),
-      props.items.map(function (item) {
-         return Object(preact_min["h"])(ContentList_ContentTile, {
-            id: item.id,
-            title: item.title,
-            date: item.start,
-            location: item.location,
-            src: item.src,
-            showModal: function showModal(id) {
-               return props.showModal(id);
+         'div',
+         { 'class': 'row' },
+         ContentList__ref,
+         ContentList__ref2,
+         Object(preact_min["h"])(
+            'button',
+            {
+               'class': 'col btn btn-primary',
+               onClick: props.newItem
             },
-            edited: item.edited
-         });
-      })
+            'Add Item'
+         )
+      ),
+      ContentList__ref3,
+      Object(preact_min["h"])(
+         'div',
+         {
+            style: "display:flex;" + "flex-direction:row;" + "flex-wrap:wrap;" + "align-items:flex-start;" + "justify-content:center;"
+         },
+         props.items.map(function (item) {
+            return Object(preact_min["h"])(ContentList_ContentCard, {
+               id: item.id,
+               title: item.title,
+               date: item.start,
+               location: item.location,
+               src: item.src,
+               showModal: function showModal(id) {
+                  return props.showModal(id);
+               },
+               edited: item.edited
+            });
+         })
+      )
    );
 };
 
-var ContentList_ContentTile = function ContentTile(props) {
+var ContentList_ContentCard = function ContentCard(props) {
    return Object(preact_min["h"])(
       'div',
-      { 'class': 'tile', style: "max-width: 500px;" + (props.edited ? "background:lightcoral;" : "") },
+      { 'class': 'card m-2', style: "width:200px;" + (props.edited ? "background:lightcoral;" : "") },
+      props.src && Object(preact_min["h"])('img', { 'class': 'responsive-img mt-2 mx-2 centered', src: props.src, style: 'max-width:182px' }),
       Object(preact_min["h"])(
          'div',
-         { 'class': 'tile-icon' },
-         Object(preact_min["h"])('img', { 'class': 'responsive-img', src: props.src, style: 'max-width:200px' })
-      ),
-      Object(preact_min["h"])(
-         'div',
-         { 'class': 'tile-content' },
+         { 'class': 'card-body' },
          Object(preact_min["h"])(
-            'p',
-            { 'class': 'tile-title' },
+            'div',
+            { 'class': 'h6 text-ellipsis' },
             props.title
          ),
          Object(preact_min["h"])(
             'div',
-            { 'class': 'tile-subtitle text-gray' },
+            { 'class': 'text-gray text-ellipsis', style: 'font-size:smaller;' },
             props.location
          ),
          Object(preact_min["h"])(
             'div',
-            { 'class': 'tile-subtitle text-gray' },
+            { 'class': 'text-gray', style: 'font-size:smaller;' },
             props.date
          )
       ),
       Object(preact_min["h"])(
          'div',
-         { 'class': 'tile-action' },
+         { 'class': 'card-footer' },
          Object(preact_min["h"])(
             'button',
             {
-               'class': 'btn',
+               'class': 'btn btn-sm float-right',
                onClick: function onClick(id) {
                   return props.showModal(props.id);
                }
             },
-            'Edit item'
+            'edit'
          )
       )
    );
@@ -4697,6 +4735,12 @@ function EditModal__inherits(subClass, superClass) { if (typeof superClass !== "
 
 // edit a chronicle item
 
+var EditModal__ref = Object(preact_min["h"])(
+   'div',
+   { 'class': 'text-center text-gray', style: 'font-size:smaller;' },
+   '- Scroll down to see a preview -'
+);
+
 var EditModal_EditModal = function (_Component) {
    EditModal__inherits(EditModal, _Component);
 
@@ -4708,6 +4752,8 @@ var EditModal_EditModal = function (_Component) {
 
    EditModal.prototype.render = function render(props) {
       var modalClasses = classnames_default()("modal", "modal-lg", { "active": props.showModal }, { "has-error": props.modalError });
+
+      var width = window.innerWidth || document.documentElement.clientWidth || document.body.client.width;
 
       return Object(preact_min["h"])(
          'div',
@@ -4730,22 +4776,18 @@ var EditModal_EditModal = function (_Component) {
                   'div',
                   { 'class': 'modal-title h5' },
                   props.item.id ? "Edit Item" : "Add Item"
-               )
+               ),
+               width < 840 && EditModal__ref
             ),
             Object(preact_min["h"])(
                'div',
                { 'class': 'modal-body' },
                Object(preact_min["h"])(
                   'div',
-                  { 'class': 'content container columns' },
-                  Object(preact_min["h"])(
-                     'div',
-                     { 'class': 'column col-6' },
-                     Object(preact_min["h"])(ManageMemorial_EditCard, { item: props.item })
-                  ),
+                  { 'class': width < 840 ? "content" : "content container columns" },
                   Object(preact_min["h"])(
                      'form',
-                     { 'class': 'form-group column col-6' },
+                     { 'class': width < 840 ? "form-group" : "form-group column col-5" },
                      Object(preact_min["h"])(form_inputs_TextInput, {
                         label: 'Title',
                         name: 'title',
@@ -4778,6 +4820,11 @@ var EditModal_EditModal = function (_Component) {
                            onChange: props.onFileChange
                         })
                      )
+                  ),
+                  Object(preact_min["h"])(
+                     'div',
+                     { 'class': width < 840 ? "" : "column col-7" },
+                     Object(preact_min["h"])(ManageMemorial_EditCard, { item: props.item })
                   )
                )
             ),
@@ -4807,21 +4854,14 @@ var EditModal_EditModal = function (_Component) {
 
 var PublicUrl_PublicUrl = function PublicUrl(props) {
    return Object(preact_min["h"])(
-      'p',
-      null,
-      'The public url for ',
-      props.nm1,
-      '\'s Chronicle is',
-      Object(preact_min["h"])(
-         'button',
-         {
-            'class': 'btn btn-link',
-            onClick: function onClick() {
-               return Object(preact_router_es["route"])('/' + props.urlStr + '/' + props.urlNm + '/chronicle');
-            }
-         },
-         '/' + props.urlStr + '/' + props.urlNm + '/chronicle'
-      )
+      'button',
+      {
+         'class': 'btn btn-link',
+         onClick: function onClick() {
+            return Object(preact_router_es["route"])('/' + props.urlStr + '/' + props.urlNm + '/chronicle');
+         }
+      },
+      'loveswake.com/' + props.urlStr + '/' + props.urlNm + '/chronicle'
    );
 };
 
@@ -4834,6 +4874,8 @@ function ManageMemorial__classCallCheck(instance, Constructor) { if (!(instance 
 function ManageMemorial__possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function ManageMemorial__inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+
 
 
 
@@ -5086,38 +5128,43 @@ var ManageMemorial_ManageMemorial = function (_Component) {
       var memorial = this.props.user.memorials.find(function (m) {
          return m.urlNm === _this2.props.urlNm;
       });
-      return Object(preact_min["h"])(
-         'div',
-         null,
-         Object(preact_min["h"])(
-            'h2',
+      return Object(preact_min["h"])(components_GridContainer, {
+         avatarColumn: Object(preact_min["h"])(
+            'div',
+            { 'class': 'menu', style: 'z-index:1;' },
+            Object(preact_min["h"])(
+               'figure',
+               { 'class': 'centered avatar avatar-xxl' },
+               Object(preact_min["h"])('img', { src: memorial.avatar })
+            ),
+            Object(preact_min["h"])(
+               'h3',
+               { 'class': 'text-center mt-2' },
+               memorial.nm
+            )
+         ),
+         contentColumn: Object(preact_min["h"])(
+            'div',
             null,
-            memorial.nm
-         ),
-         Object(preact_min["h"])(
-            'figure',
-            { 'class': 'avatar avatar-xxl' },
-            Object(preact_min["h"])('img', { src: memorial.avatar })
-         ),
-         Object(preact_min["h"])(ManageMemorial_PublicUrl, { nm1: memorial.nm1, urlStr: memorial.urlStr, urlNm: memorial.urlNm }),
-         Object(preact_min["h"])(ManageMemorial_ContentList, {
-            showModal: this.showModal,
-            items: memorial.items,
-            newItem: this.newItem
-         }),
-         Object(preact_min["h"])(ManageMemorial_EditModal, {
-            showModal: this.state.showModal,
-            hideModal: this.hideModal,
+            Object(preact_min["h"])(ManageMemorial_ContentList, {
+               showModal: this.showModal,
+               items: memorial.items,
+               newItem: this.newItem
+            }),
+            Object(preact_min["h"])(ManageMemorial_EditModal, {
+               showModal: this.state.showModal,
+               hideModal: this.hideModal,
 
-            updChronicle: this.updChronicle,
-            newChronicle: this.newChronicle,
+               updChronicle: this.updChronicle,
+               newChronicle: this.newChronicle,
 
-            onChange: this.onChange,
-            onFileChange: this.onFileChange,
+               onChange: this.onChange,
+               onFileChange: this.onFileChange,
 
-            item: this.state.item
-         })
-      );
+               item: this.state.item
+            })
+         )
+      });
    };
 
    return ManageMemorial;
@@ -5210,8 +5257,6 @@ var Entry_Entry = function (_Component) {
 // CONCATENATED MODULE: ./routes/Shrine/index.js
 
 
-function Shrine__objectDestructuringEmpty(obj) { if (obj == null) throw new TypeError("Cannot destructure undefined"); }
-
 function Shrine__classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function Shrine__possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -5219,49 +5264,66 @@ function Shrine__possibleConstructorReturn(self, call) { if (!self) { throw new 
 function Shrine__inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 
+
 // import style from './style';
 
 var Shrine_Shrine = function (_Component) {
-	Shrine__inherits(Shrine, _Component);
+   Shrine__inherits(Shrine, _Component);
 
-	function Shrine() {
-		Shrine__classCallCheck(this, Shrine);
+   function Shrine() {
+      Shrine__classCallCheck(this, Shrine);
 
-		return Shrine__possibleConstructorReturn(this, _Component.apply(this, arguments));
-	}
+      return Shrine__possibleConstructorReturn(this, _Component.apply(this, arguments));
+   }
 
-	// Note: `name` comes from the URL, courtesy of our router
-	Shrine.prototype.render = function render(_ref, _ref2) {
-		var name = _ref.name;
+   // this should be in a higher order component
+   Shrine.prototype.componentDidMount = function componentDidMount() {
+      var _this2 = this;
 
-		Shrine__objectDestructuringEmpty(_ref2);
+      fetch(api + "!getMemorial?" + this.props.urlNm).then(function (res) {
+         return res.json();
+      }).then(function (json) {
+         _this2.setState({
+            nm: json.nm,
+            nm1: json.nm1,
+            nm2: json.nm2,
+            nm3: json.nm3,
+            born: json.born,
+            died: json.died,
+            avatar: json.avatar
+         });
+      });
+   };
 
-		return Object(preact_min["h"])(
-			'div',
-			null,
-			Object(preact_min["h"])(
-				'h1',
-				null,
-				name,
-				'\'s Shrine'
-			)
-		);
-	};
+   // Note: `name` comes from the URL, courtesy of our router
 
-	return Shrine;
+
+   Shrine.prototype.render = function render() {
+      return Object(preact_min["h"])(
+         'div',
+         null,
+         Object(preact_min["h"])(
+            'h1',
+            null,
+            this.state.nm,
+            '\'s Shrine'
+         )
+      );
+   };
+
+   return Shrine;
 }(preact_min["Component"]);
 
 
 // CONCATENATED MODULE: ./routes/Atlas/index.js
 
 
-function Atlas__objectDestructuringEmpty(obj) { if (obj == null) throw new TypeError("Cannot destructure undefined"); }
-
 function Atlas__classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function Atlas__possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function Atlas__inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 
 
 // import style from './style';
@@ -5275,19 +5337,36 @@ var Atlas_Atlas = function (_Component) {
       return Atlas__possibleConstructorReturn(this, _Component.apply(this, arguments));
    }
 
+   // this should be in a higher order component
+   Atlas.prototype.componentDidMount = function componentDidMount() {
+      var _this2 = this;
+
+      fetch(api + "!getMemorial?" + this.props.urlNm).then(function (res) {
+         return res.json();
+      }).then(function (json) {
+         _this2.setState({
+            nm: json.nm,
+            nm1: json.nm1,
+            nm2: json.nm2,
+            nm3: json.nm3,
+            born: json.born,
+            died: json.died,
+            avatar: json.avatar
+         });
+      });
+   };
+
    // Note: `name` comes from the URL, courtesy of our router
-   Atlas.prototype.render = function render(_ref, _ref2) {
-      var name = _ref.name;
 
-      Atlas__objectDestructuringEmpty(_ref2);
 
+   Atlas.prototype.render = function render() {
       return Object(preact_min["h"])(
          'div',
          null,
          Object(preact_min["h"])(
             'h1',
             null,
-            name,
+            this.state.nm,
             '\'s Atlas'
          )
       );
@@ -5298,8 +5377,8 @@ var Atlas_Atlas = function (_Component) {
 
 
 // EXTERNAL MODULE: ./routes/Chronicle/style.css
-var style = __webpack_require__("uDFM");
-var style_default = /*#__PURE__*/__webpack_require__.n(style);
+var Chronicle_style = __webpack_require__("uDFM");
+var Chronicle_style_default = /*#__PURE__*/__webpack_require__.n(Chronicle_style);
 
 // CONCATENATED MODULE: ./routes/Chronicle/linked-ref.js
 
@@ -5317,32 +5396,6 @@ function linkRef(component, name) {
       component.refs[name] = c;
    });
 }
-// EXTERNAL MODULE: ./components/GridContainer/style.css
-var GridContainer_style = __webpack_require__("cUJj");
-var GridContainer_style_default = /*#__PURE__*/__webpack_require__.n(GridContainer_style);
-
-// CONCATENATED MODULE: ./components/GridContainer/index.js
-
-
-
-var GridContainer_GridContainer = function GridContainer(props) {
-   return Object(preact_min["h"])(
-      'div',
-      { 'class': GridContainer_style_default.a.gridContainer },
-      Object(preact_min["h"])(
-         'div',
-         { 'class': GridContainer_style_default.a.avatarColumn },
-         props.avatarColumn
-      ),
-      Object(preact_min["h"])(
-         'div',
-         { 'class': GridContainer_style_default.a.contentColumn },
-         props.contentColumn
-      )
-   );
-};
-
-/* harmony default export */ var components_GridContainer = (GridContainer_GridContainer);
 // CONCATENATED MODULE: ./components/avatar.js
 
 // import classNames from 'classnames';
@@ -5372,7 +5425,7 @@ var AvatarRail__ref = Object(preact_min["h"])(menu_MenuDivider, null);
 var AvatarRail_AvatarRail = function AvatarRail(props) {
    return Object(preact_min["h"])(
       menu_Menu,
-      null,
+      { style: 'z-index:1;' },
       Object(preact_min["h"])(
          'figure',
          { 'class': 'avatar avatar-xxl centered mt-2', 'data-initial': props.firstName.charAt[0] },
@@ -5559,7 +5612,7 @@ var ChronicleCard_ChronicleCard = function ChronicleCard(props) {
    return Object(preact_min["h"])(
       'div',
       {
-         'class': props.stylesheet ? "panel " + style_default.a.ChronicleCard : "panel",
+         'class': props.stylesheet ? "panel " + Chronicle_style_default.a.ChronicleCard : "panel",
          style: props.style ? "min-height:400px;" : ""
       },
       Object(preact_min["h"])(
@@ -5744,7 +5797,7 @@ var AddSomethingBtn__ref = Object(preact_min["h"])(
 var AddSomethingBtn_AddSomethingBtn = function AddSomethingBtn(props) {
    return Object(preact_min["h"])(
       "div",
-      { "class": "dropdown d-block " + style_default.a.AddSomething },
+      { "class": "dropdown d-block " + Chronicle_style_default.a.AddSomething },
       AddSomethingBtn__ref,
       Object(preact_min["h"])(
          "ul",
@@ -6238,7 +6291,7 @@ var Chronicle_Chronicle = function (_Component) {
 
          contentColumn: Object(preact_min["h"])(
             'div',
-            { 'class': style_default.a.ContentColumnContainer },
+            { 'class': Chronicle_style_default.a.ContentColumnContainer },
             Object(preact_min["h"])(Chronicle_ChronicleCard, { 'class': 'column', stylesheet: true,
                title: this.state.currentItem.title,
                location: this.state.currentItem.location,
@@ -6253,7 +6306,7 @@ var Chronicle_Chronicle = function (_Component) {
             Object(preact_min["h"])(
                'button',
                {
-                  'class': "circle btn " + style_default.a.LeftArrow,
+                  'class': "circle btn " + Chronicle_style_default.a.LeftArrow,
                   onClick: this.prevItem
                },
                Chronicle__ref
@@ -6261,7 +6314,7 @@ var Chronicle_Chronicle = function (_Component) {
             Object(preact_min["h"])(
                'button',
                {
-                  'class': "circle btn float-right " + style_default.a.RightArrow,
+                  'class': "circle btn float-right " + Chronicle_style_default.a.RightArrow,
                   onClick: this.nextItem
                },
                Chronicle__ref2
