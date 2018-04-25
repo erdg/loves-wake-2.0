@@ -81,6 +81,8 @@ class AddWrittenModal extends Component {
          "form-input-hint", "float-left", { "d-hide": !props.modalError }
       );
 
+      var width = window.innerWidth || document.documentElement.clientWidth || document.body.client.width;
+
       return (
          <div class={modalClasses}>
 
@@ -102,18 +104,19 @@ class AddWrittenModal extends Component {
                      Add Something to {props.name}'s Chronicle
                   </div>
 
+
+                  { width < 840 &&
+                     <div class="text-center text-gray" style="font-size:smaller;">
+                        - Scroll down to see a preview -
+                     </div>
+                  }
+
                </div>
 
                <div class="modal-body">
-                  <div class="content container columns">
+                  <div class={width < 840 ? "content" : "content container columns"}>
 
-                     <div class="card column col-7">
-                        <div class="card-body"
-                           dangerouslySetInnerHTML={{__html: marked(this.state.text)}}
-                        />
-                     </div>
-
-                     <form class="form-group column col-5">
+                     <form class={width < 840 ? "form-group" : "form-group column col-5"}>
 
                         <TextInput 
                            label="Title" 
@@ -139,6 +142,12 @@ class AddWrittenModal extends Component {
                            />
 
                      </form>
+
+                     <div class={width < 840 ? "card" : "card column col-7"}>
+                        <div class="card-body"
+                           dangerouslySetInnerHTML={{__html: marked(this.state.text)}}
+                        />
+                     </div>
 
                   </div>
 
