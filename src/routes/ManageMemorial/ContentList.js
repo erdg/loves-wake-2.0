@@ -41,7 +41,7 @@ const ContentList = (props) => (
 )
 
 const ContentCard = (props) => (
-   <div class="card m-2" style={"width:200px;" + (props.edited ? "background:lightcoral;" : "")}>
+   <div class="card m-2" style={"width:200px;"}>
       { props.src &&
             <img class="responsive-img mt-2 mx-2 centered" src={props.src} style="max-width:182px"/>
       }
