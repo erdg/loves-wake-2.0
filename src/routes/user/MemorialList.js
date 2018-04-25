@@ -1,49 +1,69 @@
 import { h, Component } from 'preact';
-import { route } from 'preact-router';
+import { route, Link } from 'preact-router';
+
+import style from './style.css';
 
 const MemorialList = (props) => (
    <div>
-      <h3>Memorials</h3>
-      { 
-         props.memorials.map((m) => (
-            <MemorialTile 
-               urlNm={m.urlNm}
-               urlStr={m.urlStr}
-               nm={m.nm} 
-               born={m.born} 
-               died={m.died} 
-               avatar={m.avatar}
-            />
-         ))
-      }
+      <div class="row">
+         <h3 class="col">Memorials</h3>
+         <button class="col btn btn-primary"
+            onClick={() => route("/create-shrine")}
+         >
+            Start a New Memorial
+         </button>
+      </div>
+      <div class="divider py-2" />
+      <div
+         style={
+            "display:flex;"
+            + "flex-direction:row;"
+            + "flex-wrap:wrap;"
+            + "align-items:flex-start;"
+            + "justify-content:flex-start;"
+         }
+      >
+         { 
+            props.memorials.map((m) => (
+               <MemorialTile 
+                  urlNm={m.urlNm}
+                  urlStr={m.urlStr}
+                  nm={m.nm} 
+                  born={m.born} 
+                  died={m.died} 
+                  avatar={m.avatar}
+               />
+            ))
+         }
+      </div>
    </div>
 )
 
 const MemorialTile = (props) => (
-   <div class="tile" style="max-width: 500px;">
+   <div class="tile tile-centered m-2 p-2" style="max-width:700px">
       <div class="tile-icon">
-         <figure class="avatar avatar-lg"> 
+         <figure class={"avatar avatar-xl " + style.tileAvatar}> 
             <img src={props.avatar} />
          </figure>
       </div>
       <div class="tile-content">
-         <p class="tile-title">{props.nm}</p>
+         <p class="tile-title h5">{props.nm}</p>
          <p class="tile-subtitle text-gray">
-            {props.born} - {props.died}
+            {props.born} to {props.died}
          </p>
       </div>
       <div class="tile-action">
          <button 
-            class="btn"
+            class="btn btn-sm row m-1"
             onClick={() => route("/user/manage-memorial/" + props.urlNm)}
          > 
             Manage content
          </button>
          <button 
-            class="btn"
+            class="btn btn-sm row m-1"
             onClick={() => route("/" + props.urlStr + "/" + props.urlNm + "/chronicle")}
          > 
-            View Chronicle
+            View chronicle
          </button>
       </div>
    </div>
