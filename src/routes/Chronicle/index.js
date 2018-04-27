@@ -96,7 +96,7 @@ export default class Chronicle extends Component {
             // as the base64 utility is still able to decode.
 
             // base64 string without padding
-            let str = e.target.result.split('=')[0]
+            let str = e.target.result.split(',')[1].split('=')[0]
 
             fetch( API_ENDPOINT + "!postChronicle?" + this.props.urlNm,
                { 

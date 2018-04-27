@@ -55,14 +55,14 @@ class EditModal extends Component {
                            label="Title" 
                            name="title" 
                            value={props.item.title} 
-                           onChange={props.onChange} 
+                           onInput={props.onChange} 
                         />
 
                         <TextInput 
                            label="Location" 
                            name="location"
                            value={props.item.location}
-                           onChange={props.onChange}
+                           onInput={props.onChange}
                         />
 
                         <DateInput 

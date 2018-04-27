@@ -118,9 +118,7 @@
               (put!> This 'img T)
               (pipe
                  # send to base64 utility to decode
-                 (out '(base64 "-d")
-                    # remove "data:image/<type>;base64," from URL
-                    (prin (pack (stem (chop @) ",") ) ) )
+                 (out '(base64 "-d") @)
                  # write decoded image to db blob file
                  (out (blob This 'img) (echo) ) ) )
             # +Chronicle entry for birth
@@ -197,9 +195,7 @@
                (put!> This 'img T)
                (pipe
                   # send to base64 utility to decode
-                  (out '(base64 "-d") 
-                     # remove "data:image/<type>;base64," from URL
-                     (prin (pack (stem (chop @) ",") ) ) )
+                  (out '(base64 "-d") @)
                   # write decoded image to db blob file
                   (out (blob This 'img) (echo) ) ) )
             (respondJson 
@@ -258,11 +254,9 @@
                (ifn (; Item img) (put!> Item 'img T))
                (pipe
                   # send to base64 utility to decode
-                  (out '(base64 "-d") 
-                     # remove "data:image/<type>;base64," from URL
-                     (prin (pack (stem (chop @) ",") ) ) )
+                  (out '(base64 "-d") @)
                   # write decoded image to db blob file
-                  (out (blob Item 'img) (echo) ) ) )
+                  (out (blob Item 'img) (echo)) ) )
             (respondJson "Item updated") )
          ) ) )
 
