@@ -4835,13 +4835,13 @@ var EditModal_EditModal = function (_Component) {
                         label: 'Title',
                         name: 'title',
                         value: props.item.title,
-                        onChange: props.onChange
+                        onInput: props.onChange
                      }),
                      Object(preact_min["h"])(form_inputs_TextInput, {
                         label: 'Location',
                         name: 'location',
                         value: props.item.location,
-                        onChange: props.onChange
+                        onInput: props.onChange
                      }),
                      Object(preact_min["h"])(form_inputs_DateInput, {
                         label: 'Date',
@@ -5003,7 +5003,7 @@ var ManageMemorial_ManageMemorial = function (_Component) {
                // as the base64 utility is still able to decode.
 
                // base64 string without padding
-               var str = e.target.result.split('=')[0];
+               var str = e.target.result.split(',')[1].split('=')[0];
 
                fetch(api + "!updChronicle?" + _this.props.urlNm, {
                   method: "POST",
@@ -5092,7 +5092,7 @@ var ManageMemorial_ManageMemorial = function (_Component) {
                // as the base64 utility is still able to decode.
 
                // base64 string without padding
-               var str = e.target.result.split('=')[0];
+               var str = e.target.result.split(',')[1].split('=')[0];
 
                fetch(api + "!postChronicle?" + _this.props.urlNm, {
                   method: "POST",
@@ -6204,7 +6204,7 @@ var Chronicle_Chronicle = function (_Component) {
                // as the base64 utility is still able to decode.
 
                // base64 string without padding
-               var str = e.target.result.split('=')[0];
+               var str = e.target.result.split(',')[1].split('=')[0];
 
                fetch(api + "!postChronicle?" + _this.props.urlNm, {
                   method: "POST",
