@@ -64,27 +64,15 @@ class ManageMemorial extends Component {
          reader.readAsDataURL(this.state.item.file);
 
          reader.onload = (e) => {
-            // NOTE - must remove padding for picolisp
-            //
-            // base64 strings are padded with one or two '='s to make sure it aligns
-            // to proper byte boundaries. the picolisp server does not handle this 
-            // well. so we must remove any padding before it is sent. after picolisp
-            // has parsed the http request, we can add the appropriate padding back
-            // to the string by checking if it is an even multiple of 4.
-            //
-            // see 'server.l' for the picolisp side.
-            //
-            // NOTE - turns out that we don't need to add padding back on the server
-            // as the base64 utility is still able to decode.
-
             // base64 string without padding
-            let str = e.target.result.split('=')[0]
+            let str = e.target.result.split(',')[1]
 
-            fetch( API_ENDPOINT + "!updChronicle?" + this.props.urlNm,
+            fetch( API_ENDPOINT + "!updChronicle",
                { 
                   method: "POST", 
                   body: JSON.stringify({ 
                      loginToken: window.sessionStorage.getItem("loginToken"),
+                     urlNm: this.props.urlNm,
                      id: this.state.item.id,
                      title: this.state.item.title,
                      location: this.state.item.location,
@@ -113,11 +101,12 @@ class ManageMemorial extends Component {
       } else {
 
          // EDIT URL BELOW
-         fetch( API_ENDPOINT + "!updChronicle?" + this.props.urlNm,
+         fetch( API_ENDPOINT + "!updChronicle",
             { 
                method: "POST", 
                body: JSON.stringify({ 
                   loginToken: window.sessionStorage.getItem("loginToken"),
+                  urlNm: this.props.urlNm,
                   id: this.state.item.id,
                   title: this.state.item.title,
                   location: this.state.item.location,
@@ -178,12 +167,13 @@ class ManageMemorial extends Component {
             // as the base64 utility is still able to decode.
 
             // base64 string without padding
-            let str = e.target.result.split('=')[0]
+            let str = e.target.result.split(',')[1]
 
-            fetch( API_ENDPOINT + "!postChronicle?" + this.props.urlNm,
+            fetch( API_ENDPOINT + "!newChronicle",
                { 
                   method: "POST", 
                   body: JSON.stringify({ 
+                     urlNm: this.props.urlNm,
                      title: this.state.item.title,
                      subtitle: this.state.item.subtitle,
                      location: this.state.item.location,
@@ -212,10 +202,11 @@ class ManageMemorial extends Component {
       } else {
 
          // EDIT URL BELOW
-         fetch( API_ENDPOINT + "!postChronicle?" + this.props.urlNm,
+         fetch( API_ENDPOINT + "!newChronicle",
             { 
                method: "POST", 
                body: JSON.stringify({ 
+                  urlNm: this.props.urlNm,
                   title: this.state.item.title,
                   subtitle: this.state.item.subtitle,
                   location: this.state.item.location,

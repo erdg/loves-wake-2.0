@@ -64,7 +64,7 @@ export default class Chronicle extends Component {
       reader.readAsDataURL(this.state.file);
    }
 
-   postChronicle = () => {
+   newChronicle = () => {
       // handle errors
       if (!(this.state.title && this.state.date)) {
          this.setState({ modalError: true });
@@ -96,12 +96,13 @@ export default class Chronicle extends Component {
             // as the base64 utility is still able to decode.
 
             // base64 string without padding
-            let str = e.target.result.split('=')[0]
+            let str = e.target.result.split(',')[1]
 
-            fetch( API_ENDPOINT + "!postChronicle?" + this.props.urlNm,
+            fetch( API_ENDPOINT + "!newChronicle",
                { 
                   method: "POST", 
                   body: JSON.stringify({ 
+                     urlNm: this.props.urlNm,
                      title: this.state.title,
                      subtitle: this.state.subtitle,
                      location: this.state.location,
@@ -137,10 +138,11 @@ export default class Chronicle extends Component {
       } else {
 
          // EDIT URL BELOW
-         fetch( API_ENDPOINT + "!postChronicle?" + this.props.urlNm,
+         fetch( API_ENDPOINT + "!newChronicle",
             { 
                method: "POST", 
                body: JSON.stringify({ 
+                  urlNm: this.props.urlNm,
                   title: this.state.title,
                   subtitle: this.state.subtitle,
                   location: this.state.location,
@@ -320,7 +322,7 @@ export default class Chronicle extends Component {
                      file={this.state.file}
                      src={this.state.src}
 
-                     postChronicle={this.postChronicle}
+                     newChronicle={this.newChronicle}
                      clearModalFields={this.clearModalFields}
                   />
 

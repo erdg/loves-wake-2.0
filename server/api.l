@@ -41,10 +41,13 @@
 (class +Memorial +Entity)
 
 (rel usr (+Joint) memorials (+User))   # created by user
-(rel id (+Key +Number))                # unique memorial id number
-(rel urlStr (+Ref +String))            # 8 char base64 string, e.g. "8bez73Ka"
 
+(rel id (+Key +Number))                # unique memorial id number
+# (rel canPost (+List +Number))          # list of user id's that can add content
+# (rel canEdit (+List +Number))          # list of user id's that can edit content
+(rel urlStr (+Ref +String))            # 8 char base64 string, e.g. "8bez73Ka"
 (rel urlNm (+Ref +String))             # concatenated name, e.g. "MichaelJFox"
+
 (rel nm (+Idx +String))                # full name with spaces, e.g. "Michael J Fox"
 (rel nm1 (+Idx +String))               # first name, e.g. "Michael"
 (rel nm2 (+String))                    # middle name or initial, e.g. "J"
@@ -93,13 +96,12 @@
 
 (allow "!newMemorial")
 (de newMemorial ()
-   (let [Json (json~decode *Post)
-         Nm1   (getJson "nm1" Json)
-         Nm2   (getJson "nm2" Json)
-         Nm3   (getJson "nm3" Json)
-         Born (getJson "born" Json)
-         Died (getJson "died" Json)
-         UserId  (getJson "sub" (decodeJWT *Secret (getJson "loginToken" Json))) ]
+   (let [Nm1  (posted "nm1")
+         Nm2  (posted "nm2")
+         Nm3  (posted "nm3")
+         Born (posted "born")
+         Died (posted "died")
+         UserId  (getJson "sub" (decodeJWT *Secret (posted "loginToken"))) ]
       (if (db 'id '+User UserId)  # => @
          (with  # new +Memorial => This
             [new! '(+Memorial)
@@ -114,13 +116,11 @@
               'born Born
               'died Died ]
             # upload image
-            (when (getJson "img" Json)  # '@' now contains base64 data URL
+            (when (posted "img")  # '@' now contains base64 data URL
               (put!> This 'img T)
               (pipe
                  # send to base64 utility to decode
-                 (out '(base64 "-d")
-                    # remove "data:image/<type>;base64," from URL
-                    (prin (pack (stem (chop @) ",") ) ) )
+                 (out '(base64 "-d") (prin @))
                  # write decoded image to db blob file
                  (out (blob This 'img) (echo) ) ) )
             # +Chronicle entry for birth
@@ -140,9 +140,7 @@
 
 (allow "!getMemorial")
 (de getMemorial (UrlNm)
-   (let [Json   (json~decode *Post)
-         Mem    (db 'urlNm '+Memorial UrlNm)
-         ]
+   (let Mem (db 'urlNm '+Memorial UrlNm)
       # if memorial exists and belongs to user
       (if Mem
          (respondJson (json> @))
@@ -151,7 +149,7 @@
 ##########
 
 ########################
-  +Chronicle
+#  +Chronicle
 (class +Chronicle +Entity)
 
 # link back to memorial
@@ -180,63 +178,63 @@
       (respondJson (json> @ T))
       (respondJsonError "This memorial does not exist") ) )
 
-# API/!postChronicle
-(allow "!postChronicle")
-(de postChronicle (UrlNm)
-   (let Json (json~decode *Post)
-      (if (db 'urlNm '+Memorial UrlNm)  # -> '@'
-         (with 
-            # new +Chronicle -> 'This' for rest of prg
-            [new! '(+Chronicle)
-               'memorial @  # '@' bound from 'if' statement, see above 
-               'id (genKey 'id '+Chronicle)
-               'title (getJson "title" Json)
-               'location (getJson "location" Json)
-               'date (getJson "date" Json) ]
-            (when (getJson "image" Json)  # '@' now contains base64 data URL
-               (put!> This 'img T)
-               (pipe
-                  # send to base64 utility to decode
-                  (out '(base64 "-d") 
-                     # remove "data:image/<type>;base64," from URL
-                     (prin (pack (stem (chop @) ",") ) ) )
-                  # write decoded image to db blob file
-                  (out (blob This 'img) (echo) ) ) )
-            (respondJson 
-               (json> This) ) ) ) ) )
+# API/!newChronicle
+(allow "!newChronicle")
+(de newChronicle ()
+   (if (db 'urlNm '+Memorial (posted "urlNm"))  # -> '@'
+      (with 
+         # new +Chronicle -> 'This' for rest of prg
+         [new! '(+Chronicle)
+            'memorial  @  # '@' bound from 'if' statement, see above 
+            'id        (genKey 'id '+Chronicle)
+            'title     (posted "title")
+            'location  (posted "location")
+            'date      (posted "date") ]
+         (when (posted "image")  # '@' now contains base64 data URL
+            (put!> This 'img T)
+            (pipe
+               # send to base64 utility to decode
+               (out '(base64 "-d") (prin @))
+               # write decoded image to db blob file
+               (out (blob This 'img) (echo) ) ) )
+         (respondJson 
+            (json> This) ) ) ) )
 
-# API/!postChronicle
-(allow "!postWrittenChronicle")
-(de postWrittenChronicle (UrlNm)
-   (out 2 (prinl *Post))
-   (let Json (json~decode *Post)
-      (if (db 'urlNm '+Memorial UrlNm)  # -> '@'
-         (with 
-            # new +Chronicle -> 'This' for rest of prg
-            [new! '(+Chronicle)
-               'memorial @  # '@' bound from 'if' statement, see above 
-               'id (genKey 'id '+Chronicle)
-               'title (getJson "title" Json)
-               'location (getJson "location" Json)
-               'date (getJson "date" Json) ]
-            (when (getJson "txt" Json)  # '@' now contains base64 data URL
-               (put!> This 'txt T)
-               (out (blob This 'txt) (prin @)) )
-            (respondJson 
-               (json> This) ) ) ) ) )
+(de delChronicle ())
+
+# API/!postWrittenChronicle
+(allow "!newWrittenChronicle")
+(de newWrittenChronicle (UrlNm)
+   (if (db 'urlNm '+Memorial UrlNm)  # -> @
+      (with 
+         # new +Chronicle -> 'This' for rest of prg
+         [new! '(+Chronicle)
+            'memorial @  # '@' bound from 'if' statement, see above 
+            'id       (genKey 'id '+Chronicle)
+            'title    (posted "title")
+            'location (posted "location")
+            'date     (posted "date") ]
+         (when (posted "txt")  # -> @
+            (put!> This 'txt T)
+            (out (blob This 'txt) (prin @)) )
+         (respondJson 
+            (json> This) ) ) ) )
 
 (allow "!updChronicle")
-(de updChronicle (UrlNm)
-   (let [Json (json~decode *Post)
-         UserId (getJson "sub" (decodeJWT *Secret (getJson "loginToken" Json)))
-         User (db 'id '+User UserId)
-         Memorial (db 'urlNm '+Memorial UrlNm)
-         Item (db 'id '+Chronicle (getJson "id" Json)) ]
-      # check stuff
+(de updChronicle ()
+   (let [UserId   (getJWT "sub" "loginToken")
+         User     (db 'id '+User UserId)
+         Memorial (db 'urlNm '+Memorial (posted "urlNm"))
+         Item     (db 'id '+Chronicle (posted "id")) ]
+      (and *Dbg
+         (msg "!updChronicle" " - " (stamp))
+         )
+      # checks
       (nond
-         (User (respondJsonError "Bad user"))
+         # TODO - better error handling
+         (User     (respondJsonError "Bad user"))
          (Memorial (respondJsonError "Bad memorial"))
-         (Item (respondJsonError "Bad item"))
+         (Item     (respondJsonError "Bad item"))
          # if user is NOT the creator of memorial, can't edit
          # NOTE - this will need to change when functionality is added to allow multiple
          # admins on a memorial
@@ -245,39 +243,31 @@
          # check that chronicle item and memorial match
          ((= (; Item memorial) Memorial)
             (respondJsonError "Item not in chronicle") )
-
-         # update item
+         # all is good, update item
          (NIL
-            (unless (= (; Item title) (getJson "title" Json))
-               (put!> Item 'title (getJson "title" Json)) )
-            (unless (= (; Item date) (getJson "date" Json))
-               (put!> Item 'date (getJson "date" Json)) )
-            (unless (= (; Item location) (getJson "location" Json))
-               (put!> Item 'location (getJson "location" Json)) )
-            (when (getJson "image" Json)  # '@' now contains base64 data URL
-               (ifn (; Item img) (put!> Item 'img T))
+            (unless (= (; Item title) (posted "title"))
+               (put!> Item 'title (posted "title")) )
+            (unless (= (; Item date) (posted "date"))
+               (put!> Item 'date (posted "date")) )
+            (unless (= (; Item location) (posted "location"))
+               (put!> Item 'location (posted "location")) )
+            (when (posted "image")  # '@' now contains base64 data URL
+               (or (; Item img) (put!> Item 'img T))
                (pipe
                   # send to base64 utility to decode
-                  (out '(base64 "-d") 
-                     # remove "data:image/<type>;base64," from URL
-                     (prin (pack (stem (chop @) ",") ) ) )
+                  (out '(base64 "-d") (prin (posted "image")))
                   # write decoded image to db blob file
-                  (out (blob Item 'img) (echo) ) ) )
-            (respondJson "Item updated") )
-         ) ) )
+                  (out (blob Item 'img) (echo)) ) )
+            (respondJson (list (cons "yep" "Item updated"))) ) ) ) )
 
 
 ############
 
 # API
 #
-# NOTE - incoming POST body data will be available in *Post.
-# functions should call 'json~decode' to get an 'assoc' list
-# of the POST data, e.g.
-#
-#  (let Json (json~decode *Post)
-#     ... do something with 'Json' ... )
-
+# NOTE - incoming POST body data will be available as an 'assoc'
+# list in *Posted. 'posted' maybe used to get values from the assoc
+# list.
 
 # seed the random number generator
 (seed (in "/dev/urandom" (rd 8)))
@@ -351,7 +341,10 @@
 # /api/!loginUser
 (allow "!loginUser")
 (de loginUser ()
-   (let [Json (json~decode *Post)  Em (getJson "em" Json)  Pw (getJson "pw" Json)]
+   (let [Em (posted "em")  Pw (posted "pw")]
+      (and *Dbg
+         # debugging output
+      )
       # find user in DB
       (ifn (db 'em '+User Em)
          # if no, login error
@@ -375,10 +368,10 @@
 # /api/!getUserData
 (allow "!getUserData")
 (de getUserData ()
-   (let [Json (json~decode *Post)
-         Jwt (decodeJWT *Secret (getJson "loginToken" Json))
-         Id (getJson "sub" Jwt) ]
-      (out 2 (prinl "id: " Id))
+   (let [Id (getJWT "sub" "loginToken") ]
+      (and *Dbg 
+         # debugging output
+      )
       (ifn (db 'id '+User Id)
          (forbidden)
          (respondJson (json> @) ) ) ) )
@@ -459,40 +452,23 @@
 (de loginError ()
    (list (cons "error" "login error")) )
 
-# database sizes
-(dbs
-   (3 +User +Memorial +Chronicle)
-   (3 (+User pw))
-   (4 (+Chronicle title))
-   (4 (+Chronicle id location date))
-   (4 (+User id em confirmed))
-)
-
+ # database sizes
+ (dbs
+    (3 +User +Memorial +Chronicle)
+    (3 (+User pw))
+    (4 (+Chronicle title))
+    (4 (+Chronicle id location date))
+    (4 (+User id em confirmed))
+ )
 
 # utils
-(de respondJson (Lst)
-   (let Json (json~encode Lst)
-      (http1 "application/json" 0)
-      (prinl "Access-Control-Allow-Origin: *^M")
-      (prinl "Content-Length: " (size Json) "^M^J^M")
-      (prin Json) ) )
-
-# get json val from list
-(de getJson (Key Lst)
-   (cdr (assoc Key Lst)) )
-
-# by this convention, server-side errors are returned as,
-# 
-#    { error: "Server-side error text here" }
 #
-# to be displayed on the client.
-(de respondJsonError (Str)
-   (respondJson
-      (list
-         (cons "error"
-            Str ) ) ) )
+# get 'Claim' from payload of 'Token'
+#
+# usage - (getJWT "exp" "authToken")
+#
+# NOTE - jwt should be sent in body of POST
+#
+(de getJWT (Claim Token)
+   (getJson Claim (decodeJWT *Secret (posted Token))) )
 
-(de forbidden ()
-   (prinl "HTTP/1.0 403 Forbidden^M")
-   (prinl "Access-Control-Allow-Origin: *^M")
-   (prinl "^M") )

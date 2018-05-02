@@ -106,8 +106,9 @@ class CreateShrine extends Component {
                nm3: this.state.lastName,
                born: this.state.born,
                died: this.state.died,
-               // strip trailing '='s so PL can handle it
-               img: this.state.fileURL.split("=")[0],
+               // strip leading "data:image/${mime};base64," so PL can
+               // send it to "base64 -d" without having to 'chop' it.
+               img: this.state.fileURL.split(",")[1],
                loginToken: loginToken
             })
          }

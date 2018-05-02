@@ -11,9 +11,9 @@
    (mapcar '((Lib) (load (pack Prefix Lib)))
       (list
          # edit below 
-         "picolisp-minimal-http/http.l"
          "picolisp-mail-html/mail-html.l"
          "picolisp-json/json.l"
+         "picolisp-minimal-http/http.l"
          "picolisp-bcrypt/bcrypt.l"
          "picolisp-jwt/jwt.l"
 ]

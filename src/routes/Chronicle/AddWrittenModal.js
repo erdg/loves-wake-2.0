@@ -34,7 +34,7 @@ class AddWrittenModal extends Component {
       })
    }
 
-   postWrittenChronicle = () => {
+   newWrittenChronicle = () => {
       // handle errors
       if (!(this.state.title && this.state.date)) {
          this.setState({ modalError: true });
@@ -46,7 +46,7 @@ class AddWrittenModal extends Component {
       // is basically repeated. look into async/await or a promise.
 
       // EDIT URL BELOW
-      fetch( API_ENDPOINT + "!postWrittenChronicle?" + this.props.urlNm,
+      fetch( API_ENDPOINT + "!newWrittenChronicle?" + this.props.urlNm,
          { 
             method: "POST", 
             body: JSON.stringify({ 
@@ -169,7 +169,7 @@ class AddWrittenModal extends Component {
 
                   <button 
                      class="btn btn-primary mx-2"
-                     onClick={this.postWrittenChronicle}
+                     onClick={this.newWrittenChronicle}
                   >
                      Add
                   </button>

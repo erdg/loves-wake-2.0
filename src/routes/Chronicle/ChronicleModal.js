@@ -135,7 +135,7 @@ const ChronicleModal = (props) => {
 
                <button 
                   class="btn btn-primary"
-                  onClick={props.postChronicle}
+                  onClick={props.newChronicle}
                >
                   Add
                </button>
