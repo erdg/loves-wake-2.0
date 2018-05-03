@@ -23,6 +23,7 @@
          (make
             # name
             (if (: nm) (link (cons "name" @)))
+            (if (: img) (link (cons "img" (pack *API (blob This 'img)))))
             # email
             (link (cons "email" (: em)))
             # confirmed?
@@ -32,7 +33,22 @@
             (link
                (make (link "memorials" T)
                   (for M (: memorials)
-                     (link (json> M T)) ) ) ) ) ) ) )
+                     (link (jsonAll> M)) ) ) ) ) ) ) )
+
+
+(allow "!updUserAvatar")
+(de updUserAvatar ()
+   (msg "!updUserAvatar")
+   (if (db 'id '+User (getJWT "sub" "loginToken"))
+      (prog
+         (put!> @ 'img T)
+         (pipe
+            # send to base64 utility to decode
+            (out '(base64 "-d") (prin (posted "image")))
+            # write decoded image to db blob file
+            (out (blob @ 'img) (echo)) )
+         (respondJson (list (cons "Yep" "User Avatar Updated"))) )
+      (respondJsonError "Unable to update user avatar") ) )
 
 ############
 
@@ -77,6 +93,25 @@
    (when (trim (mapcar '((W) (sub? W Str)) *BadWords))
       Str ) )
 
+
+# gathers all chronicle entries
+(dm jsonAll> ()
+   (make
+      (link (cons "urlNm" (: urlNm)))
+      (link (cons "urlStr" (: urlStr)))
+      (link (cons "nm" (: nm)))
+      (link (cons "nm1" (: nm1)))
+      (if (: nm2) (link (cons "nm2" @)))
+      (if (: nm3) (link (cons "nm3" @)))
+      (if (: born) (link (cons "born" @)))
+      (if (: died) (link (cons "died" @)))
+      (if (: img) (link (cons "avatar" (pack *API (blob This 'img)))))
+      (link
+         (make (link "items" T)
+            (for C (: chronicle)
+               (link (json> C)) ) ) ) ) )
+
+# only gathers chronicle entries with title/date
 (dm json> (Flag)  # flag to display +Chronicle
    (make
       (link (cons "urlNm" (: urlNm)))
@@ -91,8 +126,9 @@
       (if Flag
          (link
             (make (link "items" T)
-               (for M (: chronicle)
-                  (link (json> M)) ) ) ) ) ) )
+               (for C (: chronicle)
+                  (when (and (; C title) (; C date)) 
+                     (link (json> C)) ) ) ) ) ) ) )
 
 (allow "!newMemorial")
 (de newMemorial ()
