@@ -7,6 +7,7 @@ import GridContainer from '../../components/GridContainer';
 import ContentList from './ContentList';
 import EditModal from './EditModal';
 import PublicUrl from './PublicUrl';
+import BulkImport from './BulkImport';
 
 class ManageMemorial extends Component {
    state = {
@@ -282,6 +283,9 @@ class ManageMemorial extends Component {
                      urlNm={memorial.urlNm}
                   />
                   */}
+                  <BulkImport 
+                     urlNm={memorial.urlNm}
+                  />
                   <ContentList 
                      showModal={this.showModal} 
                      items={memorial.items} 
