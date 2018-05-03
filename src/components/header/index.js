@@ -19,9 +19,13 @@ const Header = (props) => {
             <section class="navbar-section">
                {/*
                <AddDropdown />
-               <UserName name={props.name || props.email} />
+               <UserName name={props.name || props.email} style="font-size:smaller"/>
                */}
-               <AvatarDropdown name={props.name || props.email} notifications={props.notifications || []}/>
+               <AvatarDropdown 
+                  name={props.name || props.email} 
+                  notifications={props.notifications || []}
+                  img={props.img}
+               />
             </section>
          }
       </header>
@@ -30,7 +34,7 @@ const Header = (props) => {
 
 const UserName = (props) => {
    return (
-      <div class="h5 mx-2" style="white-space:nowrap;">{props.name}</div>
+      <div>{props.name}</div>
    )
 }
 
@@ -46,7 +50,9 @@ const AvatarDropdown = (props) => {
                class="avatar avatar-lg badge mx-1" 
                data-badge={notifications === 0 ? "" : notifications.toString()}
                data-initial={initials}
-            />
+            >
+               <img src={props.img} />
+            </figure>
             <i class="icon icon-menu" />
          </a>
          <ul class="menu">

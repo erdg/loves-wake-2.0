@@ -9,6 +9,7 @@ import Login from '../routes/Login';
 import Signup from '../routes/signup';
 
 import User from '../routes/user';
+import UserSettings from '../routes/UserSettings';
 import CreateShrine from '../routes/create-shrine';
 import ManageMemorial from '../routes/ManageMemorial';
 
@@ -52,7 +53,11 @@ export default class App extends Component {
                * will likely check localStorage for a login token,
                * or will be a flag confirming that the login token 
                * has be validated for this session */ }
-            <Header isLoggedIn={this.state.user.email ? true : false } name={this.state.user.name || this.state.user.email} />
+            <Header 
+               isLoggedIn={this.state.user.email ? true : false } 
+               name={this.state.user.name || this.state.user.email} 
+               img={this.state.user.img}
+            />
             <Router onChange={this.handleRoute}>
                <Home path="/" />
 
@@ -76,6 +81,7 @@ export default class App extends Component {
                   setUserData={(user) => this.setUserData(user)}
                   user={this.state.user}
                />
+               <UserSettings path="/user/settings" user={this.state.user}/>
 
                <ManageMemorialWithAuth 
                   path="/user/manage-memorial/:urlNm"

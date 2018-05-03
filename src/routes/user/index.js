@@ -1,5 +1,5 @@
 import { h, Component } from 'preact';
-import { route } from 'preact-router';
+import { route, Link } from 'preact-router';
 // import style from './style';
 
 import GridContainer from '../../components/GridContainer';
@@ -27,6 +27,7 @@ export default class User extends Component {
             avatarColumn={
                <div class="menu" style="z-index:1;">
                   <p>logged in as: {this.props.user.name || this.props.user.email}</p>
+                  <Link href="/user/settings">Settings</Link>
                   {/* this.props.user.confirmed ?
                      <Toast success active >
                         You're all set!
