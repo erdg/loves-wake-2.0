@@ -32,7 +32,8 @@ export default class User extends Component {
                         <Toast error active >
                            You must confirm your account before saving any changes
                         </Toast>
-                        <button class="btn btn-primary"
+                        <button class="btn btn-error centered mt-2"
+                           style="width:100%;"
                            onclick={() => this.setState((state) => ({showModal: !state.showModal}))}
                         > Confirm Account
                         </button>
