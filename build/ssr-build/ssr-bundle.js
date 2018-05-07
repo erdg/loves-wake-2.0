@@ -1994,7 +1994,12 @@ var header_Header = function Header(props) {
       !props.isLoggedIn ? header__ref2 : Object(preact_min["h"])(
          'section',
          { 'class': 'navbar-section' },
-         Object(preact_min["h"])(header_AvatarDropdown, { name: props.name || props.email, notifications: props.notifications || [] })
+         Object(preact_min["h"])(header_AvatarDropdown, {
+            name: props.name || props.email,
+            notifications: props.notifications || [],
+            img: props.img,
+            logoutUser: props.logoutUser
+         })
       )
    );
 };
@@ -2052,11 +2057,15 @@ var header_AvatarDropdown = function AvatarDropdown(props) {
       Object(preact_min["h"])(
          'a',
          { 'class': 'dropdown-toggle', tabindex: '0', style: 'cursor:pointer;white-space:nowrap;' },
-         Object(preact_min["h"])('figure', {
-            'class': 'avatar avatar-lg badge mx-1',
-            'data-badge': notifications === 0 ? "" : notifications.toString(),
-            'data-initial': initials
-         }),
+         Object(preact_min["h"])(
+            'figure',
+            {
+               'class': 'avatar avatar-lg badge mx-1',
+               'data-badge': notifications === 0 ? "" : notifications.toString(),
+               'data-initial': initials
+            },
+            Object(preact_min["h"])('img', { src: props.img })
+         ),
          _ref3
       ),
       Object(preact_min["h"])(
@@ -2072,10 +2081,12 @@ var header_AvatarDropdown = function AvatarDropdown(props) {
             'li',
             { 'class': 'menu-item' },
             Object(preact_min["h"])(
-               match["Link"],
-               { href: '/login', onClick: function onClick() {
-                     return window.sessionStorage.removeItem("loginToken");
-                  } },
+               'a',
+               { href: '/login',
+                  onClick: function onClick() {
+                     props.logoutUser();
+                  }
+               },
                'Logout'
             )
          )
@@ -2486,9 +2497,7 @@ var login_form_container_LoginFormContainer = function (_Component) {
             body: JSON.stringify({
                // on the server...
                //
-               // (let [Json (json~decode *Post)
-               //       Em   (getJson "em" Json)
-               //       Pw   (getJson "pw" Json) ]
+               // (let [Em (posted "em")  Pw (posted "pw") ]
                //    ... )
                //
                em: _this.state.email,
@@ -2522,8 +2531,13 @@ var login_form_container_LoginFormContainer = function (_Component) {
          // loading spinner on button
          _this.setState({ recoverBtnLoading: true });
 
-         fetch("https://erikdgustafson.com/api/!recoverUserAccount?" + _this.state.email).then(function (resp) {
-            return resp.json();
+         fetch(api + "!recoverUserAccount", {
+            method: 'POST',
+            body: JSON.stringify({
+               email: _this.state.email
+            })
+         }).then(function (res) {
+            return res.json();
          }).then(function (json) {
             if (json.error) {
                _this.setState({
@@ -2534,16 +2548,10 @@ var login_form_container_LoginFormContainer = function (_Component) {
                });
             } else if (json.email) {
                // remove loading spinner
-               // set loginSuccess flag to true to trigger route change to 'Profile'
-               // FIXME - the above feels like a hack. 
-               // might be time to add a redux-style store?
-               _this.setState({ recoverBtnLoading: false, recoverAccountSuccess: true });
-               // send event up to set global app state with logged in user
-               _this.props.handleRecoverAccountSuccess(json.email);
-            }
-         }).then(function () {
-            if (_this.state.recoverAccountSuccess) {
-               Object(preact_router_es["route"])('/recover-account', true);
+               _this.setState({
+                  recoverBtnLoading: false
+               });
+               console.log(json.email);
             }
          });
       };
@@ -2866,19 +2874,20 @@ function signup_form_container__inherits(subClass, superClass) { if (typeof supe
 
 
 
+
 var signup_form_container_SignupFormContainer = function (_Component) {
    signup_form_container__inherits(SignupFormContainer, _Component);
 
-   function SignupFormContainer(props) {
+   function SignupFormContainer() {
+      var _temp, _this, _ret;
+
       signup_form_container__classCallCheck(this, SignupFormContainer);
 
-      var _this = signup_form_container__possibleConstructorReturn(this, _Component.call(this, props));
+      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+         args[_key] = arguments[_key];
+      }
 
-      _this._handleSignup = _this._handleSignup.bind(_this);
-      _this._handleEmailChange = _this._handleEmailChange.bind(_this);
-      _this._handlePasswordChange = _this._handlePasswordChange.bind(_this);
-      _this._toggleShowPassword = _this._toggleShowPassword.bind(_this);
-      _this.state = {
+      return _ret = (_temp = (_this = signup_form_container__possibleConstructorReturn(this, _Component.call.apply(_Component, [this].concat(args))), _this), _this.state = {
          email: '',
          emailError: false,
          password: '',
@@ -2888,65 +2897,58 @@ var signup_form_container_SignupFormContainer = function (_Component) {
          showServerError: false,
          loading: false,
          signupSuccess: false
-      };
-      return _this;
+      }, _this._toggleShowPassword = function () {
+         var showPassword = !_this.state.showPassword;
+         _this.setState({ showPassword: showPassword });
+      }, _this._handleSignup = function () {
+         // if not valid email address
+         if (!isEmail_default()(_this.state.email)) {
+            // throw email error, don't submit
+            _this.setState({ emailError: true });
+            return;
+         } else {
+            _this.setState({ emailError: false });
+         }
+
+         // make sure there's a password
+         if (!_this.state.password) {
+            _this.setState({ passwordError: true });
+            return;
+         } else {
+            _this.setState({ passwordError: false });
+         }
+
+         _this.setState({ loading: true });
+
+         fetch(api + '!newUser', {
+            method: "POST",
+            body: JSON.stringify({
+               email: _this.state.email,
+               password: _this.state.password
+            })
+         }).then(function (res) {
+            return res.json();
+         }).then(function (json) {
+            if (json.error) {
+               _this.setState({
+                  // display errors and remove loading spinner
+                  serverError: json.error,
+                  showServerError: true,
+                  loading: false
+               });
+            } else {
+               _this.setState({ loading: false });
+               console.log('JWT: ', json.loginToken);
+               window.sessionStorage.setItem("loginToken", json.loginToken);
+               Object(preact_router_es["route"])("/user");
+            }
+         });
+      }, _this._handleEmailChange = function (e) {
+         _this.setState({ email: e.target.value });
+      }, _this._handlePasswordChange = function (e) {
+         _this.setState({ password: e.target.value });
+      }, _temp), signup_form_container__possibleConstructorReturn(_this, _ret);
    }
-
-   SignupFormContainer.prototype._toggleShowPassword = function _toggleShowPassword() {
-      var showPassword = !this.state.showPassword;
-      this.setState({ showPassword: showPassword });
-   };
-
-   SignupFormContainer.prototype._handleSignup = function _handleSignup() {
-      var _this2 = this;
-
-      // if not valid email address
-      if (!isEmail_default()(this.state.email)) {
-         // throw email error, don't submit
-         this.setState({ emailError: true });
-         return;
-      } else {
-         this.setState({ emailError: false });
-      }
-
-      // make sure there's a password
-      if (!this.state.password) {
-         this.setState({ passwordError: true });
-         return;
-      } else {
-         this.setState({ passwordError: false });
-      }
-
-      this.setState({ loading: true });
-
-      fetch("https://erikdgustafson.com/api/!newUser?" + this.state.email + "&" + this.state.password, { method: "POST" }).then(function (resp) {
-         return resp.json();
-      }).then(function (json) {
-         if (json.error) {
-            _this2.setState({
-               // display errors and remove loading spinner
-               serverError: json.error,
-               showServerError: true,
-               loading: false
-            });
-         } else if (json.email) {
-            _this2.setState({ loading: false, signupSuccess: true });
-            _this2.props.handleSignupSuccess(json.email);
-         }
-      }).then(function () {
-         if (_this2.state.signupSuccess) {
-            Object(preact_router_es["route"])('/confirm-account', true);
-         }
-      });
-   };
-
-   SignupFormContainer.prototype._handleEmailChange = function _handleEmailChange(e) {
-      this.setState({ email: e.target.value });
-   };
-
-   SignupFormContainer.prototype._handlePasswordChange = function _handlePasswordChange(e) {
-      this.setState({ password: e.target.value });
-   };
 
    SignupFormContainer.prototype.componentWillUnmount = function componentWillUnmount() {
       this.setState({ email: '', password: '' });
@@ -3259,6 +3261,8 @@ function ConfirmAccountModal__inherits(subClass, superClass) { if (typeof superC
 
 
 
+
+
 var ConfirmAccountModal__ref = Object(preact_min["h"])(
    'div',
    { 'class': 'modal-title h5' },
@@ -3266,6 +3270,16 @@ var ConfirmAccountModal__ref = Object(preact_min["h"])(
 );
 
 var ConfirmAccountModal__ref2 = Object(preact_min["h"])(
+   'div',
+   null,
+   Object(preact_min["h"])(
+      'div',
+      { 'class': 'toast toast-success' },
+      'You\'re all set'
+   )
+);
+
+var ConfirmAccountModal__ref3 = Object(preact_min["h"])(
    'p',
    null,
    'We sent you an email with a 6-digit code. Please enter the code below to confirm your account.'
@@ -3285,15 +3299,52 @@ var ConfirmAccountModal_ConfirmAccountModal = function (_Component) {
 
       return _ret = (_temp = (_this = ConfirmAccountModal__possibleConstructorReturn(this, _Component.call.apply(_Component, [this].concat(args))), _this), _this.state = {
          // 6-digit confirmation code
-         code: ""
+         code: '',
+         codeHasError: false,
+         serverError: '',
+         showServerError: false,
+         confirmAccountSuccess: false,
+         loading: false
       }, _this.onChange = function (e) {
          var _this$setState;
 
          _this.setState((_this$setState = {}, _this$setState[e.target.name] = e.target.value, _this$setState));
+         _this.codeHasError();
       }, _this.codeHasError = function () {
-         if (_this.state.code && (isNaN(_this.state.code) || !(_this.state.code.length === 6))) {
+         if (!_this.state.code || isNaN(_this.state.code) || !(_this.state.code.length === 6)) {
+            _this.setState({ codeHasError: true });
             return true;
+         } else {
+            _this.setState({ codeHasError: false });
+            return false;
          }
+      }, _this.confirmAccount = function () {
+         if (_this.codeHasError()) {
+            return;
+         }
+         _this.setState({ loading: true });
+         fetch(api + '!confirmUser', {
+            method: "POST",
+            body: JSON.stringify({
+               loginToken: window.sessionStorage.getItem('loginToken'),
+               code: _this.state.code
+            })
+         }).then(function (res) {
+            return res.json();
+         }).then(function (json) {
+            if (json.error) {
+               _this.setState({
+                  // display errors and remove loading spinner
+                  serverError: json.error,
+                  showServerError: true,
+                  loading: false
+               });
+            } else if (json.loginToken) {
+               // remove loading spinner
+               _this.setState({ loading: false, confirmAccountSuccess: true });
+               window.sessionStorage.setItem('loginToken', json.loginToken);
+            }
+         });
       }, _temp), ConfirmAccountModal__possibleConstructorReturn(_this, _ret);
    }
 
@@ -3301,11 +3352,9 @@ var ConfirmAccountModal_ConfirmAccountModal = function (_Component) {
 
 
    ConfirmAccountModal.prototype.render = function render(props) {
-      var modalClasses = classnames_default()("modal", "modal-sm", { "active": props.showModal }, { "has-error": this.codeHasError() });
+      var modalClasses = classnames_default()("modal", "modal-sm", { "active": props.showModal }, { "has-error": this.state.codeHasError });
 
-      var errorHint = classnames_default()("form-input-hint", "float-left"
-      // { "d-hide": !this.codeHasError() }
-      );
+      var errorHint = classnames_default()("form-input-hint", "float-left", { "d-hide": !this.codeHasError });
 
       return Object(preact_min["h"])(
          'div',
@@ -3329,10 +3378,15 @@ var ConfirmAccountModal_ConfirmAccountModal = function (_Component) {
             Object(preact_min["h"])(
                'div',
                { 'class': 'modal-body' },
-               Object(preact_min["h"])(
+               this.state.confirmAccountSuccess ? ConfirmAccountModal__ref2 : Object(preact_min["h"])(
                   'div',
                   { 'class': 'content' },
-                  ConfirmAccountModal__ref2,
+                  this.state.showServerError && Object(preact_min["h"])(
+                     'div',
+                     { 'class': 'toast toast-error' },
+                     this.state.serverError
+                  ),
+                  ConfirmAccountModal__ref3,
                   Object(preact_min["h"])(
                      'form',
                      { 'class': 'form-group' },
@@ -3353,13 +3407,22 @@ var ConfirmAccountModal_ConfirmAccountModal = function (_Component) {
             Object(preact_min["h"])(
                'div',
                { 'class': 'modal-footer' },
-               Object(preact_min["h"])(
+               this.state.confirmAccountSuccess ? Object(preact_min["h"])(
                   'button',
                   {
                      'class': 'btn btn-primary',
-                     onClick: props.confirmAccount
+                     onClick: function onClick() {
+                        props.hideModal;window.location.reload(true);
+                     }
                   },
-                  'Confirm'
+                  'Close'
+               ) : Object(preact_min["h"])(
+                  'button',
+                  {
+                     'class': classnames_default()("btn", "btn-primary", { loading: this.state.loading }),
+                     onClick: this.confirmAccount
+                  },
+                  ' Confirm'
                )
             )
          )
@@ -3389,6 +3452,12 @@ var MemorialList__ref = Object(preact_min["h"])(
 
 var MemorialList__ref2 = Object(preact_min["h"])('div', { 'class': 'divider py-2' });
 
+var MemorialList__ref3 = Object(preact_min["h"])(
+   'div',
+   { 'class': 'empty-title' },
+   'You have not created any memorials'
+);
+
 var MemorialList_MemorialList = function MemorialList(props) {
    return Object(preact_min["h"])(
       'div',
@@ -3404,7 +3473,7 @@ var MemorialList_MemorialList = function MemorialList(props) {
                   return Object(preact_router_es["route"])("/create-shrine");
                }
             },
-            'Start a New Memorial'
+            ' Start a New Memorial'
          )
       ),
       MemorialList__ref2,
@@ -3413,7 +3482,7 @@ var MemorialList_MemorialList = function MemorialList(props) {
          {
             style: "display:flex;" + "flex-direction:row;" + "flex-wrap:wrap;" + "align-items:flex-start;" + "justify-content:flex-start;"
          },
-         props.memorials.map(function (m) {
+         props.memorials[0] ? props.memorials.map(function (m) {
             return Object(preact_min["h"])(MemorialList_MemorialTile, {
                urlNm: m.urlNm,
                urlStr: m.urlStr,
@@ -3422,7 +3491,24 @@ var MemorialList_MemorialList = function MemorialList(props) {
                died: m.died,
                avatar: m.avatar
             });
-         })
+         }) : Object(preact_min["h"])(
+            'div',
+            { 'class': 'empty', style: 'width:100%;' },
+            MemorialList__ref3,
+            Object(preact_min["h"])(
+               'div',
+               { 'class': 'empty-action' },
+               Object(preact_min["h"])(
+                  'button',
+                  { 'class': 'btn btn-primary',
+                     onClick: function onClick() {
+                        return Object(preact_router_es["route"])("/create-shrine");
+                     }
+                  },
+                  ' Start a New Memorial'
+               )
+            )
+         )
       )
    );
 };
@@ -3448,12 +3534,17 @@ var MemorialList_MemorialTile = function MemorialTile(props) {
             { 'class': 'tile-title h5' },
             props.nm
          ),
-         Object(preact_min["h"])(
+         props.died ? Object(preact_min["h"])(
             'p',
             { 'class': 'tile-subtitle text-gray' },
             props.born,
             ' to ',
             props.died
+         ) : Object(preact_min["h"])(
+            'p',
+            { 'class': 'tile-subtitle text-gray' },
+            'b. ',
+            props.born
          )
       ),
       Object(preact_min["h"])(
@@ -3502,6 +3593,24 @@ function user__inherits(subClass, superClass) { if (typeof superClass !== "funct
 
 
 
+var user__ref = Object(preact_min["h"])(
+   toast,
+   { error: true, active: true },
+   'You must confirm your account before saving any changes'
+);
+
+var user__ref2 = Object(preact_min["h"])('div', { 'class': 'divider' });
+
+var user__ref3 = Object(preact_min["h"])(
+   'li',
+   { 'class': 'menu-item' },
+   Object(preact_min["h"])(
+      preact_router_es["Link"],
+      { href: '/user/settings' },
+      'Settings'
+   )
+);
+
 var user_User = function (_Component) {
    user__inherits(User, _Component);
 
@@ -3525,6 +3634,8 @@ var user_User = function (_Component) {
    }
 
    User.prototype.render = function render() {
+      var _this2 = this;
+
       return Object(preact_min["h"])(components_GridContainer, {
          avatarColumn: Object(preact_min["h"])(
             'div',
@@ -3535,21 +3646,211 @@ var user_User = function (_Component) {
                'logged in as: ',
                this.props.user.name || this.props.user.email
             ),
-            !this.props.user.confirmed && Object(preact_min["h"])(user_ConfirmAccountModal, {
-               showModal: this.state.showModal,
-               hideModal: this.hideModal
-            })
+            this.props.user.confirmed === 'false' && Object(preact_min["h"])(
+               'div',
+               null,
+               user__ref,
+               Object(preact_min["h"])(
+                  'button',
+                  { 'class': 'btn btn-error centered mt-2',
+                     style: 'width:100%;',
+                     onclick: function onclick() {
+                        return _this2.setState(function (state) {
+                           return { showModal: !state.showModal };
+                        });
+                     }
+                  },
+                  ' Confirm Account'
+               )
+            ),
+            user__ref2,
+            user__ref3
          ),
 
          contentColumn: Object(preact_min["h"])(
             'div',
             null,
-            Object(preact_min["h"])(user_MemorialList, { memorials: this.props.user.memorials })
+            Object(preact_min["h"])(user_MemorialList, { memorials: this.props.user.memorials }),
+            this.props.user.confirmed === 'false' && Object(preact_min["h"])(user_ConfirmAccountModal, {
+               showModal: this.state.showModal,
+               hideModal: this.hideModal
+            })
          )
       });
    };
 
    return User;
+}(preact_min["Component"]);
+
+
+// CONCATENATED MODULE: ./routes/UserSettings/UserAvatar.js
+
+
+function UserAvatar__classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function UserAvatar__possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function UserAvatar__inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+
+
+
+
+var UserAvatar__ref = Object(preact_min["h"])(
+   'div',
+   { 'class': 'tile-content' },
+   Object(preact_min["h"])(
+      'div',
+      { 'class': 'tile-title' },
+      'Avatar'
+   )
+);
+
+var UserAvatar_UserAvatar = function (_Component) {
+   UserAvatar__inherits(UserAvatar, _Component);
+
+   function UserAvatar() {
+      var _temp, _this, _ret;
+
+      UserAvatar__classCallCheck(this, UserAvatar);
+
+      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+         args[_key] = arguments[_key];
+      }
+
+      return _ret = (_temp = (_this = UserAvatar__possibleConstructorReturn(this, _Component.call.apply(_Component, [this].concat(args))), _this), _this.state = {
+         file: '',
+         src: ''
+      }, _this.onChange = function (e) {
+         _this.setState({
+            file: e.target.files[0]
+         });
+         _this.makeFileURL();
+      }, _this.makeFileURL = function () {
+         var reader = new FileReader();
+         reader.readAsDataURL(_this.state.file);
+         reader.onload = function (e) {
+            _this.setState({ src: e.target.result });
+         };
+      }, _this.updUserAvatar = function () {
+         fetch(api + "!updUserAvatar", {
+            method: 'POST',
+            body: JSON.stringify({
+               image: _this.state.src.split(',')[1],
+               loginToken: window.sessionStorage.getItem('loginToken')
+            })
+         }).then(function (res) {
+            return res.json();
+         }).then(function (json) {
+            console.log(json);
+         });
+      }, _temp), UserAvatar__possibleConstructorReturn(_this, _ret);
+   }
+
+   UserAvatar.prototype.render = function render() {
+      return Object(preact_min["h"])(
+         'div',
+         { 'class': 'tile' },
+         Object(preact_min["h"])(
+            'div',
+            { 'class': 'tile-icon' },
+            Object(preact_min["h"])(
+               'figure',
+               { 'class': 'avatar avatar-lg' },
+               Object(preact_min["h"])('img', { src: this.state.src || this.props.img })
+            )
+         ),
+         UserAvatar__ref,
+         Object(preact_min["h"])(
+            'div',
+            { 'class': 'tile-action' },
+            Object(preact_min["h"])('input', { type: 'file', accept: '.png, .jpg, .jpeg',
+               value: this.state.file,
+               onChange: this.onChange
+            }),
+            Object(preact_min["h"])(
+               'button',
+               { 'class': 'btn btn-primary',
+                  onClick: this.updUserAvatar
+               },
+               ' Update Avatar'
+            )
+         )
+      );
+   };
+
+   return UserAvatar;
+}(preact_min["Component"]);
+
+/* harmony default export */ var UserSettings_UserAvatar = (UserAvatar_UserAvatar);
+// CONCATENATED MODULE: ./routes/UserSettings/index.js
+
+
+function UserSettings__classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function UserSettings__possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function UserSettings__inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+
+
+// import style from './style';
+
+
+
+
+
+var UserSettings__ref = Object(preact_min["h"])(
+   'h3',
+   null,
+   'Settings'
+);
+
+var UserSettings__ref2 = Object(preact_min["h"])('div', { 'class': 'divider' });
+
+var UserSettings_UserSettings = function (_Component) {
+   UserSettings__inherits(UserSettings, _Component);
+
+   function UserSettings() {
+      var _temp, _this, _ret;
+
+      UserSettings__classCallCheck(this, UserSettings);
+
+      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+         args[_key] = arguments[_key];
+      }
+
+      return _ret = (_temp = (_this = UserSettings__possibleConstructorReturn(this, _Component.call.apply(_Component, [this].concat(args))), _this), _this.state = {
+         showModal: true
+      }, _this.hideModal = function () {
+         _this.setState({ showModal: false });
+      }, _temp), UserSettings__possibleConstructorReturn(_this, _ret);
+   }
+
+   UserSettings.prototype.render = function render() {
+      return Object(preact_min["h"])(components_GridContainer, {
+         avatarColumn: Object(preact_min["h"])(
+            'div',
+            { 'class': 'menu', style: 'z-index:1;' },
+            Object(preact_min["h"])(
+               'p',
+               null,
+               'logged in as: ',
+               this.props.user.name || this.props.user.email
+            )
+         ),
+
+         contentColumn: Object(preact_min["h"])(
+            'div',
+            null,
+            UserSettings__ref,
+            UserSettings__ref2,
+            Object(preact_min["h"])(UserSettings_UserAvatar, { img: this.props.user.img })
+         )
+      });
+   };
+
+   return UserSettings;
 }(preact_min["Component"]);
 
 
@@ -4532,8 +4833,9 @@ var create_shrine_CreateShrine = function (_Component) {
                nm3: _this.state.lastName,
                born: _this.state.born,
                died: _this.state.died,
-               // strip trailing '='s so PL can handle it
-               img: _this.state.fileURL.split("=")[0],
+               // strip leading "data:image/${mime};base64," so PL can
+               // send it to "base64 -d" without having to 'chop' it.
+               img: _this.state.fileURL.split(",")[1],
                loginToken: loginToken
             })
          }).then(function (res) {
@@ -4909,6 +5211,134 @@ var PublicUrl_PublicUrl = function PublicUrl(props) {
 };
 
 /* harmony default export */ var ManageMemorial_PublicUrl = (PublicUrl_PublicUrl);
+// CONCATENATED MODULE: ./routes/ManageMemorial/BulkImport.js
+
+
+function BulkImport__classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function BulkImport__possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function BulkImport__inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+
+
+
+var BulkImport__ref = Object(preact_min["h"])(
+   'h4',
+   null,
+   'Bulk Import'
+);
+
+var BulkImport_BulkImport = function (_Component) {
+   BulkImport__inherits(BulkImport, _Component);
+
+   function BulkImport() {
+      var _temp, _this, _ret;
+
+      BulkImport__classCallCheck(this, BulkImport);
+
+      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+         args[_key] = arguments[_key];
+      }
+
+      return _ret = (_temp = (_this = BulkImport__possibleConstructorReturn(this, _Component.call.apply(_Component, [this].concat(args))), _this), _this.state = {
+         files: [],
+         filesUploaded: 0
+      }, _this.onFileChange = function (e) {
+         _this.setState({
+            files: e.target.files,
+            filesUploaded: 0
+         });
+      }, _this.bulkImport = function () {
+         _this.setState({ filesUploaded: 0 });
+         var files = _this.state.files;
+         if (files.length === 0) {
+            alert('No files selected.');
+            return;
+         }
+         var cnt = 0;
+         var nextFile = function nextFile() {
+            return files[cnt++];
+         };
+         var newChronicle = function newChronicle(file) {
+            var reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function (e) {
+               // base64 string with leading "data:image/${mime};base64," stripped
+               var str = e.target.result.split(',')[1];
+               fetch(api + "!newChronicle", {
+                  method: "POST",
+                  body: JSON.stringify({
+                     loginToken: window.sessionStorage.getItem("loginToken"),
+                     urlNm: _this.props.urlNm,
+                     image: str
+                  })
+               }).then(function (res) {
+                  return res.json();
+               }).then(function (json) {
+                  _this.setState(function (prevState) {
+                     return { filesUploaded: prevState.filesUploaded + 1 };
+                  });
+                  newChronicle(nextFile());
+                  console.log(json);
+               });
+            };
+         };
+         newChronicle(nextFile());
+      }, _temp), BulkImport__possibleConstructorReturn(_this, _ret);
+   }
+
+   BulkImport.prototype.render = function render() {
+      return Object(preact_min["h"])(
+         'div',
+         { 'class': 'row', style: 'margin-bottom:32px;' },
+         BulkImport__ref,
+         Object(preact_min["h"])('input', {
+            'class': 'form-input col',
+            style: 'max-width:400px',
+            type: 'file',
+            accept: '.png, .jpg, .jpeg',
+            value: this.state.files,
+            onChange: this.onFileChange,
+            multiple: true
+         }),
+         Object(preact_min["h"])(
+            'button',
+            { 'class': 'btn btn-primary col float-right',
+               onClick: this.bulkImport
+            },
+            ' Bulk Import'
+         ),
+         this.state.filesUploaded > 0 && Object(preact_min["h"])(
+            'div',
+            null,
+            Object(preact_min["h"])(
+               'div',
+               { 'class': 'bar' },
+               Object(preact_min["h"])('div', { 'class': 'bar-item',
+                  role: 'progressbar',
+                  style: "width:" + this.state.filesUploaded / this.state.files.length * 100 + "%;",
+                  'aria-valuenow': this.state.filesUploaded.toString(),
+                  'aria-valuemin': '0',
+                  'aria-valuemax': this.state.files.length.toString()
+               })
+            ),
+            Object(preact_min["h"])(
+               'div',
+               null,
+               this.state.filesUploaded,
+               '/',
+               this.state.files.length,
+               ' uploaded'
+            )
+         )
+      );
+   };
+
+   return BulkImport;
+}(preact_min["Component"]);
+
+/* harmony default export */ var ManageMemorial_BulkImport = (BulkImport_BulkImport);
 // CONCATENATED MODULE: ./routes/ManageMemorial/index.js
 
 
@@ -4917,6 +5347,7 @@ function ManageMemorial__classCallCheck(instance, Constructor) { if (!(instance 
 function ManageMemorial__possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function ManageMemorial__inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 
 
 
@@ -4989,26 +5420,14 @@ var ManageMemorial_ManageMemorial = function (_Component) {
             reader.readAsDataURL(_this.state.item.file);
 
             reader.onload = function (e) {
-               // NOTE - must remove padding for picolisp
-               //
-               // base64 strings are padded with one or two '='s to make sure it aligns
-               // to proper byte boundaries. the picolisp server does not handle this 
-               // well. so we must remove any padding before it is sent. after picolisp
-               // has parsed the http request, we can add the appropriate padding back
-               // to the string by checking if it is an even multiple of 4.
-               //
-               // see 'server.l' for the picolisp side.
-               //
-               // NOTE - turns out that we don't need to add padding back on the server
-               // as the base64 utility is still able to decode.
-
                // base64 string without padding
-               var str = e.target.result.split('=')[0];
+               var str = e.target.result.split(',')[1];
 
-               fetch(api + "!updChronicle?" + _this.props.urlNm, {
+               fetch(api + "!updChronicle", {
                   method: "POST",
                   body: JSON.stringify({
                      loginToken: window.sessionStorage.getItem("loginToken"),
+                     urlNm: _this.props.urlNm,
                      id: _this.state.item.id,
                      title: _this.state.item.title,
                      location: _this.state.item.location,
@@ -5033,10 +5452,11 @@ var ManageMemorial_ManageMemorial = function (_Component) {
          } else {
 
             // EDIT URL BELOW
-            fetch(api + "!updChronicle?" + _this.props.urlNm, {
+            fetch(api + "!updChronicle", {
                method: "POST",
                body: JSON.stringify({
                   loginToken: window.sessionStorage.getItem("loginToken"),
+                  urlNm: _this.props.urlNm,
                   id: _this.state.item.id,
                   title: _this.state.item.title,
                   location: _this.state.item.location,
@@ -5092,11 +5512,12 @@ var ManageMemorial_ManageMemorial = function (_Component) {
                // as the base64 utility is still able to decode.
 
                // base64 string without padding
-               var str = e.target.result.split('=')[0];
+               var str = e.target.result.split(',')[1];
 
-               fetch(api + "!postChronicle?" + _this.props.urlNm, {
+               fetch(api + "!newChronicle", {
                   method: "POST",
                   body: JSON.stringify({
+                     urlNm: _this.props.urlNm,
                      title: _this.state.item.title,
                      subtitle: _this.state.item.subtitle,
                      location: _this.state.item.location,
@@ -5121,9 +5542,10 @@ var ManageMemorial_ManageMemorial = function (_Component) {
          } else {
 
             // EDIT URL BELOW
-            fetch(api + "!postChronicle?" + _this.props.urlNm, {
+            fetch(api + "!newChronicle", {
                method: "POST",
                body: JSON.stringify({
+                  urlNm: _this.props.urlNm,
                   title: _this.state.item.title,
                   subtitle: _this.state.item.subtitle,
                   location: _this.state.item.location,
@@ -5202,6 +5624,9 @@ var ManageMemorial_ManageMemorial = function (_Component) {
          contentColumn: Object(preact_min["h"])(
             'div',
             null,
+            Object(preact_min["h"])(ManageMemorial_BulkImport, {
+               urlNm: memorial.urlNm
+            }),
             Object(preact_min["h"])(ManageMemorial_ContentList, {
                showModal: this.showModal,
                items: memorial.items,
@@ -5826,7 +6251,7 @@ var ChronicleModal_ChronicleModal = function ChronicleModal(props) {
                'button',
                {
                   'class': 'btn btn-primary',
-                  onClick: props.postChronicle
+                  onClick: props.newChronicle
                },
                'Add'
             )
@@ -5943,7 +6368,7 @@ var AddWrittenModal_AddWrittenModal = function (_Component) {
          });
       };
 
-      _this.postWrittenChronicle = function () {
+      _this.newWrittenChronicle = function () {
          // handle errors
          if (!(_this.state.title && _this.state.date)) {
             _this.setState({ modalError: true });
@@ -5955,7 +6380,7 @@ var AddWrittenModal_AddWrittenModal = function (_Component) {
          // is basically repeated. look into async/await or a promise.
 
          // EDIT URL BELOW
-         fetch(api + "!postWrittenChronicle?" + _this.props.urlNm, {
+         fetch(api + "!newWrittenChronicle?" + _this.props.urlNm, {
             method: "POST",
             body: JSON.stringify({
                title: _this.state.title,
@@ -6075,7 +6500,7 @@ var AddWrittenModal_AddWrittenModal = function (_Component) {
                   'button',
                   {
                      'class': 'btn btn-primary mx-2',
-                     onClick: this.postWrittenChronicle
+                     onClick: this.newWrittenChronicle
                   },
                   'Add'
                )
@@ -6172,7 +6597,7 @@ var Chronicle_Chronicle = function (_Component) {
          };
 
          reader.readAsDataURL(_this.state.file);
-      }, _this.postChronicle = function () {
+      }, _this.newChronicle = function () {
          // handle errors
          if (!(_this.state.title && _this.state.date)) {
             _this.setState({ modalError: true });
@@ -6204,11 +6629,12 @@ var Chronicle_Chronicle = function (_Component) {
                // as the base64 utility is still able to decode.
 
                // base64 string without padding
-               var str = e.target.result.split('=')[0];
+               var str = e.target.result.split(',')[1];
 
-               fetch(api + "!postChronicle?" + _this.props.urlNm, {
+               fetch(api + "!newChronicle", {
                   method: "POST",
                   body: JSON.stringify({
+                     urlNm: _this.props.urlNm,
                      title: _this.state.title,
                      subtitle: _this.state.subtitle,
                      location: _this.state.location,
@@ -6240,9 +6666,10 @@ var Chronicle_Chronicle = function (_Component) {
          } else {
 
             // EDIT URL BELOW
-            fetch(api + "!postChronicle?" + _this.props.urlNm, {
+            fetch(api + "!newChronicle", {
                method: "POST",
                body: JSON.stringify({
+                  urlNm: _this.props.urlNm,
                   title: _this.state.title,
                   subtitle: _this.state.subtitle,
                   location: _this.state.location,
@@ -6408,7 +6835,7 @@ var Chronicle_Chronicle = function (_Component) {
                file: this.state.file,
                src: this.state.src,
 
-               postChronicle: this.postChronicle,
+               newChronicle: this.newChronicle,
                clearModalFields: this.clearModalFields
             }),
             Object(preact_min["h"])(Chronicle_AddWrittenModal, {
@@ -6436,6 +6863,7 @@ function app__classCallCheck(instance, Constructor) { if (!(instance instanceof 
 function app__possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function app__inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 
 
 
@@ -6504,6 +6932,9 @@ var app_App = function (_Component) {
          _this.currentUrl = e.url;
       }, _this.setUserData = function (user) {
          _this.setState({ user: user });
+      }, _this.logoutUser = function () {
+         _this.setState({ user: {} });
+         window.sessionStorage.removeItem("loginToken");
       }, _temp), app__possibleConstructorReturn(_this, _ret);
    }
 
@@ -6513,7 +6944,12 @@ var app_App = function (_Component) {
       return Object(preact_min["h"])(
          'div',
          { id: 'app' },
-         Object(preact_min["h"])(header, { isLoggedIn: this.state.user.email ? true : false, name: this.state.user.name || this.state.user.email }),
+         Object(preact_min["h"])(header, {
+            isLoggedIn: this.state.user.email ? true : false,
+            name: this.state.user.name || this.state.user.email,
+            img: this.state.user.img,
+            logoutUser: this.logoutUser
+         }),
          Object(preact_min["h"])(
             preact_router_es["Router"],
             { onChange: this.handleRoute },
@@ -6536,6 +6972,7 @@ var app_App = function (_Component) {
                },
                user: this.state.user
             }),
+            Object(preact_min["h"])(UserSettings_UserSettings, { path: '/user/settings', user: this.state.user }),
             Object(preact_min["h"])(ManageMemorialWithAuth, {
                path: '/user/manage-memorial/:urlNm',
                user: this.state.user,
