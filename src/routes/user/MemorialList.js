@@ -9,8 +9,7 @@ const MemorialList = (props) => (
          <h3 class="col">Memorials</h3>
          <button class="col btn btn-primary"
             onClick={() => route("/create-shrine")}
-         >
-            Start a New Memorial
+         > Start a New Memorial
          </button>
       </div>
       <div class="divider py-2" />
@@ -23,7 +22,7 @@ const MemorialList = (props) => (
             + "justify-content:flex-start;"
          }
       >
-         { 
+         { props.memorials[0] ?
             props.memorials.map((m) => (
                <MemorialTile 
                   urlNm={m.urlNm}
@@ -34,6 +33,18 @@ const MemorialList = (props) => (
                   avatar={m.avatar}
                />
             ))
+               :
+            <div class="empty" style="width:100%;">
+               <div class="empty-title">
+                  You have not created any memorials
+               </div>
+               <div class="empty-action">
+                  <button class="btn btn-primary"
+                     onClick={() => route("/create-shrine")}
+                  > Start a New Memorial
+                  </button>
+               </div>
+            </div>
          }
       </div>
    </div>
