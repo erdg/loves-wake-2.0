@@ -13,12 +13,14 @@ class BulkImport extends Component {
    }
 
    bulkImport = () => {
-      for (var i = 0; i < this.state.files.length; i++) {
-
-         console.log(this.state.files[i]);
-
+      var files = this.state.files;
+      var cnt = 0;
+      var nextFile = () => {
+         return files[cnt++]
+      }
+      var newChronicle = (file) => {
          let reader = new FileReader();
-         reader.readAsDataURL(this.state.files[i]);
+         reader.readAsDataURL(file);
          reader.onload = (e) => {
             // base64 string with leading "data:image/${mime};base64," stripped
             let str = e.target.result.split(',')[1]
@@ -33,15 +35,11 @@ class BulkImport extends Component {
             .then(res => res.json())
             .then(json => {
                console.log(json);
-               // UPDATE TIMELINE STATE HERE
-               // NOTE - this may not be necessary, as new entries
-               // will likely go into a holding container to await
-               // editing/approval by shrine moderator
-               // this.refs.timeline.addItem(json);
-               // this.addItem(json);
-            });
+               newChronicle(nextFile());
+            })
          }
       }
+      newChronicle(nextFile());
    }
 
    render () {
@@ -57,8 +55,7 @@ class BulkImport extends Component {
             />
             <button class="btn btn-primary"
                onClick={this.bulkImport}
-            >
-               Bulk Import
+            > Bulk Import
             </button>
          </div>
       );
