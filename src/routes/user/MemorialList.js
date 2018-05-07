@@ -59,9 +59,15 @@ const MemorialTile = (props) => (
       </div>
       <div class="tile-content">
          <p class="tile-title h5">{props.nm}</p>
-         <p class="tile-subtitle text-gray">
-            {props.born} to {props.died}
-         </p>
+         { props.died ?
+            <p class="tile-subtitle text-gray">
+               {props.born} to {props.died}
+            </p>
+               :
+            <p class="tile-subtitle text-gray">
+               b. {props.born}
+            </p>
+         }
       </div>
       <div class="tile-action">
          <button 
