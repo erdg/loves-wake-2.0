@@ -25,6 +25,7 @@ const Header = (props) => {
                   name={props.name || props.email} 
                   notifications={props.notifications || []}
                   img={props.img}
+                  logoutUser={props.logoutUser}
                />
             </section>
          }
@@ -63,7 +64,13 @@ const AvatarDropdown = (props) => {
             <li class="menu-item">More Settings</li>
             <li class="divider" />
             <li class="menu-item">
-               <Link href="/login" onClick={() => window.sessionStorage.removeItem("loginToken")}>Logout</Link>
+               <a href="/login" 
+                  onClick={() => {
+                     props.logoutUser();
+                     window.sessionStorage.removeItem("loginToken");
+                  }}
+               >Logout
+               </a>
             </li>
          </ul>
       </div>

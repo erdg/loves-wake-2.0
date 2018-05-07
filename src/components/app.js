@@ -45,6 +45,11 @@ export default class App extends Component {
    setUserData = (user) => {
       this.setState({ user: user });
    }
+   
+   logoutUser = () => {
+      this.setState({ user: {} });
+      window.sessionStorage.removeItem("loginToken");
+   }
 
    render() {
       return (
@@ -57,6 +62,7 @@ export default class App extends Component {
                isLoggedIn={this.state.user.email ? true : false } 
                name={this.state.user.name || this.state.user.email} 
                img={this.state.user.img}
+               logoutUser={this.logoutUser}
             />
             <Router onChange={this.handleRoute}>
                <Home path="/" />
