@@ -10,6 +10,7 @@
 (rel pw (+Swap +String))         # password
 
 (rel created (+Ref +String))     # creation timestamp
+(rel confirmationNumber (+String))
 (rel confirmed (+Ref +Bool))     # confirmed human?
 
 # list of memorials created by user
@@ -27,7 +28,7 @@
             # email
             (link (cons "email" (: em)))
             # confirmed?
-            (link (cons "confirmed" (if (: confirmed) 'true 'false)))
+            (link (cons "confirmed" (if (: confirmed) "true" "false")))
             # memorials
             # NOTE - a lot of nested make/link'ing here
             (link
@@ -310,31 +311,34 @@
 
 # /api/!newUser
 (allow "!newUser")
-(de newUser (Em Pw)  # email, password
-   ## if email exists in db
-   (if (db 'em '+User Em)
-      ## respond with error
-      (respondJson 
-         (list 
-            (cons "error"
-               (pack
-                  "An account has already been created with that email address. "
-                  "Please try signing up with a different email address." ) ) ) )
-      ## else, continue with account creation
-      (let Rand (rand 100000 999999)
-         (with
-            (new! '(+User)
-               'id (genKey 'id '+User)
-               'em Em
-               'created (stamp)
-               'pw (bcrypt~hashpw Pw 14)
-               'confirmationNumber Rand )
-            (sendConfirmationEmail Em Rand)
-            ## respond with user ID and a 1-hour token used to confirm
-            ## the account
-            (respondJson
-               (list 
-                  (cons "email" (: em)) ) ) ) ) ) )
+(de newUser ()  # email, password
+   (let [Em (posted "email")  Pw (posted "password")]
+      ## if email exists in db
+      (if (db 'em '+User Em)
+         ## respond with error
+         (respondJson 
+            (list 
+               (cons "error"
+                  (pack
+                     "An account has already been created with that email address. "
+                     "Please try signing up with a different email address." ) ) ) )
+         ## else, continue with account creation
+         (let Rand (rand 100000 999999)
+            (with
+               (new! '(+User)
+                  'id (genKey 'id '+User)
+                  'em Em
+                  'created (stamp)
+                  'pw (bcrypt~hashpw Pw 14)
+                  'confirmationNumber Rand )
+               # (sendConfirmationEmail Em Rand)
+               (msg "New User: " Em ", Confirmation Number: " Rand)
+               ## respond with user ID and a 1-hour token used to confirm
+               ## the account
+               (respondJson
+                  (list 
+                     (cons "loginToken"
+                        (encodeJWT *Secret 3600 ("iss" . "Love's Wake") ("sub" . (: id))) ) ) ) ) ) ) ) )
 
 (de newUserConfirmationToken (Id)
    (cons "newUserConfirmationToken"
@@ -351,7 +355,7 @@
       # attachments
       NIL
       # body
-      "Thanks for signing up for LovesWake! Please enter the six-digit number below to confirm your account:"
+      "Thanks for signing up for LovesWake! Please use the six-digit number below to confirm your account:"
       NIL
       Num
       NIL
@@ -361,17 +365,18 @@
 # /api/!confirmUser
 # TODO - should use a JWT
 (allow "!confirmUser")
-(de confirmUser (Em Num)
-   (with (db 'em '+User Em)
-      (ifn (= (: confirmationNumber) Num)
-         (respondJson
-            (list (cons "error" "Confirmation number is incorrect, please try again.")) )
-         (put!> (db 'em '+User Em)
-            'confirmed T )
-         (respondJson
-            (list 
-               (cons "user" (: em))
-               (cons "token" (encodeJWT *Secret 3600 ("iss" . "lovesWake") ("sub" . (: id)))) ) ) ) ) ) 
+(de confirmUser ()
+   (let [Id (getJWT "sub" "loginToken")  Code (posted "code")]
+      (with (db 'id '+User Id)
+         (ifn (= (: confirmationNumber) (any Code))
+            (respondJson
+               (list (cons "error" "Confirmation number is incorrect, please try again.")) )
+            (put!> (db 'id '+User Id)
+               'confirmed T )
+            (respondJson
+               (list 
+                  (cons "confirmAccountSuccess" "true")
+                  (cons "loginToken" (encodeJWT *Secret 3600 ("iss" . "lovesWake") ("sub" . (: id)))) ) ) ) ) ) )
                   
 
 # /api/!loginUser

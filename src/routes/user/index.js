@@ -27,33 +27,31 @@ export default class User extends Component {
             avatarColumn={
                <div class="menu" style="z-index:1;">
                   <p>logged in as: {this.props.user.name || this.props.user.email}</p>
-                  <Link href="/user/settings">Settings</Link>
-                  {/* this.props.user.confirmed ?
-                     <Toast success active >
-                        You're all set!
-                        <button 
-                           class="btn btn-clear float-right" 
-                           onClick={this.neverShowConfirmationToastAgain}
-                        />
-                     </Toast>
-                        :
-                     <Toast error active >
-                        You must confirm your account before saving any changes
-                     </Toast>
-                  */}
-
-                  { !this.props.user.confirmed &&
-                     <ConfirmAccountModal
-                        showModal={this.state.showModal}
-                        hideModal={this.hideModal}
-                     />
+                  { this.props.user.confirmed === 'false' &&
+                     <div>
+                        <Toast error active >
+                           You must confirm your account before saving any changes
+                        </Toast>
+                        <button class="btn btn-primary"
+                           onclick={() => this.setState((state) => ({showModal: !state.showModal}))}
+                        > Confirm Account
+                        </button>
+                     </div>
                   }
+                  <div class="divider" />
+                  <li class="menu-item"><Link href="/user/settings">Settings</Link></li>
                </div>
             }
 
             contentColumn={
                <div>
                   <MemorialList memorials={this.props.user.memorials} />
+                  { this.props.user.confirmed === 'false' &&
+                     <ConfirmAccountModal
+                        showModal={this.state.showModal}
+                        hideModal={this.hideModal}
+                     />
+                  }
                </div>
             }
          />

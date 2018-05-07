@@ -1,35 +1,29 @@
 import { h, Component } from 'preact';
+import API_ENDPOINT from '../../api';
 import { route } from 'preact-router';
 import isEmail from 'validator/lib/isEmail';
 
 import { SignupForm } from './signup-form';
 
 class SignupFormContainer extends Component { 
-   constructor (props) {
-      super(props);
-      this._handleSignup = this._handleSignup.bind(this);
-      this._handleEmailChange = this._handleEmailChange.bind(this);
-      this._handlePasswordChange = this._handlePasswordChange.bind(this);
-      this._toggleShowPassword = this._toggleShowPassword.bind(this);
-      this.state = {
-         email: '',
-         emailError: false,
-         password: '',
-         passwordError: false,
-         showPassword: false,
-         serverError: '',
-         showServerError: false,
-         loading: false,
-         signupSuccess: false
-      };
+   state = {
+      email: '',
+      emailError: false,
+      password: '',
+      passwordError: false,
+      showPassword: false,
+      serverError: '',
+      showServerError: false,
+      loading: false,
+      signupSuccess: false
    }
 
-   _toggleShowPassword () {
+   _toggleShowPassword = () => {
       let showPassword = !this.state.showPassword;
       this.setState({ showPassword });
    }
 
-   _handleSignup () {
+   _handleSignup = () => {
       // if not valid email address
       if ( !(isEmail(this.state.email)) ) {
          // throw email error, don't submit
@@ -50,16 +44,15 @@ class SignupFormContainer extends Component {
 
       this.setState({ loading: true });
 
-      fetch("https://erikdgustafson.com/api/!newUser?"
-         + this.state.email
-         + "&"
-         + this.state.password,
-         { method: "POST" }
-      )
-      .then( (resp) => {
-         return resp.json();
+      fetch(API_ENDPOINT + '!newUser', {
+         method: "POST",
+         body: JSON.stringify({
+            email: this.state.email,
+            password: this.state.password
+         })
       })
-      .then( (json) => {
+      .then(res => res.json())
+      .then(json => {
          if (json.error) {
             this.setState({ 
                // display errors and remove loading spinner
@@ -67,24 +60,20 @@ class SignupFormContainer extends Component {
                showServerError: true,
                loading: false
             });
-         } else if (json.email) {
-            this.setState({ loading: false, signupSuccess: true });
-            this.props.handleSignupSuccess(json.email);
-         }
-      })
-      .then( () => {
-         if (this.state.signupSuccess) {
-            route('/confirm-account', true);
+         } else {
+            this.setState({ loading: false });
+            console.log('JWT: ', json.loginToken);
+            window.sessionStorage.setItem("loginToken", json.loginToken);
+            route("/user");
          }
       });
-
    }
 
-   _handleEmailChange (e) {
+   _handleEmailChange = (e) => {
       this.setState({ email: e.target.value });
    }
 
-   _handlePasswordChange (e) {
+   _handlePasswordChange = (e) => {
       this.setState({ password: e.target.value });
    }
 

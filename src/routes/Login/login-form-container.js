@@ -56,22 +56,18 @@ class LoginFormContainer extends Component {
       // loading spinner on button
       this.setState({ loginBtnLoading: true });
 
-      fetch(API_ENDPOINT + "!loginUser",
-         {
-            method: "POST",
-            body: JSON.stringify({
-               // on the server...
-               //
-               // (let [Json (json~decode *Post)
-               //       Em   (getJson "em" Json)
-               //       Pw   (getJson "pw" Json) ]
-               //    ... )
-               //
-               em: this.state.email,
-               pw: this.state.password
-            })
-         }
-      )
+      fetch(API_ENDPOINT + "!loginUser", {
+         method: "POST",
+         body: JSON.stringify({
+            // on the server...
+            //
+            // (let [Em (posted "em")  Pw (posted "pw") ]
+            //    ... )
+            //
+            em: this.state.email,
+            pw: this.state.password
+         })
+      })
       .then((res) => res.json())
       .then((json) => {
          if (json.error) {
