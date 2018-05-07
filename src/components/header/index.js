@@ -67,7 +67,6 @@ const AvatarDropdown = (props) => {
                <a href="/login" 
                   onClick={() => {
                      props.logoutUser();
-                     window.sessionStorage.removeItem("loginToken");
                   }}
                >Logout
                </a>
