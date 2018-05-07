@@ -440,7 +440,7 @@
             (list (cons "email" Email)) ) ) ) )
 
 (de sendRecoverAccountEmail (Email Num)
-   (mailHTML "localhost" 25 *Email Email
+   (mail-html "localhost" 25 *Email Email
       # subject
       "LovesWake - Account Recovery"
       # attachments
