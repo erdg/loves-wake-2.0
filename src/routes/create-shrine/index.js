@@ -23,6 +23,8 @@ class CreateShrine extends Component {
       file: null,
       fileURL: '',
 
+      invitation: '',
+
       loading: false
    };
 
@@ -34,6 +36,10 @@ class CreateShrine extends Component {
       // console.log(e);
       this.setState({ file: e.target.files[0] });
       this.makeFileURL();
+   }
+
+   setInvitation = (txt) => {
+      this.setState({ invitation: txt });
    }
 
    makeFileURL = () => {
@@ -171,6 +177,9 @@ class CreateShrine extends Component {
                      onFileChange={this.onFileChange}
                      born={this.state.born}
                      died={this.state.died}
+
+                     setInvitation={this.setInvitation}
+                     invitation={this.state.invitation}
 
                      firstName={ firstName }
                      middleName={this.state.middleName}
