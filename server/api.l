@@ -331,7 +331,7 @@
                   'created (stamp)
                   'pw (bcrypt~hashpw Pw 14)
                   'confirmationNumber Rand )
-               # (sendConfirmationEmail Em Rand)
+               (sendConfirmationEmail Em Rand)
                (msg "New User: " Em ", Confirmation Number: " Rand)
                ## respond with user ID and a 1-hour token used to confirm
                ## the account
