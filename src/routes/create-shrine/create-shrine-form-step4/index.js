@@ -27,16 +27,8 @@ class CreateShrineFormStep4 extends Component {
       var remember = `This is the *Remember Together* Template`;
       return (
          <div>
-            <div class="relative">
-               <div class={this.state.invitation ? "dialog" : "d-hide"}>
-               <h5>Preview</h5>
-                  <div
-                     dangerouslySetInnerHTML={{__html: marked(this.state.invitation)}}
-                  />
-               </div>
-            </div>
             <h5>Choose an Invitation Template</h5>
-            <div onChange={this.onChange} class="col mx-2">
+            <div onChange={(e) => this.props.setInvitation(e.target.value)} class="col mx-2">
                <div class="row">
                   <Radio 
                      label="Mourn Together" 
@@ -71,15 +63,20 @@ class CreateShrineFormStep4 extends Component {
                   </div>
                </div>
             </div>
+            <div class="relative">
+               <div class={this.props.invitation ? "selectInvitationDialog" : "d-hide"}>
+               <h5>Preview</h5>
+                  <div
+                     dangerouslySetInnerHTML={{__html: marked(this.props.invitation)}}
+                  />
+               </div>
+            </div>
             <div class="row my-2">
                <PrevStepButton
-                  onClick={ this.props.handlePrevStep }
+                  onClick={this.props.handlePrevStep}
                />
                <NextStepButton 
-                  onClick={() => {
-                     this.props.setInvitation(this.state.invitation);
-                     this.props.handleNextStep();
-                  }}
+                  onClick={this.props.handleNextStep}
                />
             </div>
 

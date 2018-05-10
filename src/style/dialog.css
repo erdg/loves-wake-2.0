@@ -5,6 +5,11 @@
    line-height: 1.2;
 }
 
+.selectInvitationDialog,
+.customizeInvitationDialog {
+   margin-top: 16px;
+}
+
 @media (min-width: 990px) {
    .dialog {
       position: absolute;
@@ -14,5 +19,25 @@
       word-wrap: normal;
       width: 100%;
       min-width: 444px;
+   }
+   .selectInvitationDialog {
+      position: absolute;
+      top: -262px;
+      left: 328px;
+      font-weight: normal;
+      word-wrap: normal;
+      width: 100%;
+      min-width: 444px;
+      margin-top: 0;
+   }
+   .customizeInvitationDialog {
+      position: absolute;
+      top: -380px;
+      left: 328px;
+      font-weight: normal;
+      word-wrap: normal;
+      width: 100%;
+      min-width: 444px;
+      margin-top: 0;
    }
 }

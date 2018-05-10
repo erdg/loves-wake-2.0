@@ -22,24 +22,22 @@ class CreateShrineFormStep5 extends Component {
       return (
          <div>
             <h5>Customize Invitation</h5>
+            <textarea
+               style="resize:none;"
+               class="form-input" 
+               rows="16" 
+               name="invitation"
+               value={this.props.invitation} 
+               onInput={this.props.onChange} 
+            />
             <div class="relative">
-               <div class="dialog" >
-               <strong>Preview</strong>
+               <div class="customizeInvitationDialog" >
+               <h5>Preview</h5>
                   <div
                      dangerouslySetInnerHTML={{__html: marked(this.props.invitation)}}
                   />
                </div>
             </div>
-            <label class="form-label">
-               Invitation Text
-               <textarea 
-                  class="form-input" 
-                  rows="16" 
-                  name="invitation"
-                  value={this.props.invitation} 
-                  onInput={this.props.onChange} 
-               />
-            </label>
             <div class="row my-2">
                <PrevStepButton
                   onClick={ this.props.handlePrevStep }
