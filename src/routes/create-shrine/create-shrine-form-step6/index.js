@@ -17,7 +17,8 @@ class CreateShrineFormStep6 extends Component {
       this.setState({ email: e.target.value });
    }
 
-   _addEmail = () => {
+   _addEmail = (e) => {
+      e.preventDefault();
       // if not valid email address
       if ( !(isEmail(this.state.email)) ) {
          // throw email error, don't submit
@@ -57,7 +58,7 @@ class CreateShrineFormStep6 extends Component {
       return (
          <div>
 
-            <div class={ formClasses } >
+            <form class={ formClasses } >
 
                <label class="form-label">Enter email addresses</label>
 
@@ -72,6 +73,7 @@ class CreateShrineFormStep6 extends Component {
 
                   <button 
                      class="btn btn-primary input-group-btn"
+                     type="submit"
                      onClick={ this._addEmail }
                   >
                      Add
@@ -83,7 +85,7 @@ class CreateShrineFormStep6 extends Component {
                   Please enter a valid email address
                </p>
 
-            </div>
+            </form>
 
             <div class="mt-2" >
                { this.state.emails.map((email) => (
