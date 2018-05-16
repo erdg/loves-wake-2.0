@@ -49,17 +49,17 @@ const CreateShrineFormStep3 = (props) => {
             <PrevStepButton
                onClick={ props.handlePrevStep }
             />
-         {/*
             <NextStepButton 
-               onClick={ props.handleNextStep }
+               onClick={ props.newMemorial }
             />
-         */}
 
+         {/*
             <button class={createBtnClasses}
                onClick={props.newMemorial}
             >
                Create Memorial
             </button>
+         */}
          </div>
       </div>
    );

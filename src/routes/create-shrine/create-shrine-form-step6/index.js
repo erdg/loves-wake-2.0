@@ -2,6 +2,9 @@ import { h, Component } from 'preact';
 import isEmail from 'validator/lib/isEmail';
 import classNames from 'classnames';
 
+import API_ENDPOINT from '../../../api';
+
+import { Dialog } from '../../../components/dialog';
 import { TextInput } from '../../../components/form-inputs/';
 import { PrevStepButton } from '../prev-step-button';
 
@@ -45,6 +48,22 @@ class CreateShrineFormStep6 extends Component {
       this.setState({ emails: emails });
    }
 
+   // update invitation list for memorial
+   updEmails = () => {
+      fetch(API_ENDPOINT + "!updEmails", {
+         method: "POST",
+         body: JSON.stringify({
+            emails: this.state.emails,
+            memorial: this.props.memorial.urlNm,
+            loginToken: window.sessionStorage.getItem('loginToken')
+         })
+      })
+      .then(res => res.json())
+      .then(json => {
+         console.log(json);
+      })
+   }
+
    render (props, state) {
 
       let formClasses = classNames(
@@ -58,8 +77,16 @@ class CreateShrineFormStep6 extends Component {
       return (
          <div>
 
+            <h5>Invite Others to Contribute</h5>
             <form class={ formClasses } >
 
+               <Dialog active >
+                  We'll send emails on your behalf to invite others to
+                  contribute to {props.firstName ? props.firstName + "'s" : "this"} memorial.
+                  Unfortunately you will have to manually enter emails for
+                  the time being. In the near future we'll be able to sync
+                  with your Apple/Google contacts. Apologies for the inconvenience.
+               </Dialog>
                <label class="form-label">Enter email addresses</label>
 
                <div class="input-group">
@@ -108,6 +135,10 @@ class CreateShrineFormStep6 extends Component {
                <PrevStepButton
                   onClick={ props.handlePrevStep }
                />
+               <button class="btn btn-primary float-right"
+                  onClick={this.updEmails}
+               > Send Invitations
+               </button>
             </div>
 
          </div>

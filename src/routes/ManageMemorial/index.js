@@ -9,10 +9,14 @@ import EditModal from './EditModal';
 import PublicUrl from './PublicUrl';
 import BulkImport from './BulkImport';
 
+import Invitations from './Invitations';
+
 class ManageMemorial extends Component {
    state = {
       item: {},
       showModal: false,
+
+      active: 'chronicle',
    }
 
    onChange = (e) => {
@@ -283,26 +287,62 @@ class ManageMemorial extends Component {
                      urlNm={memorial.urlNm}
                   />
                   */}
-                  <BulkImport 
-                     urlNm={memorial.urlNm}
-                  />
-                  <ContentList 
-                     showModal={this.showModal} 
-                     items={memorial.items} 
-                     newItem={this.newItem}
-                  />
-                  <EditModal 
-                     showModal={this.state.showModal}
-                     hideModal={this.hideModal}
+                  <ul class="tab tab-block">
+                     <li class={"tab-item c-hand " + (this.state.active === "chronicle" ? "active" : "")}>
+                        <a onClick={() => this.setState({ active: "chronicle" })}
+                        >Chronicle
+                        </a>
+                     </li>
+                     <li class={"tab-item c-hand " + (this.state.active === "atlas" ? "active" : "")}>
+                        <a onClick={() => this.setState({ active: "atlas" })}
+                        > Atlas
+                        </a>
+                     </li>
+                     <li class={"tab-item c-hand " + (this.state.active === "shrine" ? "active" : "")}>
+                        <a onClick={() => this.setState({ active: "shrine" })}
+                        >Shrine</a>
+                     </li>
+                     <li class={"tab-item c-hand " + (this.state.active === "invitations" ? "active" : "")}>
+                        <a onClick={() => this.setState({ active: "invitations" })}
+                        > Invitations
+                        </a>
+                     </li>
+                  </ul>
+                  { this.state.active === "chronicle" &&
+                     <div>
+                        <BulkImport 
+                           urlNm={memorial.urlNm}
+                        />
+                        <ContentList 
+                           showModal={this.showModal} 
+                           items={memorial.items} 
+                           newItem={this.newItem}
+                        />
+                        <EditModal 
+                           showModal={this.state.showModal}
+                           hideModal={this.hideModal}
 
-                     updChronicle={this.updChronicle}
-                     newChronicle={this.newChronicle}
+                           updChronicle={this.updChronicle}
+                           newChronicle={this.newChronicle}
 
-                     onChange={this.onChange}
-                     onFileChange={this.onFileChange}
+                           onChange={this.onChange}
+                           onFileChange={this.onFileChange}
 
-                     item={this.state.item}
-                  />
+                           item={this.state.item}
+                        />
+                     </div>
+                  }
+                  { this.state.active === "atlas" &&
+                     <div>This is the Atlas component</div>
+                  }
+                  { this.state.active === "shrine" &&
+                     <div>This is the Shrine component</div>
+                  }
+                  { this.state.active === "invitations" &&
+                        <Invitations 
+                           memorial={memorial}
+                        />
+                  }
                </div>
             }
          />

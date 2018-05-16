@@ -78,6 +78,7 @@ class CreateShrineFormContainer extends Component {
                   handlePrevStep={ props.handlePrevStep }
                   invitation={props.invitation}
                   onChange={props.onChange}
+                  updInvitation={props.updInvitation}
                />
             );
             break;
@@ -87,6 +88,8 @@ class CreateShrineFormContainer extends Component {
                <CreateShrineFormStep6
                   handleNextStep={ props.handleNextStep }
                   handlePrevStep={ props.handlePrevStep }
+                  firstName={props.firstName}
+                  memorial={props.memorial}
                />
             );
             break;

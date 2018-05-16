@@ -65,6 +65,10 @@
 (rel urlStr (+Ref +String))            # 8 char base64 string, e.g. "8bez73Ka"
 (rel urlNm (+Ref +String))             # concatenated name, e.g. "MichaelJFox"
 
+(rel invite (+Blob))                   # invitation text
+(rel emails (+List +String))           # list of emails (people to invite 
+                                       # to contribute to memorial)
+
 (rel nm (+Idx +String))                # full name with spaces, e.g. "Michael J Fox"
 (rel nm1 (+Idx +String))               # first name, e.g. "Michael"
 (rel nm2 (+String))                    # middle name or initial, e.g. "J"
@@ -107,6 +111,7 @@
       (if (: born) (link (cons "born" @)))
       (if (: died) (link (cons "died" @)))
       (if (: img) (link (cons "avatar" (pack *API (blob This 'img)))))
+      (if (: emails) (link (cons "emails" T (: emails))))
       (link
          (make (link "items" T)
             (for C (: chronicle)
@@ -174,6 +179,31 @@
                  'title (pack Nm1 " passed away")
                  'date Died ) )
             (respondJson (json> This)) ) ) ) )
+
+(allow "!updInvitation")
+(de updInvitation ()
+   (let [Id (getJWT "sub" "loginToken")
+         M  (db 'urlNm '+Memorial (posted "memorial")) ]
+      (ifn M
+         (respondJsonError "Bad memorial")
+         (unless (; M invite) (put!> M 'invite T))
+         (out (blob M 'invite) (prin (posted "invitation")))
+         (respondJson (list (cons "ok" "invitation updated"))) ) ) )
+
+(allow "!updEmails")
+(de updEmails ()
+   (let M (db 'urlNm '+Memorial (posted "memorial"))
+      (ifn M
+         (respondJsonError "Bad memorial")
+         (with M
+            (ifn (: emails)
+               # if no existing list, add emails
+               (put!> This 'emails (cdr (posted "emails")))
+               # else add new emails to list
+               (finally (commit)
+                  (for E (cdr (posted "emails"))
+                     (queue (:: emails) E) ) ) ) )
+         (respondJson (list (cons "ok" "invitation list updated"))) ) ) )
 
 (allow "!getMemorial")
 (de getMemorial (UrlNm)

@@ -43,7 +43,7 @@ class CreateShrineFormStep5 extends Component {
                   onClick={ this.props.handlePrevStep }
                />
                <NextStepButton 
-                  onClick={ this.props.handleNextStep }
+                  onClick={ this.props.updInvitation }
                />
             </div>
          </div>

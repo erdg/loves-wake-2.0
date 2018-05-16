@@ -10,6 +10,11 @@ class CreateShrine extends Component {
    state = {
       step: 1,
 
+      // memorial is created in step 3
+      // this is will hold a reference, so invitations
+      // and invite list can be added to the memorial
+      memorial: {},
+
       firstName: '',
       middleName: '',
       lastName: '',
@@ -121,10 +126,27 @@ class CreateShrine extends Component {
       )
          .then(res => res.json())
          .then(json => {
-            // do something with json
             this.setState({ loading: false });
-            route("/user");
+            this.setState({ memorial: json });
+            // route("/user");
+            this.setState((prevState) => ({ step: prevState.step + 1 }));
          })
+   }
+
+   updInvitation = () => {
+      if (!this.state.invitation) { return; }
+      fetch(API_ENDPOINT + "!updInvitation", {
+         method: "POST",
+         body: JSON.stringify({
+            loginToken: window.sessionStorage.getItem('loginToken'),
+            memorial: this.state.memorial.urlNm,
+            invitation: this.state.invitation
+         })
+      })
+      .then(res => res.json())
+      .then(json => {
+         this.setState((prevState) => ({step: prevState.step + 1}));
+      });
    }
 
    render (props) {
@@ -179,6 +201,7 @@ class CreateShrine extends Component {
                      died={this.state.died}
 
                      setInvitation={this.setInvitation}
+                     updInvitation={this.updInvitation}
                      invitation={this.state.invitation}
 
                      firstName={ firstName }
@@ -192,6 +215,8 @@ class CreateShrine extends Component {
 
                      deceased={ this.state.deceased }
                      handleDeath={ this._handleDeath }
+
+                     memorial={this.state.memorial}
                   />
                }
 
