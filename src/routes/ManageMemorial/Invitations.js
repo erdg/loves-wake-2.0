@@ -3,6 +3,7 @@ import isEmail from 'validator/lib/isEmail';
 import classNames from 'classnames';
 
 import API_ENDPOINT from '../../api';
+import InvitationModal from './InvitationModal';
 
 import { Dialog } from '../../components/dialog';
 import { TextInput } from '../../components/form-inputs/';
@@ -16,10 +17,15 @@ class Invitations extends Component {
       active: false,
       // email search string
       filter: '',
+      showModal: false,
    }
 
    onChange = (e) => {
       this.setState({ [e.target.name]: e.target.value });
+   }
+
+   hideModal = () => {
+      this.setState({ showModal: false });
    }
 
    _handleEmailChange = (e) => {
@@ -83,7 +89,21 @@ class Invitations extends Component {
       return (
          <div>
 
-            <h4>Invite Others to Contribute</h4>
+            <div class="row my-2">
+               <h4 class="col" style="width:80%">Invite Others to Contribute</h4>
+
+               <button class="btn btn-primary col"
+                  onClick={() => this.setState({ showModal: true })}
+               > Edit Invitation
+               </button>
+            </div>
+
+            <InvitationModal 
+               memorial={this.props.memorial}
+               showModal={this.state.showModal}
+               hideModal={this.hideModal}
+            />
+
             { 
                this.props.memorial.emails ?
                   <div>
@@ -145,9 +165,9 @@ class Invitations extends Component {
 
                <div class="input-group">
 
-                  <input 
-                     type="email" 
-                     class="form-input" 
+                  <input
+                     type="email"
+                     class="form-input"
                      value={ this.state.email }
                      onChange={ this._handleEmailChange }
                   />
