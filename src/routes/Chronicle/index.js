@@ -5,6 +5,8 @@ import './linked-ref';
 // API
 import API_ENDPOINT from '../../api';
 
+import anime from 'animejs';
+
 // generic components
 import GridContainer from '../../components/GridContainer';
 import AvatarRail from '../../components/AvatarRail';
@@ -239,8 +241,25 @@ export default class Chronicle extends Component {
       let index = this.state.items.indexOf(this.state.currentItem);
       // make sure it's not the first item in array
       if (!(index === 0)) {
-         this.setState({ currentItem: this.state.items[index - 1] });
-         this.refs.timeline.selectItem(this.state.currentItem);
+         // this needs work
+         let prevAnimation = anime.timeline();
+         prevAnimation.add({
+            targets: '.panel',
+            translateX: 1000, 
+            duration: 500, 
+            opacity: 0,
+            easing: 'easeInSine',
+            complete: () => {
+               this.setState({ currentItem: this.state.items[index - 1] });
+               this.refs.timeline.selectItem(this.state.currentItem);
+            }
+         }).add({
+            targets: '.panel',
+            translateX: [-2000, 0],
+            duration: 500, 
+            opacity: 1,
+            easing: 'easeInSine'
+         });
       }
    }
 
@@ -248,8 +267,25 @@ export default class Chronicle extends Component {
       let length = this.state.items.length;
       let index = this.state.items.indexOf(this.state.currentItem);
       if (!(index === length - 1)) {
-         this.setState({ currentItem: this.state.items[index + 1] });
-         this.refs.timeline.selectItem(this.state.currentItem);
+         // this needs work
+         let nextAnimation = anime.timeline();
+         nextAnimation.add({
+            targets: '.panel',
+            translateX: -2000, 
+            duration: 500, 
+            opacity: 0,
+            easing: 'easeInSine',
+            complete: () => {
+               this.setState({ currentItem: this.state.items[index + 1] });
+               this.refs.timeline.selectItem(this.state.currentItem);
+            }
+         }).add({
+            targets: '.panel',
+            translateX: [1000, 0],
+            duration: 500, 
+            opacity: 1,
+            easing: 'easeInSine'
+         });
       }
    }
 
