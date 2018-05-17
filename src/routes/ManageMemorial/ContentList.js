@@ -32,6 +32,7 @@ const ContentList = (props) => (
                      location={item.location} 
                      src={item.src}
                      showModal={(id) => props.showModal(id)}
+                     showDeleteModal={(id) => props.showDeleteModal(id)}
                      edited={item.edited}
                   />
             ))
@@ -51,11 +52,16 @@ const ContentCard = (props) => (
          <div class="text-gray" style="font-size:smaller;">{props.date}</div>
       </div>
       <div class="card-footer">
+         <button class="btn btn-small btn-action tooltip float-right ml-2"
+            data-tooltip="delete"
+            onClick={(id) => props.showDeleteModal(props.id)}
+         > <i class="icon icon-delete" />
+         </button>
          <button 
-            class="btn btn-sm float-right"
+            class="btn float-right tooltip"
+            data-tooltip="edit"
             onClick={(id) => props.showModal(props.id)}
-         > 
-            edit
+         > <i class="icon icon-edit" />
          </button>
       </div>
    </div>

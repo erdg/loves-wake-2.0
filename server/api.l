@@ -268,7 +268,15 @@
          (respondJson 
             (json> This) ) ) ) )
 
-(de delChronicle ())
+(allow "!delChronicle")
+(de delChronicle ()
+   (let [User (db 'id '+User (getJWT "sub" "loginToken"))
+         Item (db 'id '+Chronicle (posted "id")) ]
+      (ifn (member (; Item memorial) (; User memorials))
+         (respondJsonError "No permission to delete item")
+         (lose!> Item)
+         (respondJson (list (cons "ok" "Item deleted"))) ) ) )
+      
 
 # API/!postWrittenChronicle
 (allow "!newWrittenChronicle")

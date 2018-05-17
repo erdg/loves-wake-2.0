@@ -8,6 +8,7 @@ import ContentList from './ContentList';
 import EditModal from './EditModal';
 import PublicUrl from './PublicUrl';
 import BulkImport from './BulkImport';
+import DeleteModal from './DeleteModal';
 
 import Invitations from './Invitations';
 
@@ -15,6 +16,7 @@ class ManageMemorial extends Component {
    state = {
       item: {},
       showModal: false,
+      showDeleteModal: false,
 
       active: 'chronicle',
    }
@@ -188,20 +190,20 @@ class ManageMemorial extends Component {
                   }) 
                }
             )
-            .then( res => res.json() )
-            .then( json => {
-               console.log(json);
-               // UPDATE TIMELINE STATE HERE
-               // NOTE - this may not be necessary, as new entries
-               // will likely go into a holding container to await
-               // editing/approval by shrine moderator
-               // this.refs.timeline.addItem(json);
-               this.addItem(json);
-            })
-            .then( this.setState({ 
-               item: {}
-            }));
-            
+               .then( res => res.json() )
+               .then( json => {
+                  console.log(json);
+                  // UPDATE TIMELINE STATE HERE
+                  // NOTE - this may not be necessary, as new entries
+                  // will likely go into a holding container to await
+                  // editing/approval by shrine moderator
+                  // this.refs.timeline.addItem(json);
+                  this.addItem(json);
+               })
+               .then( this.setState({ 
+                  item: {}
+               }));
+
          }
 
       } else {
@@ -220,29 +222,53 @@ class ManageMemorial extends Component {
                }) 
             }
          )
-         .then( res => res.json() )
-         .then( json => {
-            console.log(json);
-            // UPDATE TIMELINE STATE HERE
-            // NOTE - this may not be necessary, as new entries
-            // will likely go into a holding container to await
-            // editing/approval by shrine moderator
-            // this.refs.timeline.addItem(json);
-            this.addItem(json);
-         })
-         .then( this.setState({ 
-            item: {}
-         }));
+            .then( res => res.json() )
+            .then( json => {
+               console.log(json);
+               // UPDATE TIMELINE STATE HERE
+               // NOTE - this may not be necessary, as new entries
+               // will likely go into a holding container to await
+               // editing/approval by shrine moderator
+               // this.refs.timeline.addItem(json);
+               this.addItem(json);
+            })
+            .then( this.setState({ 
+               item: {}
+            }));
 
       }
 
       this.hideModal();
    }
 
+   delChronicle = () => {
+      fetch(API_ENDPOINT + "!delChronicle", {
+         method: "POST",
+         body: JSON.stringify({
+            id: this.state.item.id,
+            loginToken: window.sessionStorage.getItem('loginToken')
+         })
+      }).then(res => res.json()).then(json => {
+         let memorial = this.props.user.memorials.find(m => m.urlNm === this.props.urlNm);
+         console.log(memorial);
+         let item =  memorial.items.find(item => item.id === this.state.item.id);
+         console.log(item);
+         let idx = memorial.items.indexOf(item);
+         if (idx !== -1) memorial.items.splice(idx, 1);
+         this.hideDeleteModal();
+      })
+   }
+
    showModal = (id) => {
       let memorial = this.props.user.memorials.find(m => m.urlNm === this.props.urlNm);
       this.setState({ showModal: true, item: memorial.items.find(item => item.id === id) });
    }
+
+   showDeleteModal = (id) => {
+      let memorial = this.props.user.memorials.find(m => m.urlNm === this.props.urlNm);
+      this.setState({ showDeleteModal: true, item: memorial.items.find(item => item.id === id) });
+   }
+
 
    hideModal = () => {
       let oldItem = this.state.item;
@@ -253,6 +279,10 @@ class ManageMemorial extends Component {
          modalError: false,
          oldItem: newItem
       });
+   }
+
+   hideDeleteModal = () => {
+      this.setState({ showDeleteModal: false });
    }
 
    newItem = () => {
@@ -317,6 +347,7 @@ class ManageMemorial extends Component {
                            showModal={this.showModal} 
                            items={memorial.items} 
                            newItem={this.newItem}
+                           showDeleteModal={(id) => this.showDeleteModal(id)}
                         />
                         <EditModal 
                            showModal={this.state.showModal}
@@ -329,6 +360,12 @@ class ManageMemorial extends Component {
                            onFileChange={this.onFileChange}
 
                            item={this.state.item}
+                        />
+                        <DeleteModal
+                           item={this.state.item}
+                           delChronicle={this.delChronicle}
+                           showDeleteModal={this.state.showDeleteModal}
+                           hideDeleteModal={this.hideDeleteModal}
                         />
                      </div>
                   }
