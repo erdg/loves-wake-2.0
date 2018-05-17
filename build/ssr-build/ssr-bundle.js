@@ -1838,9 +1838,13 @@ var spectre_override_default = /*#__PURE__*/__webpack_require__.n(spectre_overri
 var avatar_rail = __webpack_require__("SDRd");
 var avatar_rail_default = /*#__PURE__*/__webpack_require__.n(avatar_rail);
 
+// EXTERNAL MODULE: ./style/loves-wake.css
+var loves_wake = __webpack_require__("nDyB");
+var loves_wake_default = /*#__PURE__*/__webpack_require__.n(loves_wake);
+
 // CONCATENATED MODULE: ./api/index.js
 // development
-// const API_ENDPOINT = "http://localhost:8888/";
+// const API_ENDPOINT = "http://192.168.0.48:8888/";
 
 // production
 var API_ENDPOINT = "https://erikdgustafson.com/api/";
@@ -2531,13 +2535,8 @@ var login_form_container_LoginFormContainer = function (_Component) {
          // loading spinner on button
          _this.setState({ recoverBtnLoading: true });
 
-         fetch(api + "!recoverUserAccount", {
-            method: 'POST',
-            body: JSON.stringify({
-               email: _this.state.email
-            })
-         }).then(function (res) {
-            return res.json();
+         fetch("https://erikdgustafson.com/api/!recoverUserAccount?" + _this.state.email).then(function (resp) {
+            return resp.json();
          }).then(function (json) {
             if (json.error) {
                _this.setState({
@@ -2548,10 +2547,16 @@ var login_form_container_LoginFormContainer = function (_Component) {
                });
             } else if (json.email) {
                // remove loading spinner
-               _this.setState({
-                  recoverBtnLoading: false
-               });
-               console.log(json.email);
+               // set loginSuccess flag to true to trigger route change to 'Profile'
+               // FIXME - the above feels like a hack. 
+               // might be time to add a redux-style store?
+               _this.setState({ recoverBtnLoading: false, recoverAccountSuccess: true });
+               // send event up to set global app state with logged in user
+               _this.props.handleRecoverAccountSuccess(json.email);
+            }
+         }).then(function () {
+            if (_this.state.recoverAccountSuccess) {
+               Object(preact_router_es["route"])('/recover-account', true);
             }
          });
       };
@@ -4254,68 +4259,277 @@ var create_shrine_form_step3_CreateShrineFormStep3 = function CreateShrineFormSt
          Object(preact_min["h"])(prev_step_button_PrevStepButton, {
             onClick: props.handlePrevStep
          }),
-         Object(preact_min["h"])(
-            'button',
-            { 'class': createBtnClasses,
-               onClick: props.newMemorial
-            },
-            'Create Memorial'
-         )
-      )
-   );
-};
-
-
-// CONCATENATED MODULE: ./routes/create-shrine/create-shrine-form-step4/index.js
-
-
-
-
-
-
-
-var create_shrine_form_step4_CreateShrineFormStep4 = function CreateShrineFormStep4(props) {
-   return Object(preact_min["h"])(
-      'div',
-      null,
-      Object(preact_min["h"])(
-         'div',
-         { 'class': 'row my-2' },
-         Object(preact_min["h"])(prev_step_button_PrevStepButton, {
-            onClick: props.handlePrevStep
-         }),
          Object(preact_min["h"])(next_step_button_NextStepButton, {
-            onClick: props.handleNextStep
+            onClick: props.newMemorial
          })
       )
    );
 };
+
+
+// EXTERNAL MODULE: ../node_modules/marked/lib/marked.js
+var marked = __webpack_require__("3F7m");
+var marked_default = /*#__PURE__*/__webpack_require__.n(marked);
+
+// CONCATENATED MODULE: ./routes/create-shrine/create-shrine-form-step4/index.js
+
+
+function create_shrine_form_step4__classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function create_shrine_form_step4__possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function create_shrine_form_step4__inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+
+
+
+
+
+
+
+var create_shrine_form_step4__ref = Object(preact_min["h"])(
+   'h5',
+   null,
+   'Choose an Invitation Template'
+);
+
+var create_shrine_form_step4__ref2 = Object(preact_min["h"])(
+   'div',
+   { style: 'margin-left:25px;font-size:smaller;' },
+   Object(preact_min["h"])(
+      'div',
+      { 'class': 'text-gray' },
+      '- For a recent loss'
+   ),
+   Object(preact_min["h"])(
+      'div',
+      { 'class': 'text-gray' },
+      '- Encourages people to process grief'
+   )
+);
+
+var create_shrine_form_step4__ref3 = Object(preact_min["h"])(
+   'div',
+   { style: 'margin-left:25px;font-size:smaller;' },
+   Object(preact_min["h"])(
+      'div',
+      { 'class': 'text-gray' },
+      '- For after a loss stops hurting'
+   ),
+   Object(preact_min["h"])(
+      'div',
+      { 'class': 'text-gray' },
+      '- Encourages people to reconsider loss'
+   )
+);
+
+var create_shrine_form_step4__ref4 = Object(preact_min["h"])(
+   'div',
+   { style: 'margin-left:25px;font-size:smaller;' },
+   Object(preact_min["h"])(
+      'div',
+      { 'class': 'text-gray' },
+      '- For a loss that feels distant now'
+   ),
+   Object(preact_min["h"])(
+      'div',
+      { 'class': 'text-gray' },
+      '- Encourages people to remember'
+   )
+);
+
+var create_shrine_form_step4__ref5 = Object(preact_min["h"])(
+   'h5',
+   null,
+   'Preview'
+);
+
+var create_shrine_form_step4_CreateShrineFormStep4 = function (_Component) {
+   create_shrine_form_step4__inherits(CreateShrineFormStep4, _Component);
+
+   function CreateShrineFormStep4(props) {
+      create_shrine_form_step4__classCallCheck(this, CreateShrineFormStep4);
+
+      var _this = create_shrine_form_step4__possibleConstructorReturn(this, _Component.call(this, props));
+
+      _this.state = {
+         invitation: ''
+      };
+
+      _this.onChange = function (e) {
+         _this.setState({ invitation: e.target.value });
+      };
+
+      marked_default.a.setOptions({
+         sanitize: true
+      });
+      return _this;
+   }
+
+   CreateShrineFormStep4.prototype.render = function render() {
+      var _this2 = this;
+
+      var mourn = 'This is the *Mourn Together* Template';
+      var heal = 'This is the *Heal Together* Template';
+      var remember = 'This is the *Remember Together* Template';
+      return Object(preact_min["h"])(
+         'div',
+         null,
+         create_shrine_form_step4__ref,
+         Object(preact_min["h"])(
+            'div',
+            { onChange: function onChange(e) {
+                  return _this2.props.setInvitation(e.target.value);
+               }, 'class': 'col mx-2' },
+            Object(preact_min["h"])(
+               'div',
+               { 'class': 'row' },
+               Object(preact_min["h"])(form_inputs_Radio, {
+                  label: 'Mourn Together',
+                  name: 'invitation',
+                  value: mourn
+               }),
+               create_shrine_form_step4__ref2
+            ),
+            Object(preact_min["h"])(
+               'div',
+               { 'class': 'row' },
+               Object(preact_min["h"])(form_inputs_Radio, {
+                  label: 'Heal Together',
+                  name: 'invitation',
+                  value: heal
+               }),
+               create_shrine_form_step4__ref3
+            ),
+            Object(preact_min["h"])(
+               'div',
+               { 'class': 'row' },
+               Object(preact_min["h"])(form_inputs_Radio, {
+                  label: 'Remember Together',
+                  name: 'invitation',
+                  value: remember
+               }),
+               create_shrine_form_step4__ref4
+            )
+         ),
+         Object(preact_min["h"])(
+            'div',
+            { 'class': 'relative' },
+            Object(preact_min["h"])(
+               'div',
+               { 'class': this.props.invitation ? "selectInvitationDialog" : "d-hide" },
+               create_shrine_form_step4__ref5,
+               Object(preact_min["h"])('div', {
+                  dangerouslySetInnerHTML: { __html: marked_default()(this.props.invitation) }
+               })
+            )
+         ),
+         Object(preact_min["h"])(
+            'div',
+            { 'class': 'row my-2' },
+            Object(preact_min["h"])(prev_step_button_PrevStepButton, {
+               onClick: this.props.handlePrevStep
+            }),
+            Object(preact_min["h"])(next_step_button_NextStepButton, {
+               onClick: this.props.handleNextStep
+            })
+         )
+      );
+   };
+
+   return CreateShrineFormStep4;
+}(preact_min["Component"]);
 
 
 // CONCATENATED MODULE: ./routes/create-shrine/create-shrine-form-step5/index.js
 
 
+function create_shrine_form_step5__classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function create_shrine_form_step5__possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function create_shrine_form_step5__inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 
 
 
 
-var create_shrine_form_step5_CreateShrineFormStep5 = function CreateShrineFormStep5(props) {
-   return Object(preact_min["h"])(
-      'div',
-      null,
-      Object(preact_min["h"])(
+
+
+
+
+var create_shrine_form_step5__ref = Object(preact_min["h"])(
+   'h5',
+   null,
+   'Customize Invitation'
+);
+
+var create_shrine_form_step5__ref2 = Object(preact_min["h"])(
+   'h5',
+   null,
+   'Preview'
+);
+
+var create_shrine_form_step5_CreateShrineFormStep5 = function (_Component) {
+   create_shrine_form_step5__inherits(CreateShrineFormStep5, _Component);
+
+   function CreateShrineFormStep5(props) {
+      create_shrine_form_step5__classCallCheck(this, CreateShrineFormStep5);
+
+      var _this = create_shrine_form_step5__possibleConstructorReturn(this, _Component.call(this, props));
+
+      _this.onChange = function (e) {
+         var _this$setState;
+
+         _this.setState((_this$setState = {}, _this$setState[e.target.name] = e.target.value, _this$setState));
+      };
+
+      marked_default.a.setOptions({
+         sanitize: true
+      });
+      return _this;
+   }
+
+   CreateShrineFormStep5.prototype.render = function render() {
+      return Object(preact_min["h"])(
          'div',
-         { 'class': 'row my-2' },
-         Object(preact_min["h"])(prev_step_button_PrevStepButton, {
-            onClick: props.handlePrevStep
+         null,
+         create_shrine_form_step5__ref,
+         Object(preact_min["h"])('textarea', {
+            style: 'resize:none;',
+            'class': 'form-input',
+            rows: '16',
+            name: 'invitation',
+            value: this.props.invitation,
+            onInput: this.props.onChange
          }),
-         Object(preact_min["h"])(next_step_button_NextStepButton, {
-            onClick: props.handleNextStep
-         })
-      )
-   );
-};
+         Object(preact_min["h"])(
+            'div',
+            { 'class': 'relative' },
+            Object(preact_min["h"])(
+               'div',
+               { 'class': 'customizeInvitationDialog' },
+               create_shrine_form_step5__ref2,
+               Object(preact_min["h"])('div', {
+                  dangerouslySetInnerHTML: { __html: marked_default()(this.props.invitation) }
+               })
+            )
+         ),
+         Object(preact_min["h"])(
+            'div',
+            { 'class': 'row my-2' },
+            Object(preact_min["h"])(prev_step_button_PrevStepButton, {
+               onClick: this.props.handlePrevStep
+            }),
+            Object(preact_min["h"])(next_step_button_NextStepButton, {
+               onClick: this.props.updInvitation
+            })
+         )
+      );
+   };
+
+   return CreateShrineFormStep5;
+}(preact_min["Component"]);
 
 
 // CONCATENATED MODULE: ./routes/create-shrine/create-shrine-form-step6/index.js
@@ -4334,7 +4548,16 @@ function create_shrine_form_step6__inherits(subClass, superClass) { if (typeof s
 
 
 
+
+
+
 var create_shrine_form_step6__ref = Object(preact_min["h"])(
+   'h5',
+   null,
+   'Invite Others to Contribute'
+);
+
+var create_shrine_form_step6__ref2 = Object(preact_min["h"])(
    'label',
    { 'class': 'form-label' },
    'Enter email addresses'
@@ -4358,7 +4581,8 @@ var create_shrine_form_step6_CreateShrineFormStep6 = function (_Component) {
          emailError: false
       }, _this._handleEmailChange = function (e) {
          _this.setState({ email: e.target.value });
-      }, _this._addEmail = function () {
+      }, _this._addEmail = function (e) {
+         e.preventDefault();
          // if not valid email address
          if (!isEmail_default()(_this.state.email)) {
             // throw email error, don't submit
@@ -4383,8 +4607,24 @@ var create_shrine_form_step6_CreateShrineFormStep6 = function (_Component) {
          });
          // and set the state to that.
          _this.setState({ emails: emails });
+      }, _this.updEmails = function () {
+         fetch(api + "!updEmails", {
+            method: "POST",
+            body: JSON.stringify({
+               emails: _this.state.emails,
+               memorial: _this.props.memorial.urlNm,
+               loginToken: window.sessionStorage.getItem('loginToken')
+            })
+         }).then(function (res) {
+            return res.json();
+         }).then(function (json) {
+            console.log(json);
+         });
       }, _temp), create_shrine_form_step6__possibleConstructorReturn(_this, _ret);
    }
+
+   // update invitation list for memorial
+
 
    CreateShrineFormStep6.prototype.render = function render(props, state) {
       var _this2 = this;
@@ -4396,10 +4636,18 @@ var create_shrine_form_step6_CreateShrineFormStep6 = function (_Component) {
       return Object(preact_min["h"])(
          'div',
          null,
+         create_shrine_form_step6__ref,
          Object(preact_min["h"])(
-            'div',
+            'form',
             { 'class': formClasses },
-            create_shrine_form_step6__ref,
+            Object(preact_min["h"])(
+               dialog_Dialog,
+               { active: true },
+               'We\'ll send emails on your behalf to invite others to contribute to ',
+               props.firstName ? props.firstName + "'s" : "this",
+               ' memorial. Unfortunately you will have to manually enter emails for the time being. In the near future we\'ll be able to sync with your Apple/Google contacts. Apologies for the inconvenience.'
+            ),
+            create_shrine_form_step6__ref2,
             Object(preact_min["h"])(
                'div',
                { 'class': 'input-group' },
@@ -4413,6 +4661,7 @@ var create_shrine_form_step6_CreateShrineFormStep6 = function (_Component) {
                   'button',
                   {
                      'class': 'btn btn-primary input-group-btn',
+                     type: 'submit',
                      onClick: this._addEmail
                   },
                   'Add'
@@ -4449,7 +4698,14 @@ var create_shrine_form_step6_CreateShrineFormStep6 = function (_Component) {
             { 'class': 'row my-2' },
             Object(preact_min["h"])(prev_step_button_PrevStepButton, {
                onClick: props.handlePrevStep
-            })
+            }),
+            Object(preact_min["h"])(
+               'button',
+               { 'class': 'btn btn-primary float-right',
+                  onClick: this.updEmails
+               },
+               ' Send Invitations'
+            )
          )
       );
    };
@@ -4534,21 +4790,28 @@ var create_shrine_form_container_CreateShrineFormContainer = function (_Componen
          case 4:
             return Object(preact_min["h"])(create_shrine_form_step4_CreateShrineFormStep4, {
                handleNextStep: props.handleNextStep,
-               handlePrevStep: props.handlePrevStep
+               handlePrevStep: props.handlePrevStep,
+               setInvitation: props.setInvitation,
+               invitation: props.invitation
             });
             break;
 
          case 5:
             return Object(preact_min["h"])(create_shrine_form_step5_CreateShrineFormStep5, {
                handleNextStep: props.handleNextStep,
-               handlePrevStep: props.handlePrevStep
+               handlePrevStep: props.handlePrevStep,
+               invitation: props.invitation,
+               onChange: props.onChange,
+               updInvitation: props.updInvitation
             });
             break;
 
          case 6:
             return Object(preact_min["h"])(create_shrine_form_step6_CreateShrineFormStep6, {
                handleNextStep: props.handleNextStep,
-               handlePrevStep: props.handlePrevStep
+               handlePrevStep: props.handlePrevStep,
+               firstName: props.firstName,
+               memorial: props.memorial
             });
             break;
       }
@@ -4682,9 +4945,11 @@ var avatar_rail_AvatarRail = function AvatarRail(props) {
             },
             Object(preact_min["h"])(
                'a',
-               { 'class': 'btn btn-sm btn-link', onClick: function onClick(n) {
-                     return props.gotoStep(4);
-                  } },
+               { 'class': 'btn btn-sm btn-link',
+                  onClick: function onClick() {
+                     props.gotoStep(4);
+                  }
+               },
                'Invitation Template'
             )
          ),
@@ -4695,9 +4960,11 @@ var avatar_rail_AvatarRail = function AvatarRail(props) {
             },
             Object(preact_min["h"])(
                'a',
-               { 'class': 'btn btn-sm btn-link', onClick: function onClick(n) {
-                     return props.gotoStep(5);
-                  } },
+               { 'class': 'btn btn-sm btn-link',
+                  onClick: function onClick() {
+                     props.gotoStep(5);
+                  }
+               },
                'Customize Invitation'
             )
          ),
@@ -4757,6 +5024,11 @@ var create_shrine_CreateShrine = function (_Component) {
       return _ret = (_temp = (_this = create_shrine__possibleConstructorReturn(this, _Component.call.apply(_Component, [this].concat(args))), _this), _this.state = {
          step: 1,
 
+         // memorial is created in step 3
+         // this is will hold a reference, so invitations
+         // and invite list can be added to the memorial
+         memorial: {},
+
          firstName: '',
          middleName: '',
          lastName: '',
@@ -4770,6 +5042,8 @@ var create_shrine_CreateShrine = function (_Component) {
          file: null,
          fileURL: '',
 
+         invitation: '',
+
          loading: false
       }, _this.onChange = function (e) {
          var _this$setState;
@@ -4779,6 +5053,8 @@ var create_shrine_CreateShrine = function (_Component) {
          // console.log(e);
          _this.setState({ file: e.target.files[0] });
          _this.makeFileURL();
+      }, _this.setInvitation = function (txt) {
+         _this.setState({ invitation: txt });
       }, _this.makeFileURL = function () {
          console.log('reading file');
          var reader = new FileReader();
@@ -4841,9 +5117,30 @@ var create_shrine_CreateShrine = function (_Component) {
          }).then(function (res) {
             return res.json();
          }).then(function (json) {
-            // do something with json
             _this.setState({ loading: false });
-            Object(preact_router_es["route"])("/user");
+            _this.setState({ memorial: json });
+            // route("/user");
+            _this.setState(function (prevState) {
+               return { step: prevState.step + 1 };
+            });
+         });
+      }, _this.updInvitation = function () {
+         if (!_this.state.invitation) {
+            return;
+         }
+         fetch(api + "!updInvitation", {
+            method: "POST",
+            body: JSON.stringify({
+               loginToken: window.sessionStorage.getItem('loginToken'),
+               memorial: _this.state.memorial.urlNm,
+               invitation: _this.state.invitation
+            })
+         }).then(function (res) {
+            return res.json();
+         }).then(function (json) {
+            _this.setState(function (prevState) {
+               return { step: prevState.step + 1 };
+            });
          });
       }, _temp), create_shrine__possibleConstructorReturn(_this, _ret);
    }
@@ -4904,6 +5201,10 @@ var create_shrine_CreateShrine = function (_Component) {
                born: this.state.born,
                died: this.state.died,
 
+               setInvitation: this.setInvitation,
+               updInvitation: this.updInvitation,
+               invitation: this.state.invitation,
+
                firstName: firstName,
                middleName: this.state.middleName,
                lastName: lastName,
@@ -4914,7 +5215,9 @@ var create_shrine_CreateShrine = function (_Component) {
                handleGenderChange: this._handleGenderChange,
 
                deceased: this.state.deceased,
-               handleDeath: this._handleDeath
+               handleDeath: this._handleDeath,
+
+               memorial: this.state.memorial
             })
 
          })
@@ -5339,6 +5642,399 @@ var BulkImport_BulkImport = function (_Component) {
 }(preact_min["Component"]);
 
 /* harmony default export */ var ManageMemorial_BulkImport = (BulkImport_BulkImport);
+// CONCATENATED MODULE: ./routes/ManageMemorial/InvitationModal.js
+
+
+function InvitationModal__classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function InvitationModal__possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function InvitationModal__inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+
+
+
+
+
+
+// add a new item to chronicle
+
+var InvitationModal__ref = Object(preact_min["h"])(
+   'div',
+   { 'class': 'text-center text-gray', style: 'font-size:smaller;' },
+   '- Scroll down to see a preview -'
+);
+
+var InvitationModal__ref2 = Object(preact_min["h"])('div', { 'class': 'modal-footer' });
+
+var InvitationModal_InvitationModal = function (_Component) {
+   InvitationModal__inherits(InvitationModal, _Component);
+
+   function InvitationModal(props) {
+      InvitationModal__classCallCheck(this, InvitationModal);
+
+      var _this = InvitationModal__possibleConstructorReturn(this, _Component.call(this, props));
+
+      _this.onChange = function (e) {
+         var _this$setState;
+
+         _this.setState((_this$setState = {}, _this$setState[e.target.name] = e.target.value, _this$setState));
+      };
+
+      marked_default.a.setOptions({
+         sanitize: true
+      });
+      _this.state = {
+         invitation: _this.props.memorial.invitation || ''
+      };
+      return _this;
+   }
+
+   InvitationModal.prototype.render = function render(props) {
+      var modalClasses = classnames_default()("modal", "modal-lg", { "active": props.showModal }, { "has-error": props.modalError });
+
+      var errorHint = classnames_default()("form-input-hint", "float-left", { "d-hide": !props.modalError });
+
+      var width = window.innerWidth || document.documentElement.clientWidth || document.body.client.width;
+
+      return Object(preact_min["h"])(
+         'div',
+         { 'class': modalClasses },
+         Object(preact_min["h"])('a', { onClick: props.hideModal,
+            'class': 'modal-overlay',
+            'aria-label': 'Close'
+         }),
+         Object(preact_min["h"])(
+            'div',
+            { 'class': 'modal-container' },
+            Object(preact_min["h"])(
+               'div',
+               { 'class': 'modal-header' },
+               Object(preact_min["h"])('a', { onClick: props.hideModal,
+                  'class': 'btn btn-clear float-right',
+                  'aria-label': 'Close'
+               }),
+               Object(preact_min["h"])(
+                  'div',
+                  { 'class': 'modal-title h5' },
+                  'Edit Invitation to ',
+                  props.memorial.nm1,
+                  '\'s Memorial'
+               ),
+               width < 840 && InvitationModal__ref
+            ),
+            Object(preact_min["h"])(
+               'div',
+               { 'class': 'modal-body' },
+               Object(preact_min["h"])(
+                  'div',
+                  { 'class': width < 840 ? "content" : "content container columns" },
+                  Object(preact_min["h"])(
+                     'form',
+                     { 'class': width < 840 ? "form-group" : "form-group column col-5" },
+                     Object(preact_min["h"])('textarea', { 'class': 'form-input', rows: '16',
+                        value: this.state.invitation,
+                        onInput: this.onChange,
+                        name: 'invitation'
+                     })
+                  ),
+                  Object(preact_min["h"])(
+                     'div',
+                     { 'class': width < 840 ? "card" : "card column col-7" },
+                     Object(preact_min["h"])('div', { 'class': 'card-body',
+                        dangerouslySetInnerHTML: { __html: marked_default()(this.state.invitation) }
+                     })
+                  )
+               )
+            ),
+            InvitationModal__ref2
+         )
+      );
+   };
+
+   return InvitationModal;
+}(preact_min["Component"]);
+
+/* harmony default export */ var ManageMemorial_InvitationModal = (InvitationModal_InvitationModal);
+// CONCATENATED MODULE: ./routes/ManageMemorial/Invitations.js
+
+
+function Invitations__classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function Invitations__possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function Invitations__inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+
+
+
+
+
+
+
+
+
+
+var Invitations__ref = Object(preact_min["h"])(
+   'h4',
+   { 'class': 'col', style: 'width:80%' },
+   'Invite Others to Contribute'
+);
+
+var Invitations__ref2 = Object(preact_min["h"])(
+   'span',
+   { 'class': 'input-group-addon addon-sm' },
+   Object(preact_min["h"])('i', { 'class': 'icon icon-search' })
+);
+
+var Invitations__ref3 = Object(preact_min["h"])(
+   'h5',
+   null,
+   'You haven\'t invited anyone yet'
+);
+
+var Invitations__ref4 = Object(preact_min["h"])(
+   'label',
+   { 'class': 'form-label' },
+   'Enter email addresses'
+);
+
+var Invitations_Invitations = function (_Component) {
+   Invitations__inherits(Invitations, _Component);
+
+   function Invitations() {
+      var _temp, _this, _ret;
+
+      Invitations__classCallCheck(this, Invitations);
+
+      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+         args[_key] = arguments[_key];
+      }
+
+      return _ret = (_temp = (_this = Invitations__possibleConstructorReturn(this, _Component.call.apply(_Component, [this].concat(args))), _this), _this.state = {
+         email: '',
+         emails: [],
+         emailError: false,
+         active: false,
+         // email search string
+         filter: '',
+         showModal: false
+      }, _this.onChange = function (e) {
+         var _this$setState;
+
+         _this.setState((_this$setState = {}, _this$setState[e.target.name] = e.target.value, _this$setState));
+      }, _this.hideModal = function () {
+         _this.setState({ showModal: false });
+      }, _this._handleEmailChange = function (e) {
+         _this.setState({ email: e.target.value });
+      }, _this._addEmail = function (e) {
+         e.preventDefault();
+         // if not valid email address
+         if (!isEmail_default()(_this.state.email)) {
+            // throw email error, don't submit
+            _this.setState({ emailError: true });
+            return;
+         } else {
+            _this.setState({ emailError: false });
+         }
+
+         _this.setState({
+            emails: [].concat(_this.state.emails, [_this.state.email]),
+            email: ''
+         });
+      }, _this._removeEmail = function (e) {
+         // save all emails except the one we want to get rid of...
+         // NOTE - originally intended to use e.target.value, but that isn't
+         // a thing when clicking on <a> tags. went with e.target.name as
+         // that was something I could set when the element is created.
+         // see line 67 below.
+         var emails = _this.state.emails.filter(function (email) {
+            return email !== e.target.name;
+         });
+         // and set the state to that.
+         _this.setState({ emails: emails });
+      }, _this.updEmails = function () {
+         fetch(api + "!updEmails", {
+            method: "POST",
+            body: JSON.stringify({
+               emails: _this.state.emails,
+               memorial: _this.props.memorial.urlNm,
+               loginToken: window.sessionStorage.getItem('loginToken')
+            })
+         }).then(function (res) {
+            return res.json();
+         }).then(function (json) {
+            console.log(json);
+         });
+      }, _temp), Invitations__possibleConstructorReturn(_this, _ret);
+   }
+
+   // update invitation list for memorial
+
+
+   Invitations.prototype.render = function render(props, state) {
+      var _this2 = this;
+
+      var formClasses = classnames_default()('form-group', { 'has-error': this.state.emailError });
+
+      var emailHintClasses = classnames_default()('form-input-hint', { 'd-hide': !this.state.emailError });
+
+      return Object(preact_min["h"])(
+         'div',
+         null,
+         Object(preact_min["h"])(
+            'div',
+            { 'class': 'row my-2' },
+            Invitations__ref,
+            Object(preact_min["h"])(
+               'button',
+               { 'class': 'btn btn-primary col',
+                  onClick: function onClick() {
+                     return _this2.setState({ showModal: true });
+                  }
+               },
+               ' Edit Invitation'
+            )
+         ),
+         Object(preact_min["h"])(ManageMemorial_InvitationModal, {
+            memorial: this.props.memorial,
+            showModal: this.state.showModal,
+            hideModal: this.hideModal
+         }),
+         this.props.memorial.emails ? Object(preact_min["h"])(
+            'div',
+            null,
+            Object(preact_min["h"])(
+               'span',
+               { 'class': 'badge',
+                  'data-badge': this.props.memorial.emails.length.toString()
+               },
+               'Invitations Sent'
+            ),
+            Object(preact_min["h"])(
+               'span',
+               null,
+               this.state.active ? Object(preact_min["h"])(
+                  'div',
+                  { 'class': 'd-inline' },
+                  Object(preact_min["h"])(
+                     'button',
+                     { 'class': 'btn btn-sm ml-2',
+                        onClick: function onClick() {
+                           return _this2.setState({ active: false });
+                        }
+                     },
+                     ' hide'
+                  ),
+                  Object(preact_min["h"])(
+                     'div',
+                     { 'class': 'input-group float-right' },
+                     Invitations__ref2,
+                     Object(preact_min["h"])('input', {
+                        'class': 'form-input input-sm',
+                        type: 'text',
+                        value: this.state.filter,
+                        onInput: this.onChange,
+                        name: 'filter'
+                     })
+                  )
+               ) : Object(preact_min["h"])(
+                  'button',
+                  { 'class': 'btn btn-sm ml-2',
+                     onClick: function onClick() {
+                        return _this2.setState({ active: true });
+                     }
+                  },
+                  ' show'
+               )
+            ),
+            this.state.active && Object(preact_min["h"])(
+               'div',
+               { 'class': 'my-2' },
+               this.state.filter !== "" ? this.props.memorial.emails.filter(function (email) {
+                  return email.includes(_this2.state.filter);
+               }).map(function (email) {
+                  return Object(preact_min["h"])(
+                     'span',
+                     { 'class': 'chip' },
+                     email
+                  );
+               }) : this.props.memorial.emails.map(function (email) {
+                  return Object(preact_min["h"])(
+                     'span',
+                     { 'class': 'chip' },
+                     email
+                  );
+               })
+            )
+         ) : Invitations__ref3,
+         Object(preact_min["h"])(
+            'form',
+            { 'class': formClasses },
+            Invitations__ref4,
+            Object(preact_min["h"])(
+               'div',
+               { 'class': 'input-group' },
+               Object(preact_min["h"])('input', {
+                  type: 'email',
+                  'class': 'form-input',
+                  value: this.state.email,
+                  onChange: this._handleEmailChange
+               }),
+               Object(preact_min["h"])(
+                  'button',
+                  {
+                     'class': 'btn btn-primary input-group-btn',
+                     type: 'submit',
+                     onClick: this._addEmail
+                  },
+                  'Add'
+               )
+            ),
+            Object(preact_min["h"])(
+               'p',
+               { 'class': emailHintClasses },
+               'Please enter a valid email address'
+            )
+         ),
+         Object(preact_min["h"])(
+            'div',
+            { 'class': 'mt-2' },
+            this.state.emails.map(function (email) {
+               return Object(preact_min["h"])(
+                  'span',
+                  {
+                     'class': 'chip'
+                  },
+                  email,
+                  Object(preact_min["h"])('a', {
+                     'class': 'btn btn-clear',
+                     'aria-label': 'Close',
+                     role: 'button',
+                     onClick: _this2._removeEmail,
+                     name: email
+                  })
+               );
+            })
+         ),
+         Object(preact_min["h"])(
+            'div',
+            { 'class': 'row my-2' },
+            Object(preact_min["h"])(
+               'button',
+               { 'class': 'btn btn-primary float-right',
+                  onClick: this.updEmails
+               },
+               ' Send Invitations'
+            )
+         )
+      );
+   };
+
+   return Invitations;
+}(preact_min["Component"]);
+
+/* harmony default export */ var ManageMemorial_Invitations = (Invitations_Invitations);
 // CONCATENATED MODULE: ./routes/ManageMemorial/index.js
 
 
@@ -5359,7 +6055,21 @@ function ManageMemorial__inherits(subClass, superClass) { if (typeof superClass 
 
 
 
+
+
 var ManageMemorial__ref = Object(preact_min["h"])('div', { 'class': 'divider' });
+
+var ManageMemorial__ref2 = Object(preact_min["h"])(
+   'div',
+   null,
+   'This is the Atlas component'
+);
+
+var ManageMemorial__ref3 = Object(preact_min["h"])(
+   'div',
+   null,
+   'This is the Shrine component'
+);
 
 var ManageMemorial_ManageMemorial = function (_Component) {
    ManageMemorial__inherits(ManageMemorial, _Component);
@@ -5375,7 +6085,9 @@ var ManageMemorial_ManageMemorial = function (_Component) {
 
       return _ret = (_temp = (_this = ManageMemorial__possibleConstructorReturn(this, _Component.call.apply(_Component, [this].concat(args))), _this), _this.state = {
          item: {},
-         showModal: false
+         showModal: false,
+
+         active: 'chronicle'
       }, _this.onChange = function (e) {
          var oldState = _this.state.item;
          var newState = _this.state.item;
@@ -5624,25 +6336,86 @@ var ManageMemorial_ManageMemorial = function (_Component) {
          contentColumn: Object(preact_min["h"])(
             'div',
             null,
-            Object(preact_min["h"])(ManageMemorial_BulkImport, {
-               urlNm: memorial.urlNm
-            }),
-            Object(preact_min["h"])(ManageMemorial_ContentList, {
-               showModal: this.showModal,
-               items: memorial.items,
-               newItem: this.newItem
-            }),
-            Object(preact_min["h"])(ManageMemorial_EditModal, {
-               showModal: this.state.showModal,
-               hideModal: this.hideModal,
+            Object(preact_min["h"])(
+               'ul',
+               { 'class': 'tab tab-block' },
+               Object(preact_min["h"])(
+                  'li',
+                  { 'class': "tab-item c-hand " + (this.state.active === "chronicle" ? "active" : "") },
+                  Object(preact_min["h"])(
+                     'a',
+                     { onClick: function onClick() {
+                           return _this2.setState({ active: "chronicle" });
+                        }
+                     },
+                     'Chronicle'
+                  )
+               ),
+               Object(preact_min["h"])(
+                  'li',
+                  { 'class': "tab-item c-hand " + (this.state.active === "atlas" ? "active" : "") },
+                  Object(preact_min["h"])(
+                     'a',
+                     { onClick: function onClick() {
+                           return _this2.setState({ active: "atlas" });
+                        }
+                     },
+                     ' Atlas'
+                  )
+               ),
+               Object(preact_min["h"])(
+                  'li',
+                  { 'class': "tab-item c-hand " + (this.state.active === "shrine" ? "active" : "") },
+                  Object(preact_min["h"])(
+                     'a',
+                     { onClick: function onClick() {
+                           return _this2.setState({ active: "shrine" });
+                        }
+                     },
+                     'Shrine'
+                  )
+               ),
+               Object(preact_min["h"])(
+                  'li',
+                  { 'class': "tab-item c-hand " + (this.state.active === "invitations" ? "active" : "") },
+                  Object(preact_min["h"])(
+                     'a',
+                     { onClick: function onClick() {
+                           return _this2.setState({ active: "invitations" });
+                        }
+                     },
+                     ' Invitations'
+                  )
+               )
+            ),
+            this.state.active === "chronicle" && Object(preact_min["h"])(
+               'div',
+               null,
+               Object(preact_min["h"])(ManageMemorial_BulkImport, {
+                  urlNm: memorial.urlNm
+               }),
+               Object(preact_min["h"])(ManageMemorial_ContentList, {
+                  showModal: this.showModal,
+                  items: memorial.items,
+                  newItem: this.newItem
+               }),
+               Object(preact_min["h"])(ManageMemorial_EditModal, {
+                  showModal: this.state.showModal,
+                  hideModal: this.hideModal,
 
-               updChronicle: this.updChronicle,
-               newChronicle: this.newChronicle,
+                  updChronicle: this.updChronicle,
+                  newChronicle: this.newChronicle,
 
-               onChange: this.onChange,
-               onFileChange: this.onFileChange,
+                  onChange: this.onChange,
+                  onFileChange: this.onFileChange,
 
-               item: this.state.item
+                  item: this.state.item
+               })
+            ),
+            this.state.active === "atlas" && ManageMemorial__ref2,
+            this.state.active === "shrine" && ManageMemorial__ref3,
+            this.state.active === "invitations" && Object(preact_min["h"])(ManageMemorial_Invitations, {
+               memorial: memorial
             })
          )
       });
@@ -5906,7 +6679,7 @@ var AvatarRail__ref = Object(preact_min["h"])(menu_MenuDivider, null);
 var AvatarRail_AvatarRail = function AvatarRail(props) {
    return Object(preact_min["h"])(
       menu_Menu,
-      { style: 'z-index:1;' },
+      { style: 'z-index:1;background:rgba(255,255,255,0.9);' },
       Object(preact_min["h"])(
          'figure',
          { 'class': 'avatar avatar-xxl centered mt-2', 'data-initial': props.firstName.charAt[0] },
@@ -6079,10 +6852,6 @@ var TimeLine_TimeLine = function (_Component) {
 }(preact_min["Component"]);
 
 
-// EXTERNAL MODULE: ../node_modules/marked/lib/marked.js
-var marked = __webpack_require__("3F7m");
-var marked_default = /*#__PURE__*/__webpack_require__.n(marked);
-
 // CONCATENATED MODULE: ./routes/Chronicle/ChronicleCard.js
 
 
@@ -6105,7 +6874,8 @@ var ChronicleCard_ChronicleCard = function ChronicleCard(props) {
             props.src && Object(preact_min["h"])('img', {
                src: props.src,
                alt: props.title,
-               'class': 'img-responsive centered my-2'
+               'class': 'img-responsive centered my-2',
+               style: 'max-height:400px;'
             }),
             Object(preact_min["h"])(
                'h4',
@@ -6114,12 +6884,12 @@ var ChronicleCard_ChronicleCard = function ChronicleCard(props) {
             ),
             Object(preact_min["h"])(
                'div',
-               { 'class': 'text-gray d-inline' },
+               { 'class': 'd-inline' },
                props.location
             ),
             Object(preact_min["h"])(
                'div',
-               { 'class': 'text-gray d-inline mx-2' },
+               { 'class': 'd-inline mx-2' },
                props.date
             )
          )
@@ -6989,6 +7759,7 @@ var app_App = function (_Component) {
 
 
 // CONCATENATED MODULE: ./index.js
+
 
 
 
@@ -13841,6 +14612,13 @@ function isEmail(str, options) {
   return true;
 }
 module.exports = exports['default'];
+
+/***/ }),
+
+/***/ "nDyB":
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
 
 /***/ }),
 
