@@ -16,3 +16,11 @@
 .form-input[type="file"] {
    overflow: hidden;
 }
+
+body {
+   color: #333;
+}
+
+.menu {
+   min-width: unset;
+}

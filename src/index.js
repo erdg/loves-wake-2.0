@@ -5,6 +5,7 @@ import './style/flex-container.css';
 import './style/dialog.css';
 import './style/spectre-override.css';
 import './style/avatar-rail.css';
+import './style/loves-wake.css';
 
 import './api';
 

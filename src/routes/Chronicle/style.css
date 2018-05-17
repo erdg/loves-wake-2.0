@@ -6,6 +6,7 @@
 .ChronicleCard {
    width: 100%;
    height: 500px;
+   background: rgba(255,255,255, 0.9);
    /* height: 40vw; // test on big screen */
 }
 
@@ -13,13 +14,22 @@
    position: relative;
    bottom: 140px;
    right: 46px;
+   background: rgba(255,255,255, 0.9);
 }
 
 .RightArrow {
    position: relative;
    bottom: 140px;
    left: 80px;
+   background: rgba(255,255,255, 0.9);
 }
+
+.RightArrow:hover,
+.LeftArrow:hover {
+   color: white;
+   background: #5755d9;
+}
+
 
 .AddSomething {
    position: relative;

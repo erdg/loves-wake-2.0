@@ -56,13 +56,23 @@ const AvatarRail = (props) => {
             <MenuItem 
                class={ props.step === 4 && "arrow-box" }
             >
-               <a class="btn btn-sm btn-link" onClick={(n) => props.gotoStep(4)}>Invitation Template</a>
+               <a class="btn btn-sm btn-link"
+                  onClick={() => {
+                     props.gotoStep(4)
+                  }}
+               >Invitation Template
+               </a>
             </MenuItem>
 
             <MenuItem 
                class={ props.step === 5 && "arrow-box" }
             >
-               <a class="btn btn-sm btn-link" onClick={(n) => props.gotoStep(5)}>Customize Invitation</a>
+               <a class="btn btn-sm btn-link"
+                  onClick={() => {
+                     props.gotoStep(5)
+                  }}
+               >Customize Invitation
+               </a>
             </MenuItem>
 
             <MenuItem 

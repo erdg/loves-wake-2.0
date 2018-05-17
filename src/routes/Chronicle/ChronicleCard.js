@@ -21,11 +21,12 @@ const ChronicleCard = (props) => (
                      src={props.src} 
                      alt={props.title} 
                      class="img-responsive centered my-2"
+                     style="max-height:400px;"
                   />
                }
                <h4>{props.title}</h4>
-               <div class="text-gray d-inline">{props.location}</div> 
-               <div class="text-gray d-inline mx-2">{props.date}</div>
+               <div class="d-inline">{props.location}</div> 
+               <div class="d-inline mx-2">{props.date}</div>
             </div>
          }
       </div>

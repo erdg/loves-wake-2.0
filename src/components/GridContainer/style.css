@@ -10,7 +10,7 @@
 .avatarColumn {
    flex: 0 0 16%;
    margin-bottom: 16px;
-   min-width: 240px;
+   max-width: 150px;
 }
 
 .avatarColumn > div {
