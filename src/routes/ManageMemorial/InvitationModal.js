@@ -12,7 +12,7 @@ class InvitationModal extends Component {
          sanitize: true
       })
       this.state = {
-         invitation: this.props.memorial.invitation
+         invitation: this.props.memorial.invitation || ''
       }
    }
 

@@ -112,6 +112,7 @@
       (if (: died) (link (cons "died" @)))
       (if (: img) (link (cons "avatar" (pack *API (blob This 'img)))))
       (if (: emails) (link (cons "emails" T (: emails))))
+      (if (: invite) (link (cons "invitation" (glue "\n\n" (make (in (blob This 'invite) (until (eof) (link (line T)))))))))
       (link
          (make (link "items" T)
             (for C (: chronicle)
