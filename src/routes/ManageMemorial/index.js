@@ -12,6 +12,8 @@ import DeleteModal from './DeleteModal';
 
 import Invitations from './Invitations';
 
+import anime from 'animejs';
+
 class ManageMemorial extends Component {
    state = {
       item: {},
@@ -19,6 +21,7 @@ class ManageMemorial extends Component {
       showDeleteModal: false,
 
       active: 'chronicle',
+      items: this.props.user.memorials.find(m => m.urlNm === this.props.urlNm).items
    }
 
    onChange = (e) => {
@@ -249,13 +252,25 @@ class ManageMemorial extends Component {
             loginToken: window.sessionStorage.getItem('loginToken')
          })
       }).then(res => res.json()).then(json => {
-         let memorial = this.props.user.memorials.find(m => m.urlNm === this.props.urlNm);
-         console.log(memorial);
-         let item =  memorial.items.find(item => item.id === this.state.item.id);
-         console.log(item);
-         let idx = memorial.items.indexOf(item);
-         if (idx !== -1) memorial.items.splice(idx, 1);
          this.hideDeleteModal();
+         let item =  this.state.items.find(item => item.id === this.state.item.id);
+         console.log(item);
+         let delAnimation = anime.timeline();
+         delAnimation.add({
+            targets: '.item-' + item.id,
+            scale: 1.1,
+            duration: 100
+         }).add({
+            targets: '.item-' + item.id,
+            scale: 0,
+            duration: 500,
+            complete: () => {
+               let items = this.state.items.filter( i => i !== item );
+               this.setState({ items: items });
+               var el = document.querySelector('.item-' + item.id);
+               el.parentNode.removeChild(el);
+            }
+         })
       })
    }
 
@@ -291,7 +306,7 @@ class ManageMemorial extends Component {
    }
 
    render () {
-      let memorial = this.props.user.memorials.find(m => m.urlNm === this.props.urlNm);
+      let memorial = this.props.user.memorials.find(m => m.urlNm === this.props.urlNm)
       return (
          <GridContainer
             avatarColumn={
@@ -345,7 +360,7 @@ class ManageMemorial extends Component {
                         />
                         <ContentList 
                            showModal={this.showModal} 
-                           items={memorial.items} 
+                           items={this.state.items} 
                            newItem={this.newItem}
                            showDeleteModal={(id) => this.showDeleteModal(id)}
                         />
