@@ -51,37 +51,22 @@ const MemorialList = (props) => (
 )
 
 const MemorialTile = (props) => (
-   <div class="tile tile-centered m-2 p-2" style="flex-wrap:wrap;">
-      <div class="tile-icon">
-         <figure class={"avatar avatar-xl " + style.tileAvatar}> 
-            <img src={props.avatar} />
-         </figure>
-      </div>
-      <div class="tile-content">
-         <p class="tile-title h5">{props.nm}</p>
-         { props.died ?
-            <p class="tile-subtitle text-gray">
-               {props.born} to {props.died}
-            </p>
-               :
-            <p class="tile-subtitle text-gray">
-               b. {props.born}
-            </p>
-         }
-      </div>
-      <div class="tile-action">
-         <button 
-            class="btn btn-sm row m-1"
-            onClick={() => route("/user/manage-memorial/" + props.urlNm)}
-         > 
-            Manage content
-         </button>
-         <button 
-            class="btn btn-sm row m-1"
-            onClick={() => route("/" + props.urlStr + "/" + props.urlNm + "/chronicle")}
-         > 
-            View chronicle
-         </button>
+   <div class="card m-2 p-2" style="flex-wrap:wrap;">
+      <div class="card-body">
+         <img class="img-responsive" src={props.avatar} />
+            <p class="card-title col h5">{props.nm}</p>
+            <button 
+               class="btn btn-sm row m-1"
+               onClick={() => route("/user/manage-memorial/" + props.urlNm)}
+            > 
+               Manage content
+            </button>
+            <button 
+               class="btn btn-sm row m-1"
+               onClick={() => route("/" + props.urlStr + "/" + props.urlNm + "/chronicle")}
+            > 
+               View chronicle
+            </button>
       </div>
    </div>
 )

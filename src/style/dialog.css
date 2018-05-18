@@ -19,25 +19,34 @@
       word-wrap: normal;
       width: 100%;
       min-width: 444px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 8px;
+      border-radius: 2px;
    }
    .selectInvitationDialog {
       position: absolute;
-      top: -262px;
+      top: -294px;
       left: 328px;
       font-weight: normal;
       word-wrap: normal;
       width: 100%;
       min-width: 444px;
       margin-top: 0;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 8px;
+      border-radius: 2px;
    }
    .customizeInvitationDialog {
       position: absolute;
-      top: -380px;
+      top: -388px;
       left: 328px;
       font-weight: normal;
       word-wrap: normal;
       width: 100%;
       min-width: 444px;
       margin-top: 0;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 8px;
+      border-radius: 2px;
    }
 }

@@ -35,10 +35,12 @@
 .form-rail {
    flex: 0 0 307px;
    margin: 8px;
+   padding: 8px;
+   background: rgba(255, 255, 255, 0.9);
+   border-radius: 2px;
 }
 
 .dialog-rail {
-   /* background-color: lightgray; */
    flex: 0 0 470px;
 }
 

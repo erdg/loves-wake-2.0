@@ -1,5 +1,8 @@
 .avatar-rail-menu {
    font-size: small;
+   background: rgba(255, 255, 255, 0.9);
+   list-style: none;
+   margin: 8px;
 }
 
 .avatar.avatar-xxl {
