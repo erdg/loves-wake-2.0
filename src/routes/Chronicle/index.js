@@ -246,8 +246,9 @@ export default class Chronicle extends Component {
          prevAnimation.add({
             targets: '.panel',
             translateX: 1000, 
-            duration: 500, 
+            duration: 250, 
             opacity: 0,
+            scale: '0.3',
             easing: 'easeInSine',
             complete: () => {
                this.setState({ currentItem: this.state.items[index - 1] });
@@ -256,8 +257,9 @@ export default class Chronicle extends Component {
          }).add({
             targets: '.panel',
             translateX: [-2000, 0],
-            duration: 500, 
+            duration: 250, 
             opacity: 1,
+            scale: ['*=0.3', 1],
             easing: 'easeInSine'
          });
       }
@@ -272,8 +274,9 @@ export default class Chronicle extends Component {
          nextAnimation.add({
             targets: '.panel',
             translateX: -2000, 
-            duration: 500, 
+            duration: 250, 
             opacity: 0,
+            scale: 0.3,
             easing: 'easeInSine',
             complete: () => {
                this.setState({ currentItem: this.state.items[index + 1] });
@@ -282,8 +285,9 @@ export default class Chronicle extends Component {
          }).add({
             targets: '.panel',
             translateX: [1000, 0],
-            duration: 500, 
+            duration: 250, 
             opacity: 1,
+            scale: ['*=0.3', 1],
             easing: 'easeInSine'
          });
       }
