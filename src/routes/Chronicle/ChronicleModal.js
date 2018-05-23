@@ -94,11 +94,11 @@ const ChronicleModal = (props) => {
                      <label
                         class="form-label"
                      >
-                        Add a photo
+                        Add an image, audio or video file
                         <input 
                            class="form-input"
                            type="file" 
-                           accept=".jpg, .jpeg, .png"
+                           accept="audio/*, video/*, image/*"
                            value={props.file} 
                            onChange={props.onFileChange}
                         />

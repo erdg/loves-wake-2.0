@@ -6,6 +6,7 @@ import './style/dialog.css';
 import './style/spectre-override.css';
 import './style/avatar-rail.css';
 import './style/loves-wake.css';
+import './style/material-icons.css';
 
 import './api';
 

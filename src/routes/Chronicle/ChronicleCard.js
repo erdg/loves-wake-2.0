@@ -7,6 +7,7 @@ const ChronicleCard = (props) => (
    <div 
       class={props.stylesheet ? "panel " + style.ChronicleCard : "panel"}
       style={props.style ? "min-height:400px;" : ""}
+      id="ChronicleCard"
    >
 
       <div class="panel-body my-2">
@@ -16,12 +17,30 @@ const ChronicleCard = (props) => (
             <div dangerouslySetInnerHTML={{__html: marked(props.txt.split("^J^J").join("\n"))}} />
                :
             <div>
-               { props.src &&
+               { props.imageSrc &&
                   <img 
-                     src={props.src} 
+                     src={props.imageSrc} 
                      alt={props.title} 
                      class="img-responsive centered my-2"
                      style="max-height:400px;"
+                  />
+               }
+               { props.audioSrc &&
+                  <audio 
+                     src={props.audioSrc} 
+                     alt={props.title} 
+                     class="img-responsive centered my-2"
+                     style="max-height:400px;"
+                     controls
+                  />
+               }
+               { props.videoSrc &&
+                  <video 
+                     src={props.videoSrc} 
+                     alt={props.title} 
+                     class="img-responsive centered my-2"
+                     style="max-height:400px;"
+                     controls
                   />
                }
                <h4>{props.title}</h4>

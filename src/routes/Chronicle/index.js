@@ -6,6 +6,7 @@ import './linked-ref';
 import API_ENDPOINT from '../../api';
 
 import anime from 'animejs';
+import Hammer from 'hammerjs';
 
 // generic components
 import GridContainer from '../../components/GridContainer';
@@ -16,6 +17,7 @@ import TimeLine from './TimeLine';
 import ChronicleCard from './ChronicleCard';
 import ChronicleModal from './ChronicleModal';
 import AddSomethingBtn from './AddSomethingBtn';
+import AddSomethingBtn2 from './AddSomethingBtn2';
 import AddWrittenModal from './AddWrittenModal';
 
 export default class Chronicle extends Component {
@@ -46,12 +48,13 @@ export default class Chronicle extends Component {
       items: []
    }
 
+
    onChange = (e) => {
       this.setState({ [e.target.name]: e.target.value });
    }
 
    onFileChange = (e) => {
-      // console.log(e);
+      console.log(e.target.files[0].type);
       this.setState({ file: e.target.files[0] });
       this.makeFileURL();
    }
@@ -98,7 +101,8 @@ export default class Chronicle extends Component {
             // as the base64 utility is still able to decode.
 
             // base64 string without padding
-            let str = e.target.result.split(',')[1]
+            let str = e.target.result.split(',')[1];
+            let blob = this.state.file.type.split('/')[0];
 
             fetch( API_ENDPOINT + "!newChronicle",
                { 
@@ -110,7 +114,7 @@ export default class Chronicle extends Component {
                      location: this.state.location,
                      date: this.state.date,
                      txt: this.state.txt,
-                     image: str
+                     [blob]: str
                   }) 
                }
             )
@@ -184,6 +188,60 @@ export default class Chronicle extends Component {
    }
 
    componentDidMount () {
+      // init swipe stuff
+      this.hammer = Hammer(document.getElementById('ChronicleCard'));
+      this.hammer.on('swipeleft', this.nextItem);
+      this.hammer.on('swiperight', this.prevItem);
+
+      // should init animations here, probably inefficient to
+      // create a new animation timeline every single time the
+      // button is clicked
+      this.nextAnimation = anime.timeline({autoplay: false});
+      this.nextAnimation.add({
+         targets: '.panel',
+         translateX: -2000, 
+         duration: 250, 
+         opacity: 0,
+         scale: 0.3,
+         easing: 'easeInSine',
+         complete: () => {
+            this.setState((prevState) => ( 
+               { currentItem: prevState.items[prevState.items.indexOf(prevState.currentItem) + 1] }
+            ));
+            this.refs.timeline.selectItem(this.state.currentItem);
+         }
+      }).add({
+         targets: '.panel',
+         translateX: [1000, 0],
+         duration: 500, 
+         opacity: 1,
+         scale: ['*=0.3', 1],
+         easing: 'easeInSine'
+      });
+
+      this.prevAnimation = anime.timeline({autoplay: false});
+      this.prevAnimation.add({
+         targets: '.panel',
+         translateX: 1000, 
+         duration: 250, 
+         opacity: 0,
+         scale: '0.3',
+         easing: 'easeInSine',
+         complete: () => {
+            this.setState((prevState) => ( 
+               { currentItem: prevState.items[prevState.items.indexOf(prevState.currentItem) - 1] }
+            ));
+            this.refs.timeline.selectItem(this.state.currentItem);
+         }
+      }).add({
+         targets: '.panel',
+         translateX: [-2000, 0],
+         duration: 500, 
+         opacity: 1,
+         scale: ['*=0.3', 1],
+         easing: 'easeInSine'
+      });
+
       // fetch chronicle items
       fetch( API_ENDPOINT + "!getChronicle?" + this.props.urlStr + "&" + this.props.urlNm)
       .then(res => res.json())
@@ -241,27 +299,27 @@ export default class Chronicle extends Component {
       let index = this.state.items.indexOf(this.state.currentItem);
       // make sure it's not the first item in array
       if (!(index === 0)) {
-         // this needs work
-         let prevAnimation = anime.timeline();
-         prevAnimation.add({
-            targets: '.panel',
-            translateX: 1000, 
-            duration: 250, 
-            opacity: 0,
-            scale: '0.3',
-            easing: 'easeInSine',
-            complete: () => {
-               this.setState({ currentItem: this.state.items[index - 1] });
-               this.refs.timeline.selectItem(this.state.currentItem);
-            }
-         }).add({
-            targets: '.panel',
-            translateX: [-2000, 0],
-            duration: 250, 
-            opacity: 1,
-            scale: ['*=0.3', 1],
-            easing: 'easeInSine'
-         });
+         this.prevAnimation.restart();
+         // let prevAnimation = anime.timeline();
+         // prevAnimation.add({
+         //    targets: '.panel',
+         //    translateX: 1000, 
+         //    duration: 250, 
+         //    opacity: 0,
+         //    scale: '0.3',
+         //    easing: 'easeInSine',
+         //    complete: () => {
+         //       this.setState({ currentItem: this.state.items[index - 1] });
+         //       this.refs.timeline.selectItem(this.state.currentItem);
+         //    }
+         // }).add({
+         //    targets: '.panel',
+         //    translateX: [-2000, 0],
+         //    duration: 500, 
+         //    opacity: 1,
+         //    scale: ['*=0.3', 1],
+         //    easing: 'easeInSine'
+         // });
       }
    }
 
@@ -269,27 +327,28 @@ export default class Chronicle extends Component {
       let length = this.state.items.length;
       let index = this.state.items.indexOf(this.state.currentItem);
       if (!(index === length - 1)) {
+         this.nextAnimation.restart();
          // this needs work
-         let nextAnimation = anime.timeline();
-         nextAnimation.add({
-            targets: '.panel',
-            translateX: -2000, 
-            duration: 250, 
-            opacity: 0,
-            scale: 0.3,
-            easing: 'easeInSine',
-            complete: () => {
-               this.setState({ currentItem: this.state.items[index + 1] });
-               this.refs.timeline.selectItem(this.state.currentItem);
-            }
-         }).add({
-            targets: '.panel',
-            translateX: [1000, 0],
-            duration: 250, 
-            opacity: 1,
-            scale: ['*=0.3', 1],
-            easing: 'easeInSine'
-         });
+         // let nextAnimation = anime.timeline();
+         // nextAnimation.add({
+         //    targets: '.panel',
+         //    translateX: -2000, 
+         //    duration: 250, 
+         //    opacity: 0,
+         //    scale: 0.3,
+         //    easing: 'easeInSine',
+         //    complete: () => {
+         //       this.setState({ currentItem: this.state.items[index + 1] });
+         //       this.refs.timeline.selectItem(this.state.currentItem);
+         //    }
+         // }).add({
+         //    targets: '.panel',
+         //    translateX: [1000, 0],
+         //    duration: 500, 
+         //    opacity: 1,
+         //    scale: ['*=0.3', 1],
+         //    easing: 'easeInSine'
+         // });
       }
    }
 
@@ -312,11 +371,13 @@ export default class Chronicle extends Component {
                      title={this.state.currentItem.title}
                      location={this.state.currentItem.location}
                      date={this.state.currentItem.start}
-                     src={this.state.currentItem.src}
+                     imageSrc={this.state.currentItem.imageSrc}
+                     audioSrc={this.state.currentItem.audioSrc}
+                     videoSrc={this.state.currentItem.videoSrc}
                      txt={this.state.currentItem.txt}
                   />
 
-                  <AddSomethingBtn 
+                  <AddSomethingBtn2
                      showModal={this.showModal} 
                      showWrittenModal={this.showWrittenModal}
                   />

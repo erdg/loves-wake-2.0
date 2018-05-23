@@ -228,6 +228,8 @@
 (rel date (+Ref +String))
 (rel txt (+Blob))                      # story text (markdown)
 (rel img (+Blob))                      # image
+(rel aud (+Blob))                      # audio
+(rel vid (+Blob))                      # video
 
 (dm json> ()
    (make
@@ -237,7 +239,9 @@
       # use 'start' for vis.Timeline - start date (the 'point') on timeline
       (if (: date) (link (cons "start" @)))
       (if (: txt) (link (cons "txt" (glue "\n\n" (make (in (blob This 'txt) (until (eof) (link (line T)))))))))
-      (if (: img) (link (cons "src" (pack *API (blob This 'img))))) ) )
+      (if (: img) (link (cons "imageSrc" (pack *API (blob This 'img)))))
+      (if (: aud) (link (cons "audioSrc" (pack *API (blob This 'aud)))))
+      (if (: vid) (link (cons "videoSrc" (pack *API (blob This 'vid))))) ) )
 
 # API/!getChronicle
 (allow "!getChronicle")
@@ -258,13 +262,28 @@
             'title     (posted "title")
             'location  (posted "location")
             'date      (posted "date") ]
-         (when (posted "image")  # '@' now contains base64 data URL
-            (put!> This 'img T)
-            (pipe
-               # send to base64 utility to decode
-               (out '(base64 "-d") (prin @))
-               # write decoded image to db blob file
-               (out (blob This 'img) (echo) ) ) )
+         (cond 
+            ((posted "image")  # '@' now contains base64 data URL
+               (put!> This 'img T)
+               (pipe
+                  # send to base64 utility to decode
+                  (out '(base64 "-d") (prin @))
+                  # write decoded image to db blob file
+                  (out (blob This 'img) (echo) ) ) )
+            ((posted "audio")  # '@' now contains base64 data URL
+               (put!> This 'aud T)
+               (pipe
+                  # send to base64 utility to decode
+                  (out '(base64 "-d") (prin @))
+                  # write decoded audio to db blob file
+                  (out (blob This 'aud) (echo) ) ) )
+            ((posted "video")  # '@' now contains base64 data URL
+               (put!> This 'vid T)
+               (pipe
+                  # send to base64 utility to decode
+                  (out '(base64 "-d") (prin @))
+                  # write decoded video to db blob file
+                  (out (blob This 'vid) (echo) ) ) ) )
          (respondJson 
             (json> This) ) ) ) )
 
@@ -278,7 +297,7 @@
          (respondJson (list (cons "ok" "Item deleted"))) ) ) )
       
 
-# API/!postWrittenChronicle
+# API/!newWrittenChronicle
 (allow "!newWrittenChronicle")
 (de newWrittenChronicle (UrlNm)
    (if (db 'urlNm '+Memorial UrlNm)  # -> @
