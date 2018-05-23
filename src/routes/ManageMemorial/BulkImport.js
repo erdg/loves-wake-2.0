@@ -52,7 +52,7 @@ class BulkImport extends Component {
 
    render () {
       return (
-         <div class="row" style="margin-bottom:32px;">
+         <div class="row semi-transparent-bg" style="margin-bottom:32px">
             <h4>Bulk Import</h4>
             <input 
                class="form-input col"

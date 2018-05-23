@@ -87,7 +87,7 @@ class Invitations extends Component {
       );
 
       return (
-         <div>
+         <div class="semi-transparent-bg">
 
             <div class="row my-2">
                <h4 class="col" style="width:80%">Invite Others to Contribute</h4>

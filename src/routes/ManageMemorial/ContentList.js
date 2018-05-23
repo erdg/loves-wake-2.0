@@ -3,7 +3,7 @@ import { route } from 'preact-router';
 
 const ContentList = (props) => (
    <div>
-      <div class="row">
+      <div class="row semi-transparent-bg">
          <h4 class="col">Chronicle Items</h4>
          <div class="col" />
          <button
@@ -13,7 +13,6 @@ const ContentList = (props) => (
             Add Item
          </button>
       </div>
-      <div class="divider" />
       <div
          style={
             "display:flex;"

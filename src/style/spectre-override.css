@@ -25,3 +25,7 @@ body {
    min-width: unset;
    background: rgba(255, 255, 255, 0.9);
 }
+
+.tab, .tab-block {
+   background: rgba(255, 255, 255, 0.9);
+}
