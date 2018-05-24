@@ -29,7 +29,9 @@ const ContentList = (props) => (
                      title={item.title} 
                      date={item.start} 
                      location={item.location} 
-                     src={item.src}
+                     imageSrc={item.imageSrc}
+                     audioSrc={item.audioSrc}
+                     videoSrc={item.videoSrc}
                      showModal={(id) => props.showModal(id)}
                      showDeleteModal={(id) => props.showDeleteModal(id)}
                      edited={item.edited}
@@ -42,8 +44,22 @@ const ContentList = (props) => (
 
 const ContentCard = (props) => (
    <div class={"card m-2 item-" + props.id} style={"width:200px;"}>
-      { props.src &&
-            <img class="responsive-img mt-2 mx-2 centered" src={props.src} style="max-width:182px"/>
+      { props.imageSrc &&
+            <img class="responsive-img mt-2 mx-2 centered" src={props.imageSrc} style="max-width:182px"/>
+      }
+      { props.audioSrc &&
+            <audio class="responsive-img mt-2 mx-2 centered" 
+               src={props.audioSrc}
+               style="max-width:182px"
+               controls
+            />
+      }
+      { props.videoSrc &&
+            <video class="responsive-img mt-2 mx-2 centered" 
+               src={props.videoSrc} 
+               style="max-width:182px"
+               controls
+            />
       }
       <div class="card-body">
          <div class="h6 text-ellipsis">{props.title}</div>
