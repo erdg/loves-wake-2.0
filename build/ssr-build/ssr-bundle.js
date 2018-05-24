@@ -1842,6 +1842,10 @@ var avatar_rail_default = /*#__PURE__*/__webpack_require__.n(avatar_rail);
 var loves_wake = __webpack_require__("nDyB");
 var loves_wake_default = /*#__PURE__*/__webpack_require__.n(loves_wake);
 
+// EXTERNAL MODULE: ./style/material-icons.css
+var material_icons = __webpack_require__("eeh7");
+var material_icons_default = /*#__PURE__*/__webpack_require__.n(material_icons);
+
 // CONCATENATED MODULE: ./api/index.js
 // development
 // const API_ENDPOINT = "http://192.168.0.48:8888/";
@@ -3835,6 +3839,10 @@ var UserSettings_UserSettings = function (_Component) {
 }(preact_min["Component"]);
 
 
+// EXTERNAL MODULE: ../node_modules/marked/lib/marked.js
+var marked = __webpack_require__("3F7m");
+var marked_default = /*#__PURE__*/__webpack_require__.n(marked);
+
 // CONCATENATED MODULE: ./routes/create-shrine/next-step-button/index.js
 
 var next_step_button_NextStepButton = function NextStepButton(props) {
@@ -4242,10 +4250,6 @@ var create_shrine_form_step3_CreateShrineFormStep3 = function CreateShrineFormSt
    );
 };
 
-
-// EXTERNAL MODULE: ../node_modules/marked/lib/marked.js
-var marked = __webpack_require__("3F7m");
-var marked_default = /*#__PURE__*/__webpack_require__.n(marked);
 
 // CONCATENATED MODULE: ./routes/create-shrine/create-shrine-form-step4/index.js
 
@@ -4979,6 +4983,8 @@ function create_shrine__inherits(subClass, superClass) { if (typeof superClass !
 
 
 
+
+
 var create_shrine__ref = Object(preact_min["h"])(
    'h1',
    null,
@@ -5109,7 +5115,8 @@ var create_shrine_CreateShrine = function (_Component) {
             body: JSON.stringify({
                loginToken: window.sessionStorage.getItem('loginToken'),
                memorial: _this.state.memorial.urlNm,
-               invitation: _this.state.invitation
+               invitation: _this.state.invitation,
+               markdown: marked_default()(_this.state.invitation)
             })
          }).then(function (res) {
             return res.json();
@@ -5120,6 +5127,12 @@ var create_shrine_CreateShrine = function (_Component) {
          });
       }, _temp), create_shrine__possibleConstructorReturn(_this, _ret);
    }
+
+   CreateShrine.prototype.componentDidMount = function componentDidMount() {
+      marked_default.a.setOptions({
+         sanitize: true
+      });
+   };
 
    // this is a terrible function name...
    // as if death could be handled with 3 lines of code.
@@ -5217,15 +5230,13 @@ var ContentList__ref = Object(preact_min["h"])(
 
 var ContentList__ref2 = Object(preact_min["h"])('div', { 'class': 'col' });
 
-var ContentList__ref3 = Object(preact_min["h"])('div', { 'class': 'divider' });
-
 var ContentList_ContentList = function ContentList(props) {
    return Object(preact_min["h"])(
       'div',
       null,
       Object(preact_min["h"])(
          'div',
-         { 'class': 'row' },
+         { 'class': 'row semi-transparent-bg' },
          ContentList__ref,
          ContentList__ref2,
          Object(preact_min["h"])(
@@ -5237,7 +5248,6 @@ var ContentList_ContentList = function ContentList(props) {
             'Add Item'
          )
       ),
-      ContentList__ref3,
       Object(preact_min["h"])(
          'div',
          {
@@ -5249,7 +5259,9 @@ var ContentList_ContentList = function ContentList(props) {
                title: item.title,
                date: item.start,
                location: item.location,
-               src: item.src,
+               imageSrc: item.imageSrc,
+               audioSrc: item.audioSrc,
+               videoSrc: item.videoSrc,
                showModal: function showModal(id) {
                   return props.showModal(id);
                },
@@ -5263,15 +5275,25 @@ var ContentList_ContentList = function ContentList(props) {
    );
 };
 
-var ContentList__ref4 = Object(preact_min["h"])('i', { 'class': 'icon icon-delete' });
+var ContentList__ref3 = Object(preact_min["h"])('i', { 'class': 'icon icon-delete' });
 
-var ContentList__ref5 = Object(preact_min["h"])('i', { 'class': 'icon icon-edit' });
+var ContentList__ref4 = Object(preact_min["h"])('i', { 'class': 'icon icon-edit' });
 
 var ContentList_ContentCard = function ContentCard(props) {
    return Object(preact_min["h"])(
       'div',
       { 'class': "card m-2 item-" + props.id, style: "width:200px;" },
-      props.src && Object(preact_min["h"])('img', { 'class': 'responsive-img mt-2 mx-2 centered', src: props.src, style: 'max-width:182px' }),
+      props.imageSrc && Object(preact_min["h"])('img', { 'class': 'responsive-img mt-2 mx-2 centered', src: props.imageSrc, style: 'max-width:182px' }),
+      props.audioSrc && Object(preact_min["h"])('audio', { 'class': 'responsive-img mt-2 mx-2 centered',
+         src: props.audioSrc,
+         style: 'max-width:182px',
+         controls: true
+      }),
+      props.videoSrc && Object(preact_min["h"])('video', { 'class': 'responsive-img mt-2 mx-2 centered',
+         src: props.videoSrc,
+         style: 'max-width:182px',
+         controls: true
+      }),
       Object(preact_min["h"])(
          'div',
          { 'class': 'card-body' },
@@ -5303,7 +5325,7 @@ var ContentList_ContentCard = function ContentCard(props) {
                }
             },
             ' ',
-            ContentList__ref4
+            ContentList__ref3
          ),
          Object(preact_min["h"])(
             'button',
@@ -5315,7 +5337,7 @@ var ContentList_ContentCard = function ContentCard(props) {
                }
             },
             ' ',
-            ContentList__ref5
+            ContentList__ref4
          )
       )
    );
@@ -5590,7 +5612,7 @@ var BulkImport_BulkImport = function (_Component) {
    BulkImport.prototype.render = function render() {
       return Object(preact_min["h"])(
          'div',
-         { 'class': 'row', style: 'margin-bottom:32px;' },
+         { 'class': 'row semi-transparent-bg', style: 'margin-bottom:32px' },
          BulkImport__ref,
          Object(preact_min["h"])('input', {
             'class': 'form-input col',
@@ -5748,32 +5770,36 @@ var InvitationModal__ref = Object(preact_min["h"])(
    '- Scroll down to see a preview -'
 );
 
-var InvitationModal__ref2 = Object(preact_min["h"])('div', { 'class': 'modal-footer' });
-
 var InvitationModal_InvitationModal = function (_Component) {
    InvitationModal__inherits(InvitationModal, _Component);
 
-   function InvitationModal(props) {
+   function InvitationModal() {
+      var _temp, _this, _ret;
+
       InvitationModal__classCallCheck(this, InvitationModal);
 
-      var _this = InvitationModal__possibleConstructorReturn(this, _Component.call(this, props));
+      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+         args[_key] = arguments[_key];
+      }
 
-      _this.onChange = function (e) {
+      return _ret = (_temp = (_this = InvitationModal__possibleConstructorReturn(this, _Component.call.apply(_Component, [this].concat(args))), _this), _this.state = {
+         invitation: _this.props.memorial.invitationText.split("^J^J").join("\n") || ''
+      }, _this.onChange = function (e) {
          var _this$setState;
 
          _this.setState((_this$setState = {}, _this$setState[e.target.name] = e.target.value, _this$setState));
-      };
+      }, _temp), InvitationModal__possibleConstructorReturn(_this, _ret);
+   }
 
+   InvitationModal.prototype.componentDidMount = function componentDidMount() {
       marked_default.a.setOptions({
          sanitize: true
       });
-      _this.state = {
-         invitation: _this.props.memorial.invitation || ''
-      };
-      return _this;
-   }
+   };
 
    InvitationModal.prototype.render = function render(props) {
+      var _this2 = this;
+
       var modalClasses = classnames_default()("modal", "modal-lg", { "active": props.showModal }, { "has-error": props.modalError });
 
       var errorHint = classnames_default()("form-input-hint", "float-left", { "d-hide": !props.modalError });
@@ -5830,7 +5856,20 @@ var InvitationModal_InvitationModal = function (_Component) {
                   )
                )
             ),
-            InvitationModal__ref2
+            Object(preact_min["h"])(
+               'div',
+               { 'class': 'modal-footer' },
+               Object(preact_min["h"])(
+                  'button',
+                  { 'class': 'btn btn-primary',
+                     onClick: function onClick(updated) {
+                        props.updInvitation(_this2.state.invitation);
+                        props.hideModal();
+                     }
+                  },
+                  ' Update Invitation'
+               )
+            )
          )
       );
    };
@@ -5937,6 +5976,10 @@ var Invitations_Invitations = function (_Component) {
          // and set the state to that.
          _this.setState({ emails: emails });
       }, _this.updEmails = function () {
+         if (_this.state.emails.length === 0) {
+            alert("No new people to send inivations to, please add new email addresses.");
+            return;
+         }
          fetch(api + "!updEmails", {
             method: "POST",
             body: JSON.stringify({
@@ -5964,7 +6007,7 @@ var Invitations_Invitations = function (_Component) {
 
       return Object(preact_min["h"])(
          'div',
-         null,
+         { 'class': 'semi-transparent-bg' },
          Object(preact_min["h"])(
             'div',
             { 'class': 'row my-2' },
@@ -5982,7 +6025,10 @@ var Invitations_Invitations = function (_Component) {
          Object(preact_min["h"])(ManageMemorial_InvitationModal, {
             memorial: this.props.memorial,
             showModal: this.state.showModal,
-            hideModal: this.hideModal
+            hideModal: this.hideModal,
+            updInvitation: function updInvitation(updated) {
+               return props.updInvitation(updated);
+            }
          }),
          this.props.memorial.emails ? Object(preact_min["h"])(
             'div',
@@ -6147,6 +6193,7 @@ function ManageMemorial__inherits(subClass, superClass) { if (typeof superClass 
 
 
 
+
 var ManageMemorial__ref = Object(preact_min["h"])('div', { 'class': 'divider' });
 
 var ManageMemorial__ref2 = Object(preact_min["h"])(
@@ -6164,30 +6211,35 @@ var ManageMemorial__ref3 = Object(preact_min["h"])(
 var ManageMemorial_ManageMemorial = function (_Component) {
    ManageMemorial__inherits(ManageMemorial, _Component);
 
-   function ManageMemorial() {
-      var _temp, _this, _ret;
-
+   function ManageMemorial(props) {
       ManageMemorial__classCallCheck(this, ManageMemorial);
 
-      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-         args[_key] = arguments[_key];
-      }
+      var _this = ManageMemorial__possibleConstructorReturn(this, _Component.call(this, props));
 
-      return _ret = (_temp = (_this = ManageMemorial__possibleConstructorReturn(this, _Component.call.apply(_Component, [this].concat(args))), _this), _this.state = {
+      _this.state = {
          item: {},
          showModal: false,
          showDeleteModal: false,
 
          active: 'chronicle',
+         // 'forks' items from user data
+         // allows to have UI update in response to deleting/editing items
+         // very gross hack
+         // this application needs a store, but I've decided to hack through
+         // features, take on technical debt and refactor later
          items: _this.props.user.memorials.find(function (m) {
             return m.urlNm === _this.props.urlNm;
          }).items
-      }, _this.onChange = function (e) {
+      };
+
+      _this.onChange = function (e) {
          var oldState = _this.state.item;
          var newState = _this.state.item;
          newState[e.target.name] = e.target.value;
          _this.setState({ oldState: newState });
-      }, _this.onFileChange = function (e) {
+      };
+
+      _this.onFileChange = function (e) {
          var oldState = _this.state.item;
          var newState = _this.state.item;
          newState["file"] = e.target.files[0];
@@ -6195,7 +6247,9 @@ var ManageMemorial_ManageMemorial = function (_Component) {
          // needed to do this as a separate step so the state
          // updates properly. which means this is a hack.
          _this.makeFileURL();
-      }, _this.makeFileURL = function () {
+      };
+
+      _this.makeFileURL = function () {
          var oldState = _this.state.item;
          var newState = _this.state.item;
          var reader = new FileReader();
@@ -6206,7 +6260,9 @@ var ManageMemorial_ManageMemorial = function (_Component) {
          };
 
          reader.readAsDataURL(_this.state.item.file);
-      }, _this.updChronicle = function () {
+      };
+
+      _this.updChronicle = function () {
          console.log('updChronicle');
 
          // handle errors
@@ -6285,7 +6341,9 @@ var ManageMemorial_ManageMemorial = function (_Component) {
          }
 
          _this.hideModal();
-      }, _this.newChronicle = function () {
+      };
+
+      _this.newChronicle = function () {
          console.log('newChronicle');
          // handle errors
          if (!(_this.state.item.title && _this.state.item.start)) {
@@ -6374,7 +6432,9 @@ var ManageMemorial_ManageMemorial = function (_Component) {
          }
 
          _this.hideModal();
-      }, _this.delChronicle = function () {
+      };
+
+      _this.delChronicle = function () {
          fetch(api + "!delChronicle", {
             method: "POST",
             body: JSON.stringify({
@@ -6408,21 +6468,51 @@ var ManageMemorial_ManageMemorial = function (_Component) {
                }
             });
          });
-      }, _this.showModal = function (id) {
+      };
+
+      _this.updInvitation = function (updated) {
+         _this.setState(function (prevState) {
+            return { invitation: updated };
+         });
+         if (!_this.state.invitation) {
+            return;
+         }
+         var markdown = marked_default()(_this.state.invitation);
+         console.log(markdown);
+         fetch(api + "!updInvitation", {
+            method: "POST",
+            body: JSON.stringify({
+               loginToken: window.sessionStorage.getItem('loginToken'),
+               memorial: _this.props.urlNm,
+               markdown: markdown,
+               invitation: _this.state.invitation
+            })
+         }).then(function (res) {
+            return res.json();
+         }).then(function (json) {
+            console.log(json);
+         });
+      };
+
+      _this.showModal = function (id) {
          var memorial = _this.props.user.memorials.find(function (m) {
             return m.urlNm === _this.props.urlNm;
          });
          _this.setState({ showModal: true, item: memorial.items.find(function (item) {
                return item.id === id;
             }) });
-      }, _this.showDeleteModal = function (id) {
+      };
+
+      _this.showDeleteModal = function (id) {
          var memorial = _this.props.user.memorials.find(function (m) {
             return m.urlNm === _this.props.urlNm;
          });
          _this.setState({ showDeleteModal: true, item: memorial.items.find(function (item) {
                return item.id === id;
             }) });
-      }, _this.hideModal = function () {
+      };
+
+      _this.hideModal = function () {
          var oldItem = _this.state.item;
          var newItem = _this.state.item;
          newItem["edited"] = true;
@@ -6431,12 +6521,21 @@ var ManageMemorial_ManageMemorial = function (_Component) {
             modalError: false,
             oldItem: newItem
          });
-      }, _this.hideDeleteModal = function () {
+      };
+
+      _this.hideDeleteModal = function () {
          _this.setState({ showDeleteModal: false });
-      }, _this.newItem = function () {
+      };
+
+      _this.newItem = function () {
          _this.showModal();
          _this.setState({ item: {} });
-      }, _temp), ManageMemorial__possibleConstructorReturn(_this, _ret);
+      };
+
+      marked_default.a.setOptions({
+         sanitize: true
+      });
+      return _this;
    }
 
    ManageMemorial.prototype.render = function render() {
@@ -6561,7 +6660,10 @@ var ManageMemorial_ManageMemorial = function (_Component) {
             this.state.active === "atlas" && ManageMemorial__ref2,
             this.state.active === "shrine" && ManageMemorial__ref3,
             this.state.active === "invitations" && Object(preact_min["h"])(ManageMemorial_Invitations, {
-               memorial: memorial
+               memorial: memorial,
+               updInvitation: function updInvitation(updated) {
+                  return _this2.updInvitation(updated);
+               }
             })
          )
       });
@@ -6796,6 +6898,10 @@ function linkRef(component, name) {
       component.refs[name] = c;
    });
 }
+// EXTERNAL MODULE: ./routes/Chronicle/swipe-it.min.js
+var swipe_it_min = __webpack_require__("hIwO");
+var swipe_it_min_default = /*#__PURE__*/__webpack_require__.n(swipe_it_min);
+
 // CONCATENATED MODULE: ./components/avatar.js
 
 // import classNames from 'classnames';
@@ -7009,7 +7115,8 @@ var ChronicleCard_ChronicleCard = function ChronicleCard(props) {
       'div',
       {
          'class': props.stylesheet ? "panel " + Chronicle_style_default.a.ChronicleCard : "panel",
-         style: props.style ? "min-height:400px;" : ""
+         style: props.style ? "min-height:400px;" : "",
+         id: 'ChronicleCard'
       },
       Object(preact_min["h"])(
          'div',
@@ -7017,11 +7124,25 @@ var ChronicleCard_ChronicleCard = function ChronicleCard(props) {
          props.txt ? Object(preact_min["h"])('div', { dangerouslySetInnerHTML: { __html: marked_default()(props.txt.split("^J^J").join("\n")) } }) : Object(preact_min["h"])(
             'div',
             null,
-            props.src && Object(preact_min["h"])('img', {
-               src: props.src,
+            props.imageSrc && Object(preact_min["h"])('img', {
+               src: props.imageSrc,
                alt: props.title,
                'class': 'img-responsive centered my-2',
                style: 'max-height:400px;'
+            }),
+            props.audioSrc && Object(preact_min["h"])('audio', {
+               src: props.audioSrc,
+               alt: props.title,
+               'class': 'img-responsive centered my-2',
+               style: 'max-height:400px;',
+               controls: true
+            }),
+            props.videoSrc && Object(preact_min["h"])('video', {
+               src: props.videoSrc,
+               alt: props.title,
+               'class': 'img-responsive centered my-2',
+               style: 'max-height:400px;',
+               controls: true
             }),
             Object(preact_min["h"])(
                'h4',
@@ -7124,11 +7245,11 @@ var ChronicleModal_ChronicleModal = function ChronicleModal(props) {
                      {
                         'class': 'form-label'
                      },
-                     'Add a photo',
+                     'Add an image, audio or video file',
                      Object(preact_min["h"])('input', {
                         'class': 'form-input',
                         type: 'file',
-                        accept: '.jpg, .jpeg, .png',
+                        accept: 'audio/*, video/*, image/*',
                         value: props.file,
                         onChange: props.onFileChange
                      })
@@ -7224,6 +7345,267 @@ var AddSomethingBtn_AddSomethingBtn = function AddSomethingBtn(props) {
 };
 
 /* harmony default export */ var Chronicle_AddSomethingBtn = (AddSomethingBtn_AddSomethingBtn);
+// CONCATENATED MODULE: ./routes/Chronicle/AddSomethingBtn2.js
+
+
+function AddSomethingBtn2__classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function AddSomethingBtn2__possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function AddSomethingBtn2__inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+
+
+
+var AddSomethingBtn2__ref = Object(preact_min["h"])('i', { 'class': 'icon icon-plus' });
+
+var AddSomethingBtn2__ref2 = Object(preact_min["h"])(
+   'i',
+   { 'class': 'material-icons float-right' },
+   'photo'
+);
+
+var AddSomethingBtn2__ref3 = Object(preact_min["h"])(
+   'i',
+   { 'class': 'material-icons float-right' },
+   'videocam'
+);
+
+var AddSomethingBtn2__ref4 = Object(preact_min["h"])(
+   'i',
+   { 'class': 'material-icons float-right' },
+   'audiotrack'
+);
+
+var AddSomethingBtn2__ref5 = Object(preact_min["h"])(
+   'i',
+   { 'class': 'material-icons float-right' },
+   'email'
+);
+
+var AddSomethingBtn2__ref6 = Object(preact_min["h"])(
+   'div',
+   { 'class': 'modal-title h5' },
+   'Add something'
+);
+
+var AddSomethingBtn2__ref7 = Object(preact_min["h"])(
+   'i',
+   { 'class': 'material-icons float-right' },
+   'photo'
+);
+
+var AddSomethingBtn2__ref8 = Object(preact_min["h"])(
+   'i',
+   { 'class': 'material-icons float-right' },
+   'videocam'
+);
+
+var AddSomethingBtn2__ref9 = Object(preact_min["h"])(
+   'i',
+   { 'class': 'material-icons float-right' },
+   'audiotrack'
+);
+
+var AddSomethingBtn2__ref10 = Object(preact_min["h"])(
+   'i',
+   { 'class': 'material-icons float-right' },
+   'email'
+);
+
+var AddSomethingBtn2_AddSomethingBtn2 = function (_Component) {
+   AddSomethingBtn2__inherits(AddSomethingBtn2, _Component);
+
+   function AddSomethingBtn2() {
+      AddSomethingBtn2__classCallCheck(this, AddSomethingBtn2);
+
+      return AddSomethingBtn2__possibleConstructorReturn(this, _Component.apply(this, arguments));
+   }
+
+   AddSomethingBtn2.prototype.render = function render(props) {
+      var width = window.innerWidth || document.documentElement.clientWidth || document.body.client.width;
+      return Object(preact_min["h"])(
+         'div',
+         { 'class': "d-block " + (width > 800 ? "popover popover-bottom " : "") + Chronicle_style_default.a.AddSomething },
+         Object(preact_min["h"])(
+            'button',
+            {
+               onClick: width < 800 ? function () {
+                  return document.getElementById('choose-modal').classList.add('active');
+               } : function () {},
+               'class': "circle btn btn-primary float-right " + (width < 800 ? "" : "tooltip tooltip-left dropdown-toggle"),
+               'tab-index': '0',
+               'data-tooltip': 'Add Something'
+            },
+            AddSomethingBtn2__ref
+         ),
+         width > 800 ? Object(preact_min["h"])(
+            'div',
+            { 'class': 'popover-container',
+               style: 'top:32px;left:unset;right:-100px;width:180px'
+            },
+            Object(preact_min["h"])(
+               'div',
+               { 'class': 'card'
+               },
+               Object(preact_min["h"])(
+                  'div',
+                  { 'class': 'card-body'
+                  },
+                  Object(preact_min["h"])(
+                     'ul',
+                     { style: 'list-style:none;' },
+                     Object(preact_min["h"])(
+                        'li',
+                        { 'class': 'menu-item' },
+                        Object(preact_min["h"])(
+                           'a',
+                           { 'class': 'd-block c-hand',
+                              onClick: props.showModal
+                           },
+                           ' Photo ',
+                           AddSomethingBtn2__ref2
+                        )
+                     ),
+                     Object(preact_min["h"])(
+                        'li',
+                        { 'class': 'menu-item' },
+                        Object(preact_min["h"])(
+                           'a',
+                           { 'class': 'd-block c-hand',
+                              onClick: props.showModal
+                           },
+                           ' Video ',
+                           AddSomethingBtn2__ref3
+                        )
+                     ),
+                     Object(preact_min["h"])(
+                        'li',
+                        { 'class': 'menu-item' },
+                        Object(preact_min["h"])(
+                           'a',
+                           { 'class': 'd-block c-hand',
+                              onClick: props.showModal
+                           },
+                           ' Audio ',
+                           AddSomethingBtn2__ref4
+                        )
+                     ),
+                     Object(preact_min["h"])(
+                        'li',
+                        { 'class': 'menu-item' },
+                        Object(preact_min["h"])(
+                           'a',
+                           { 'class': 'd-block c-hand',
+                              onClick: props.showWrittenModal
+                           },
+                           ' Text ',
+                           AddSomethingBtn2__ref5
+                        )
+                     )
+                  )
+               )
+            )
+         ) : Object(preact_min["h"])(
+            'div',
+            { id: 'choose-modal', 'class': 'modal modal-sm' },
+            Object(preact_min["h"])('a', { onClick: function onClick() {
+                  return document.getElementById('choose-modal').classList.remove('active');
+               },
+               'class': 'modal-overlay',
+               'aria-label': 'Close'
+            }),
+            Object(preact_min["h"])(
+               'div',
+               { 'class': 'modal-container' },
+               Object(preact_min["h"])(
+                  'div',
+                  { 'class': 'modal-header' },
+                  Object(preact_min["h"])('a', { onClick: function onClick() {
+                        return document.getElementById('choose-modal').classList.remove('active');
+                     },
+                     'class': 'btn btn-clear float-right',
+                     'aria-label': 'Close'
+                  }),
+                  AddSomethingBtn2__ref6
+               ),
+               Object(preact_min["h"])(
+                  'div',
+                  { 'class': 'modal-body' },
+                  Object(preact_min["h"])(
+                     'ul',
+                     { style: 'list-style:none;' },
+                     Object(preact_min["h"])(
+                        'li',
+                        { 'class': 'menu-item' },
+                        Object(preact_min["h"])(
+                           'a',
+                           { 'class': 'd-block c-hand',
+                              onClick: function onClick() {
+                                 props.showModal();
+                                 document.getElementById('choose-modal').classList.remove('active');
+                              }
+                           },
+                           ' Photo ',
+                           AddSomethingBtn2__ref7
+                        )
+                     ),
+                     Object(preact_min["h"])(
+                        'li',
+                        { 'class': 'menu-item' },
+                        Object(preact_min["h"])(
+                           'a',
+                           { 'class': 'd-block c-hand',
+                              onClick: function onClick() {
+                                 props.showModal();
+                                 document.getElementById('choose-modal').classList.remove('active');
+                              }
+                           },
+                           ' Video ',
+                           AddSomethingBtn2__ref8
+                        )
+                     ),
+                     Object(preact_min["h"])(
+                        'li',
+                        { 'class': 'menu-item' },
+                        Object(preact_min["h"])(
+                           'a',
+                           { 'class': 'd-block c-hand',
+                              onClick: function onClick() {
+                                 props.showModal();
+                                 document.getElementById('choose-modal').classList.remove('active');
+                              }
+                           },
+                           ' Audio ',
+                           AddSomethingBtn2__ref9
+                        )
+                     ),
+                     Object(preact_min["h"])(
+                        'li',
+                        { 'class': 'menu-item' },
+                        Object(preact_min["h"])(
+                           'a',
+                           { 'class': 'd-block c-hand',
+                              onClick: function onClick() {
+                                 props.showWrittenModal();
+                                 document.getElementById('choose-modal').classList.remove('active');
+                              }
+                           },
+                           ' Text ',
+                           AddSomethingBtn2__ref10
+                        )
+                     )
+                  )
+               )
+            )
+         )
+      );
+   };
+
+   return AddSomethingBtn2;
+}(preact_min["Component"]);
+
+/* harmony default export */ var Chronicle_AddSomethingBtn2 = (AddSomethingBtn2_AddSomethingBtn2);
 // CONCATENATED MODULE: ./routes/Chronicle/AddWrittenModal.js
 
 
@@ -7447,11 +7829,13 @@ function Chronicle__inherits(subClass, superClass) { if (typeof superClass !== "
 
 
 
+
 // generic components
 
 
 
 // route specific components
+
 
 
 
@@ -7504,7 +7888,7 @@ var Chronicle_Chronicle = function (_Component) {
 
          _this.setState((_this$setState = {}, _this$setState[e.target.name] = e.target.value, _this$setState));
       }, _this.onFileChange = function (e) {
-         // console.log(e);
+         console.log(e.target.files[0].type);
          _this.setState({ file: e.target.files[0] });
          _this.makeFileURL();
       }, _this.makeFileURL = function () {
@@ -7533,6 +7917,8 @@ var Chronicle_Chronicle = function (_Component) {
             var reader = new FileReader();
 
             reader.onload = function (e) {
+               var _JSON$stringify;
+
                // NOTE - must remove padding for picolisp
                //
                // base64 strings are padded with one or two '='s to make sure it aligns
@@ -7548,18 +7934,18 @@ var Chronicle_Chronicle = function (_Component) {
 
                // base64 string without padding
                var str = e.target.result.split(',')[1];
+               var blob = _this.state.file.type.split('/')[0];
 
                fetch(api + "!newChronicle", {
                   method: "POST",
-                  body: JSON.stringify({
+                  body: JSON.stringify((_JSON$stringify = {
                      urlNm: _this.props.urlNm,
                      title: _this.state.title,
                      subtitle: _this.state.subtitle,
                      location: _this.state.location,
                      date: _this.state.date,
-                     txt: _this.state.txt,
-                     image: str
-                  })
+                     txt: _this.state.txt
+                  }, _JSON$stringify[blob] = str, _JSON$stringify))
                }).then(function (res) {
                   return res.json();
                }).then(function (json) {
@@ -7648,59 +8034,118 @@ var Chronicle_Chronicle = function (_Component) {
          var index = _this.state.items.indexOf(_this.state.currentItem);
          // make sure it's not the first item in array
          if (!(index === 0)) {
-            // this needs work
-            var prevAnimation = anime_min_default.a.timeline();
-            prevAnimation.add({
-               targets: '.panel',
-               translateX: 1000,
-               duration: 250,
-               opacity: 0,
-               scale: '0.3',
-               easing: 'easeInSine',
-               complete: function complete() {
-                  _this.setState({ currentItem: _this.state.items[index - 1] });
-                  _this.refs.timeline.selectItem(_this.state.currentItem);
-               }
-            }).add({
-               targets: '.panel',
-               translateX: [-2000, 0],
-               duration: 250,
-               opacity: 1,
-               scale: ['*=0.3', 1],
-               easing: 'easeInSine'
-            });
+            _this.prevAnimation.restart();
+            // let prevAnimation = anime.timeline();
+            // prevAnimation.add({
+            //    targets: '.panel',
+            //    translateX: 1000, 
+            //    duration: 250, 
+            //    opacity: 0,
+            //    scale: '0.3',
+            //    easing: 'easeInSine',
+            //    complete: () => {
+            //       this.setState({ currentItem: this.state.items[index - 1] });
+            //       this.refs.timeline.selectItem(this.state.currentItem);
+            //    }
+            // }).add({
+            //    targets: '.panel',
+            //    translateX: [-2000, 0],
+            //    duration: 500, 
+            //    opacity: 1,
+            //    scale: ['*=0.3', 1],
+            //    easing: 'easeInSine'
+            // });
          }
       }, _this.nextItem = function () {
          var length = _this.state.items.length;
          var index = _this.state.items.indexOf(_this.state.currentItem);
          if (!(index === length - 1)) {
+            _this.nextAnimation.restart();
             // this needs work
-            var nextAnimation = anime_min_default.a.timeline();
-            nextAnimation.add({
-               targets: '.panel',
-               translateX: -2000,
-               duration: 250,
-               opacity: 0,
-               scale: 0.3,
-               easing: 'easeInSine',
-               complete: function complete() {
-                  _this.setState({ currentItem: _this.state.items[index + 1] });
-                  _this.refs.timeline.selectItem(_this.state.currentItem);
-               }
-            }).add({
-               targets: '.panel',
-               translateX: [1000, 0],
-               duration: 250,
-               opacity: 1,
-               scale: ['*=0.3', 1],
-               easing: 'easeInSine'
-            });
+            // let nextAnimation = anime.timeline();
+            // nextAnimation.add({
+            //    targets: '.panel',
+            //    translateX: -2000, 
+            //    duration: 250, 
+            //    opacity: 0,
+            //    scale: 0.3,
+            //    easing: 'easeInSine',
+            //    complete: () => {
+            //       this.setState({ currentItem: this.state.items[index + 1] });
+            //       this.refs.timeline.selectItem(this.state.currentItem);
+            //    }
+            // }).add({
+            //    targets: '.panel',
+            //    translateX: [1000, 0],
+            //    duration: 500, 
+            //    opacity: 1,
+            //    scale: ['*=0.3', 1],
+            //    easing: 'easeInSine'
+            // });
          }
       }, _temp), Chronicle__possibleConstructorReturn(_this, _ret);
    }
 
    Chronicle.prototype.componentDidMount = function componentDidMount() {
       var _this2 = this;
+
+      // init swipe stuff
+      this.swipe = new SwipeIt('#ChronicleCard');
+      this.swipe.on('swipeLeft', function () {
+         return _this2.nextItem();
+      });
+      this.swipe.on('swipeRight', function () {
+         return _this2.prevItem();
+      });
+
+      // should init animations here, probably inefficient to
+      // create a new animation timeline every single time the
+      // button is clicked
+      this.nextAnimation = anime_min_default.a.timeline({ autoplay: false });
+      this.nextAnimation.add({
+         targets: '.panel',
+         translateX: -2000,
+         duration: 250,
+         opacity: 0,
+         scale: 0.3,
+         easing: 'easeInSine',
+         complete: function complete() {
+            _this2.setState(function (prevState) {
+               return { currentItem: prevState.items[prevState.items.indexOf(prevState.currentItem) + 1] };
+            });
+            _this2.refs.timeline.selectItem(_this2.state.currentItem);
+         }
+      }).add({
+         targets: '.panel',
+         translateX: [1000, 0],
+         duration: 500,
+         opacity: 1,
+         scale: ['*=0.3', 1],
+         easing: 'easeInSine'
+      });
+
+      this.prevAnimation = anime_min_default.a.timeline({ autoplay: false });
+      this.prevAnimation.add({
+         targets: '.panel',
+         translateX: 1000,
+         duration: 250,
+         opacity: 0,
+         scale: '0.3',
+         easing: 'easeInSine',
+         complete: function complete() {
+            _this2.setState(function (prevState) {
+               return { currentItem: prevState.items[prevState.items.indexOf(prevState.currentItem) - 1] };
+            });
+            _this2.refs.timeline.selectItem(_this2.state.currentItem);
+         }
+      }).add({
+         targets: '.panel',
+         translateX: [-2000, 0],
+         duration: 500,
+         opacity: 1,
+         scale: ['*=0.3', 1],
+         easing: 'easeInSine'
+      });
 
       // fetch chronicle items
       fetch(api + "!getChronicle?" + this.props.urlStr + "&" + this.props.urlNm).then(function (res) {
@@ -7744,10 +8189,12 @@ var Chronicle_Chronicle = function (_Component) {
                title: this.state.currentItem.title,
                location: this.state.currentItem.location,
                date: this.state.currentItem.start,
-               src: this.state.currentItem.src,
+               imageSrc: this.state.currentItem.imageSrc,
+               audioSrc: this.state.currentItem.audioSrc,
+               videoSrc: this.state.currentItem.videoSrc,
                txt: this.state.currentItem.txt
             }),
-            Object(preact_min["h"])(Chronicle_AddSomethingBtn, {
+            Object(preact_min["h"])(Chronicle_AddSomethingBtn2, {
                showModal: this.showModal,
                showWrittenModal: this.showWrittenModal
             }),
@@ -7958,7 +8405,8 @@ var app_App = function (_Component) {
 
 
 
-/* harmony default export */ var index_0 = __webpack_exports__["default"] = (app_App);
+
+/* harmony default export */ var index = __webpack_exports__["default"] = (app_App);
 
 /***/ }),
 
@@ -8707,6 +9155,110 @@ function assertString(input) {
   }
 }
 module.exports = exports['default'];
+
+/***/ }),
+
+/***/ "eeh7":
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+
+/***/ "hIwO":
+/***/ (function(module, exports) {
+
+/*===========================
+  Swipe-it v1.4.1
+  An event listener for swiping gestures with vanilla js.
+  https://github.com/tri613/swipe-it#readme
+ 
+  @Create 2016/09/22
+  @Update 2017/08/11
+  @Author Trina Lu
+  ===========================*/
+if (typeof window !== "undefined") {
+  "use strict";var _slicedToArray = function () {
+    function n(n, t) {
+      var e = [],
+          i = !0,
+          o = !1,
+          r = void 0;try {
+        for (var u, c = n[Symbol.iterator](); !(i = (u = c.next()).done) && (e.push(u.value), !t || e.length !== t); i = !0) {}
+      } catch (n) {
+        o = !0, r = n;
+      } finally {
+        try {
+          !i && c.return && c.return();
+        } finally {
+          if (o) throw r;
+        }
+      }return e;
+    }return function (t, e) {
+      if (Array.isArray(t)) return t;if (Symbol.iterator in Object(t)) return n(t, e);throw new TypeError("Invalid attempt to destructure non-iterable instance");
+    };
+  }();!function (n, t, e) {
+    function i(n) {
+      function e() {
+        o("touchstart", m, w), o("touchmove", d, w), o("touchend", p, w), E.mouseEvent && o("mousedown", s, w);
+      }function i() {
+        y = !1, D = !1, A = !1, b = !1, a = !1;
+      }function s(n) {
+        a = this, y = n.clientX, D = n.clientY, o("mousemove", l, v), o("mouseup", h, v);
+      }function l(n) {
+        n.preventDefault(), y && D && (A = n.clientX, b = n.clientY);
+      }function h(n) {
+        r("mousemove", l, v), r("mouseup", h, v), p(n);
+      }function m(n) {
+        a = this, y = n.touches[0].clientX, D = n.touches[0].clientY;
+      }function d(n) {
+        A = n.touches[0].clientX, b = n.touches[0].clientY;
+      }function p(n) {
+        if (y && D && A && b) {
+          var t = y - A,
+              e = D - b,
+              o = [t, e].map(Math.abs),
+              r = _slicedToArray(o, 2),
+              c = r[0],
+              s = r[1],
+              v = E.minDistance;if (c > v) {
+            var f = y < A ? "swipeRight" : "swipeLeft";u(f, a, { distance: t, start: y, end: A });
+          }if (s > v) {
+            var l = D > b ? "swipeUp" : "swipeDown";u(l, a, { distance: e, start: D, end: b });
+          }(c > v || s > v) && u("swipe", a);
+        }i();
+      }var E = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {},
+          w = c(t.querySelectorAll(n)),
+          y = void 0,
+          D = void 0,
+          A = void 0,
+          b = void 0;E.mouseEvent = void 0 === E.mouseEvent ? f.mouseEvent : E.mouseEvent, E.minDistance = void 0 === E.minDistance ? f.minDistance : E.minDistance, i(), e(), this.on = function (n, t) {
+        return o(n, t, w), this;
+      };
+    }function o(n, t, e) {
+      s(e).forEach(function (e) {
+        return e.addEventListener(n, t);
+      });
+    }function r(n, t, e) {
+      s(e).forEach(function (e) {
+        return e.removeEventListener(n, t);
+      });
+    }function u(n, e) {
+      var i = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {},
+          o = t.createEvent("Event");o.initEvent(n, !0, !0), o.swipe = i, s(e).forEach(function (n) {
+        return n.dispatchEvent(o);
+      });
+    }function c(n) {
+      for (var t = [], e = 0; e < n.length; e++) {
+        t.push(n[e]);
+      }return t;
+    }function s(n) {
+      return Array.isArray(n) ? n : [n];
+    }var a = !1,
+        v = [n],
+        f = { mouseEvent: !0, minDistance: 30 };n[e] = i;
+  }(window, document, "SwipeIt");
+}
 
 /***/ }),
 
