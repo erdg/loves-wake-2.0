@@ -6,7 +6,7 @@ import './linked-ref';
 import API_ENDPOINT from '../../api';
 
 import anime from 'animejs';
-import Hammer from 'hammerjs';
+import './swipe-it.min.js';
 
 // generic components
 import GridContainer from '../../components/GridContainer';
@@ -189,9 +189,9 @@ export default class Chronicle extends Component {
 
    componentDidMount () {
       // init swipe stuff
-      this.hammer = Hammer(document.getElementById('ChronicleCard'));
-      this.hammer.on('swipeleft', this.nextItem);
-      this.hammer.on('swiperight', this.prevItem);
+      this.swipe = new SwipeIt('#ChronicleCard');
+      this.swipe.on('swipeLeft', () => this.nextItem());
+      this.swipe.on('swipeRight', () => this.prevItem());
 
       // should init animations here, probably inefficient to
       // create a new animation timeline every single time the
