@@ -220,8 +220,8 @@
                # else add new emails to list
                (finally (commit)
                   (for E (cdr (posted "emails"))
-                     (queue (:: emails) E) ) )
-               (sendEmails This) ) )
+                     (queue (:: emails) E) ) ) )
+               (sendEmails This) ) 
          (respondJson (list (cons "ok" "invitation list updated"))) ) ) )
 
 (allow "!sendEmails")
@@ -248,7 +248,7 @@
       # attachments
       NIL
       # body
-      (in (blob Memorial 'invite.md) (till NIL T)) ) )
+      (prin (in (blob Memorial 'invite.md) (till NIL T)) ) ) )
 
 (allow "!getMemorial")
 (de getMemorial (UrlNm)
