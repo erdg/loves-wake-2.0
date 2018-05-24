@@ -28,7 +28,9 @@
     "preact-render-spy": "^1.2.1"
   },
   "dependencies": {
+    "animejs": "^2.2.0",
     "classnames": "^2.2.5",
+    "hammerjs": "^2.0.8",
     "marked": "^0.3.19",
     "preact": "^8.2.6",
     "preact-compat": "^3.18.0",
