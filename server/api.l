@@ -65,7 +65,8 @@
 (rel urlStr (+Ref +String))            # 8 char base64 string, e.g. "8bez73Ka"
 (rel urlNm (+Ref +String))             # concatenated name, e.g. "MichaelJFox"
 
-(rel invite (+Blob))                   # invitation text
+(rel invite.txt (+Blob))               # invitation text (for web app display/editing)
+(rel invite.md (+Blob))                # invitation markdown (for email sending)
 (rel emails (+List +String))           # list of emails (people to invite 
                                        # to contribute to memorial)
 
@@ -111,8 +112,22 @@
       (if (: born) (link (cons "born" @)))
       (if (: died) (link (cons "died" @)))
       (if (: img) (link (cons "avatar" (pack *API (blob This 'img)))))
-      (if (: emails) (link (cons "emails" T (: emails))))
-      (if (: invite) (link (cons "invitation" (glue "\n\n" (make (in (blob This 'invite) (until (eof) (link (line T)))))))))
+      (if (: emails) 
+         (link
+            (make (link "emails" T)
+               (for E (: emails)
+                  (if (str? E)
+                     (link E)
+                     (chain E) ) ) ) ) )
+      (if (: invite.txt) 
+         (link 
+            (cons "invitationText"
+               (glue "\n\n"
+                  (make 
+                     (in (blob This 'invite.txt)
+                        (until (eof) 
+                           (link (line T)) ) ) ) ) ) )
+         (link (cons "invitationText" "You haven't yet written an invitation")) )
       (link
          (make (link "items" T)
             (for C (: chronicle)
@@ -187,8 +202,10 @@
          M  (db 'urlNm '+Memorial (posted "memorial")) ]
       (ifn M
          (respondJsonError "Bad memorial")
-         (unless (; M invite) (put!> M 'invite T))
-         (out (blob M 'invite) (prin (posted "invitation")))
+         (unless (; M invite.txt) (put!> M 'invite.txt T))
+         (unless (; M invite.md) (put!> M 'invite.md T))
+         (out (blob M 'invite.txt) (prin (posted "invitation")))
+         (out (blob M 'invite.md) (prin (posted "markdown")))
          (respondJson (list (cons "ok" "invitation updated"))) ) ) )
 
 (allow "!updEmails")
@@ -203,8 +220,35 @@
                # else add new emails to list
                (finally (commit)
                   (for E (cdr (posted "emails"))
-                     (queue (:: emails) E) ) ) ) )
+                     (queue (:: emails) E) ) )
+               (sendEmails This) ) )
          (respondJson (list (cons "ok" "invitation list updated"))) ) ) )
+
+(allow "!sendEmails")
+(de sendEmails (Memorial)
+   # NOTE - THIS PATTERN IS BROKEN
+   # will not work when there are multiple memorials 
+   # of the same name
+   (with Memorial  # -> This
+      (put!> This 'emails
+         (make
+            (for E (: emails)
+               (if (pair E)
+                  (link @)
+                  # (let Invite (in (blob This 'invite.md) (till NIL T)) ...
+                  (sendInvitationEmail E This)  # (sendInvitationEmail E Invite)
+                  (link (list E)) ) ) ) ) ) )
+
+# probably don't want to read the file every time
+(de sendInvitationEmail (Email Memorial)
+   (msg "Invitation sent to " Email)
+   (mail-html "localhost" 25 *Email Email
+      # subject
+      "LovesWake - Invitation to Contribute"
+      # attachments
+      NIL
+      # body
+      (in (blob Memorial 'invite.md) (till NIL T)) ) )
 
 (allow "!getMemorial")
 (de getMemorial (UrlNm)
@@ -468,9 +512,6 @@
 (allow "!getUserData")
 (de getUserData ()
    (let [Id (getJWT "sub" "loginToken") ]
-      (and *Dbg 
-         # debugging output
-      )
       (ifn (db 'id '+User Id)
          (forbidden)
          (respondJson (json> @) ) ) ) )

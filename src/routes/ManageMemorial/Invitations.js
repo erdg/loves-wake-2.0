@@ -62,6 +62,10 @@ class Invitations extends Component {
 
    // update invitation list for memorial
    updEmails = () => {
+      if (this.state.emails.length === 0) {
+         alert("No new people to send inivations to, please add new email addresses.");
+         return;
+      }
       fetch(API_ENDPOINT + "!updEmails", {
          method: "POST",
          body: JSON.stringify({
@@ -102,6 +106,7 @@ class Invitations extends Component {
                memorial={this.props.memorial}
                showModal={this.state.showModal}
                hideModal={this.hideModal}
+               updInvitation={(updated) => props.updInvitation(updated)}
             />
 
             { 

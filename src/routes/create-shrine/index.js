@@ -2,6 +2,8 @@ import { h, Component } from 'preact';
 import API_ENDPOINT from '../../api';
 import { route } from 'preact-router';
 
+import marked from 'marked';
+
 import { FlexContainer } from '../../components/FlexContainer';
 import { CreateShrineFormContainer } from './create-shrine-form-container/';
 import { AvatarRail } from './avatar-rail/';
@@ -32,6 +34,12 @@ class CreateShrine extends Component {
 
       loading: false
    };
+
+   componentDidMount () {
+      marked.setOptions({
+         sanitize: true
+      });
+   }
 
    onChange = (e) => {
       this.setState({ [e.target.name]: e.target.value });
@@ -140,7 +148,8 @@ class CreateShrine extends Component {
          body: JSON.stringify({
             loginToken: window.sessionStorage.getItem('loginToken'),
             memorial: this.state.memorial.urlNm,
-            invitation: this.state.invitation
+            invitation: this.state.invitation,
+            markdown: marked(this.state.invitation)
          })
       })
       .then(res => res.json())

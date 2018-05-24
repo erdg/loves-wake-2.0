@@ -12,15 +12,28 @@ import DeleteModal from './DeleteModal';
 
 import Invitations from './Invitations';
 
+import marked from 'marked';
 import anime from 'animejs';
 
 class ManageMemorial extends Component {
+   constructor(props) {
+      super(props);
+      marked.setOptions({
+         sanitize: true
+      })
+   }
+
    state = {
       item: {},
       showModal: false,
       showDeleteModal: false,
 
       active: 'chronicle',
+      // 'forks' items from user data
+      // allows to have UI update in response to deleting/editing items
+      // very gross hack
+      // this application needs a store, but I've decided to hack through
+      // features, take on technical debt and refactor later
       items: this.props.user.memorials.find(m => m.urlNm === this.props.urlNm).items
    }
 
@@ -274,6 +287,26 @@ class ManageMemorial extends Component {
       })
    }
 
+   updInvitation = (updated) => {
+      this.setState((prevState) => ({ invitation: updated }));
+      if (!this.state.invitation) { return; }
+      let markdown = marked(this.state.invitation);
+      console.log(markdown);
+      fetch(API_ENDPOINT + "!updInvitation", {
+         method: "POST",
+         body: JSON.stringify({
+            loginToken: window.sessionStorage.getItem('loginToken'),
+            memorial: this.props.urlNm,
+            markdown: markdown,
+            invitation: this.state.invitation
+         })
+      })
+      .then(res => res.json())
+      .then(json => {
+         console.log(json);
+      });
+   }
+
    showModal = (id) => {
       let memorial = this.props.user.memorials.find(m => m.urlNm === this.props.urlNm);
       this.setState({ showModal: true, item: memorial.items.find(item => item.id === id) });
@@ -393,6 +426,7 @@ class ManageMemorial extends Component {
                   { this.state.active === "invitations" &&
                         <Invitations 
                            memorial={memorial}
+                           updInvitation={(updated) => this.updInvitation(updated)}
                         />
                   }
                </div>

@@ -6,15 +6,16 @@ import API_ENDPOINT from '../../api';
 
 // add a new item to chronicle
 class InvitationModal extends Component {
-   constructor(props) {
-      super(props);
+   state = {
+      invitation: this.props.memorial.invitationText.split("^J^J").join("\n") || ''
+   }
+
+   componentDidMount () {
       marked.setOptions({
          sanitize: true
-      })
-      this.state = {
-         invitation: this.props.memorial.invitation || ''
-      }
+      });
    }
+
 
    onChange = (e) => {
       this.setState({ [e.target.name]: e.target.value });
@@ -83,9 +84,14 @@ class InvitationModal extends Component {
 
                </div>
 
-
                <div class="modal-footer">
-
+                  <button class="btn btn-primary"
+                     onClick={(updated) => {
+                        props.updInvitation(this.state.invitation);
+                        props.hideModal();
+                     }}
+                  > Update Invitation
+                  </button>
                </div>
 
             </div>
